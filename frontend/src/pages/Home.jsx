@@ -257,7 +257,7 @@ const Home = () => {
         }, 3000);
       }
     } catch (err) {
-      alert('Failed to submit event: ' + err.response?.data?.message);
+      alert('Failed to submit event: ' + (err.response?.data?.message || 'Server is offline or unreachable. Please try again.'));
     } finally {
       setSubmittingEvent(false);
     }
@@ -275,7 +275,7 @@ const Home = () => {
         fetchData();
       }
     } catch (err) {
-      alert('Failed to post question: ' + err.response?.data?.message);
+      alert('Failed to post question: ' + (err.response?.data?.message || 'Server is offline or unreachable. Please try again.'));
     } finally {
       setSubmittingQuestion(false);
     }
