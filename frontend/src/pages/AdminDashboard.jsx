@@ -43,7 +43,7 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     fetchAdminData();
-  }, []);
+  }, [activeTab]);
 
   const fetchAdminData = async () => {
     try {

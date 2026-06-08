@@ -94,7 +94,7 @@ const Home = () => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [activeTab]);
 
   // Sync timeline events correctly (only future dates)
   useEffect(() => {
@@ -246,7 +246,7 @@ const Home = () => {
     try {
       const res = await api.post('/events', eventForm);
       if (res.data.success) {
-        setEventSuccessMsg(user.role === 'Admin' ? 'Event created successfully!' : 'Event submitted successfully! Status set to Pending Admin approval.');
+        setEventSuccessMsg('Event created successfully!');
         setEventForm({
           name: '', description: '', banner: '', date: '', time: '', venue: '', category: 'Coding', tags: [], registrationLink: ''
         });
@@ -292,7 +292,7 @@ const Home = () => {
       const res = await api.post(`/placements/${placements[0]._id}/companies`, { companyName: recruiterInput });
       if (res.data.success) {
         setRecruiterInput('');
-        setRecruiterSuccessMsg('Thank you! Your suggestion has been submitted and is pending admin approval.');
+        setRecruiterSuccessMsg('Thank you! Your suggestion has been added successfully.');
         setTimeout(() => setRecruiterSuccessMsg(''), 5000);
       }
     } catch (err) {

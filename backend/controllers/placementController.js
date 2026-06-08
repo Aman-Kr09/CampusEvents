@@ -136,8 +136,8 @@ exports.addCompany = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Placement record not found' });
     }
 
-    // Determine status: Admin adds directly as Approved; Student as Pending
-    const status = req.user.role === 'Admin' || req.user.role === 'SuperAdmin' ? 'Approved' : 'Pending';
+    // Suggested recruiters are approved by default so they are visible immediately until modified/deleted by Admin
+    const status = 'Approved';
 
     // Prevent duplicate suggestions (pending/approved) under the same placement year record
     const exists = record.companiesVisited.some(

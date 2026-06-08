@@ -24,7 +24,7 @@ const SuperAdminDashboard = () => {
 
   useEffect(() => {
     fetchSuperAdminData();
-  }, []);
+  }, [activeTab]);
 
   const fetchSuperAdminData = async () => {
     try {

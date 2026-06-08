@@ -140,8 +140,8 @@ exports.submitEvent = async (req, res) => {
   try {
     const collegeId = req.user.college._id;
 
-    // Determine status: Admin-created events are Approved automatically
-    const status = req.user.role === 'Admin' ? 'Approved' : 'Pending';
+    // Default to 'Approved' so events are visible immediately until moderated/deleted by Admin
+    const status = 'Approved';
 
     const event = await Event.create({
       name,
