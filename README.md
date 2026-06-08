@@ -188,11 +188,3 @@ CampusEvents/
     Open your browser and navigate to `http://localhost:5173`.
 
 ---
-
-## Default Seed Credentials
-
-For quick local testing and authentication, the database has been pre-populated with:
-
-*   **Super Admin User**:
-    *   Email: `superadmin@campusevents.com`
-    *   Password: `SuperAdminSecure123!`
