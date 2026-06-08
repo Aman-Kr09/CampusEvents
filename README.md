@@ -160,7 +160,7 @@ CampusEvents/
     ```
 
 3.  **Seed Database**:
-    Initialize college list, students, placements, and administrator accounts:
+    Initialize the default superadmin account:
     ```bash
     npm run seed
     ```
@@ -196,12 +196,3 @@ For quick local testing and authentication, the database has been pre-populated 
 *   **Super Admin User**:
     *   Email: `superadmin@campusevents.com`
     *   Password: `SuperAdminSecure123!`
-*   **Stark Institute Admin**:
-    *   Email: `starkadmin@sit.edu`
-    *   Password: `Admin123!`
-*   **Wayne School Admin**:
-    *   Email: `wayneadmin@wse.edu`
-    *   Password: `Admin123!`
-*   **Students (Stark Institute)**:
-    *   Peter Parker: `peter@sit.edu` / `Student123!` (Interests: Research, Data Science, AI/ML, Photography)
-    *   Tony Stark Jr: `tony@sit.edu` / `Student123!` (Interests: Coding, Robotics, Startups, AI/ML)

@@ -98,23 +98,11 @@ const Login = () => {
     setLoading(true);
     setError('');
     try {
-      // Simulate OAuth response with seed students
-      const mockGoogleProfiles = [
-        { name: 'Peter Parker', email: 'peter@sit.edu', googleId: 'g_123456789_peter' },
-        { name: 'Tony Stark Jr', email: 'tony@sit.edu', googleId: 'g_123456789_tony' },
-        { name: 'Bruce Wayne Jr', email: 'bruce@wse.edu', googleId: 'g_123456789_bruce' }
-      ];
-
-      // Match profile to selected college or fallback to Tony Stark
-      let selectedProfile = mockGoogleProfiles.find(p => p.email.endsWith(selectedCollege.name.includes('Wayne') ? 'wse.edu' : 'sit.edu'));
-      if (!selectedProfile) {
-        // Fallback profile
-        selectedProfile = {
-          name: 'New Google Student',
-          email: `google_student_${Math.floor(1000 + Math.random() * 9000)}@sit.edu`,
-          googleId: `g_oauth_${Date.now()}`
-        };
-      }
+      const selectedProfile = {
+        name: 'Google Student',
+        email: `google_student_${Date.now()}@${selectedCollege.name.includes('Wayne') ? 'wse.edu' : 'sit.edu'}`,
+        googleId: `g_oauth_${Date.now()}`
+      };
 
       const res = await googleLogin({
         ...selectedProfile,
@@ -257,7 +245,7 @@ const Login = () => {
                       type="email"
                       name="email"
                       required
-                      placeholder="e.g. peter@sit.edu"
+                      placeholder="e.g. student@college.edu"
                       value={form.email}
                       onChange={handleChange}
                       className="w-full pl-10 glass-input"
@@ -318,7 +306,7 @@ const Login = () => {
                       type="text"
                       name="name"
                       required
-                      placeholder="Peter Parker"
+                      placeholder="Your Name"
                       value={form.name}
                       onChange={handleChange}
                       className="w-full pl-10 glass-input"
@@ -334,7 +322,7 @@ const Login = () => {
                       type="email"
                       name="email"
                       required
-                      placeholder="peter@sit.edu"
+                      placeholder="student@college.edu"
                       value={form.email}
                       onChange={handleChange}
                       className="w-full pl-10 glass-input"
@@ -430,7 +418,7 @@ const Login = () => {
                           type="email"
                           name="email"
                           required
-                          placeholder="tony@sit.edu"
+                          placeholder="student@college.edu"
                           value={form.email}
                           onChange={handleChange}
                           className="w-full pl-10 glass-input"

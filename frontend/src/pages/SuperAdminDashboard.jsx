@@ -318,7 +318,7 @@ const SuperAdminDashboard = () => {
                         <input
                           type="email"
                           required
-                          placeholder="starkadmin@sit.edu"
+                          placeholder="admin@college.edu"
                           value={adminForm.email}
                           onChange={(e) => setAdminForm({ ...adminForm, email: e.target.value })}
                           className="w-full pl-10 glass-input"

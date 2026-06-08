@@ -315,14 +315,6 @@ const Landing = () => {
                       <span>Password</span>
                       <span className="font-mono text-amber-400">SuperAdminSecure123!</span>
                     </div>
-                    <div className="border-t border-glassBorder/50 pt-1 flex justify-between items-center text-gray-500">
-                      <span>College Admin</span>
-                      <span className="font-mono text-indigo-400">starkadmin@sit.edu</span>
-                    </div>
-                    <div className="flex justify-between items-center text-gray-500">
-                      <span>Password</span>
-                      <span className="font-mono text-amber-400">Admin123!</span>
-                    </div>
                   </div>
                 </div>
               </form>
