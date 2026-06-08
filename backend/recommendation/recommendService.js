@@ -3,8 +3,11 @@ const path = require('path');
 
 const runPythonScript = (scriptName, inputData) => {
   return new Promise((resolve, reject) => {
-    // Locate the python executable inside backend/venv/Scripts/python.exe
-    const pythonPath = path.join(__dirname, '..', 'venv', 'Scripts', 'python.exe');
+    // Locate the python executable inside backend/venv/ (Scripts/python.exe on Windows, bin/python on Linux/macOS)
+    const isWindows = process.platform === 'win32';
+    const pythonPath = isWindows
+      ? path.join(__dirname, '..', 'venv', 'Scripts', 'python.exe')
+      : path.join(__dirname, '..', 'venv', 'bin', 'python');
     const scriptPath = path.join(__dirname, scriptName);
 
     const pyProcess = spawn(pythonPath, [scriptPath]);
