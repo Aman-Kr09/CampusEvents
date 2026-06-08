@@ -15,6 +15,7 @@ build
 coverage
 
 # Environment files
+.env.production
 .env
 .env.*
 backend/.env
