@@ -1,0 +1,106 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-darkBg text-gray-100 font-sans antialiased overflow-x-hidden;
+    background-image: 
+      radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.1) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, rgba(34, 211, 238, 0.08) 0px, transparent 50%),
+      radial-gradient(at 50% 50%, rgba(244, 114, 182, 0.03) 0px, transparent 50%);
+    background-attachment: fixed;
+  }
+}
+
+/* Glassmorphism Styles */
+.glass-panel {
+  background: rgba(17, 19, 28, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+}
+
+.glass-panel-hover {
+  @apply transition-all duration-300;
+}
+.glass-panel-hover:hover {
+  background: rgba(25, 28, 41, 0.85);
+  border-color: rgba(99, 102, 241, 0.3);
+  box-shadow: 0 12px 40px 0 rgba(99, 102, 241, 0.15);
+  transform: translateY(-2px);
+}
+
+.glass-input {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  @apply text-white placeholder-gray-500 rounded-lg px-4 py-2.5 outline-none transition-all duration-200;
+}
+.glass-input:focus {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(99, 102, 241, 0.5);
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.15);
+}
+
+.glass-button-primary {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  @apply text-white font-medium px-5 py-2.5 rounded-lg transition-all duration-300 shadow-glow;
+}
+.glass-button-primary:hover {
+  background: linear-gradient(135deg, #818cf8 0%, #6366f1 100%);
+  box-shadow: 0 0 20px rgba(99, 102, 241, 0.45);
+  transform: translateY(-1px);
+}
+
+.glass-button-secondary {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  @apply text-gray-300 font-medium px-5 py-2.5 rounded-lg transition-all duration-300;
+}
+.glass-button-secondary:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  @apply text-white;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #090a0f;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(99, 102, 241, 0.4);
+}
+
+/* Premium Gradient Text */
+.gradient-text-indigo-cyan {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400 font-extrabold;
+}
+
+.gradient-text-purple-pink {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400 font-extrabold;
+}
+
+/* Custom Timeline Design */
+.timeline-item::after {
+  content: '';
+  position: absolute;
+  left: 19px;
+  top: 36px;
+  bottom: -20px;
+  width: 2px;
+  background: rgba(255, 255, 255, 0.06);
+}
+.timeline-item:last-child::after {
+  display: none;
+}

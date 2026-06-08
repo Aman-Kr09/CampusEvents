@@ -1,0 +1,48 @@
+const nodemailer = require('nodemailer');
+
+const sendEmail = async (options) => {
+  const host = process.env.SMTP_HOST;
+  const port = process.env.SMTP_PORT || 587;
+  const user = process.env.SMTP_USER;
+  const pass = process.env.SMTP_PASS;
+  const from = process.env.SMTP_FROM || 'noreply@campusevents.com';
+
+  // If no SMTP host is configured, mock email delivery and log it
+  if (!host || !user || !pass) {
+    console.log('\n==================================================');
+    console.log(`[DEV EMAIL SIMULATION] Sending Email To: ${options.email}`);
+    console.log(`Subject: ${options.subject}`);
+    console.log('--------------------------------------------------');
+    console.log(options.message);
+    console.log('==================================================\n');
+    return { success: true, mocked: true };
+  }
+
+  const transporter = nodemailer.createTransport({
+    host,
+    port,
+    auth: {
+      user,
+      pass
+    }
+  });
+
+  const mailOptions = {
+    from,
+    to: options.email,
+    subject: options.subject,
+    text: options.message,
+    html: options.html || `<p>${options.message}</p>`
+  };
+
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log(`Email sent successfully: ${info.messageId}`);
+    return { success: true, messageId: info.messageId };
+  } catch (error) {
+    console.error(`Email sending failed: ${error.message}`);
+    throw error;
+  }
+};
+
+module.exports = sendEmail;
