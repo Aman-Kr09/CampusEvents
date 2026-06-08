@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { api, useAuth } from '../context/AuthContext';
 import { useCollege } from '../context/CollegeContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
+import {
   Calendar, MapPin, Clock, Search, Send, Plus, ArrowRight, Heart, Users,
   Megaphone, TrendingUp, BarChart3, HelpCircle, Tags, ChevronRight, X, AlertCircle, Sparkles, MessageSquare, ThumbsUp, Check
 } from 'lucide-react';
@@ -22,7 +22,7 @@ const Home = () => {
   const [announcements, setAnnouncements] = useState([]);
   const [questions, setQuestions] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-  
+
   // Search results
   const [searchResults, setSearchResults] = useState(null);
   const [isSearching, setIsSearching] = useState(false);
@@ -31,13 +31,13 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [isEventModalOpen, setIsEventModalOpen] = useState(false);
   const [isQAOpen, setIsQAOpen] = useState(false); // Ask Question modal
-  
+
   // View Question detail drawer state
   const [selectedQuestion, setSelectedQuestion] = useState(null);
   const [answers, setAnswers] = useState([]);
   const [newAnswerContent, setNewAnswerContent] = useState('');
   const [newCommentContent, setNewCommentContent] = useState('');
-  
+
   // New Event Form State
   const [eventForm, setEventForm] = useState({
     name: '',
@@ -100,10 +100,10 @@ const Home = () => {
   useEffect(() => {
     if (events.length > 0) {
       const today = new Date();
-      today.setHours(0,0,0,0);
+      today.setHours(0, 0, 0, 0);
       const sortedTimeline = [...events]
         .filter(e => new Date(e.date) >= today)
-        .sort((a,b) => new Date(a.date) - new Date(b.date));
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
       setTimeline(sortedTimeline);
     }
   }, [events]);
@@ -119,7 +119,7 @@ const Home = () => {
             const isReg = e.registrations.includes(user._id);
             return {
               ...e,
-              registrations: isReg 
+              registrations: isReg
                 ? e.registrations.filter(id => id !== user._id)
                 : [...e.registrations, user._id]
             };
@@ -132,7 +132,7 @@ const Home = () => {
             const isReg = e.registrations.includes(user._id);
             return {
               ...e,
-              registrations: isReg 
+              registrations: isReg
                 ? e.registrations.filter(id => id !== user._id)
                 : [...e.registrations, user._id]
             };
@@ -257,7 +257,7 @@ const Home = () => {
         }, 3000);
       }
     } catch (err) {
-      alert('Failed to submit event: ' + (err.response?.data?.message || 'Server is offline or unreachable. Please try again.'));
+      alert('Failed to submit event: ' + err.response?.data?.message);
     } finally {
       setSubmittingEvent(false);
     }
@@ -275,7 +275,7 @@ const Home = () => {
         fetchData();
       }
     } catch (err) {
-      alert('Failed to post question: ' + (err.response?.data?.message || 'Server is offline or unreachable. Please try again.'));
+      alert('Failed to post question: ' + err.response?.data?.message);
     } finally {
       setSubmittingQuestion(false);
     }
@@ -417,7 +417,7 @@ const Home = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative">
-      
+
       {/* 1. Dashboard Controls Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-glassBorder pb-6 mb-8">
         <div>
@@ -433,8 +433,8 @@ const Home = () => {
               type="text"
               placeholder={
                 activeTab === 'events' ? 'Search events...' :
-                activeTab === 'qa' ? 'Search discussions...' :
-                activeTab === 'placements' ? 'Search recruiters...' : 'Search announcements...'
+                  activeTab === 'qa' ? 'Search discussions...' :
+                    activeTab === 'placements' ? 'Search recruiters...' : 'Search announcements...'
               }
               value={searchQuery}
               onChange={handleSearchChange}
@@ -473,11 +473,10 @@ const Home = () => {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center space-x-2 px-5 py-3 rounded-xl font-bold text-sm transition-all duration-200 relative whitespace-nowrap ${
-                isActive
+              className={`flex items-center space-x-2 px-5 py-3 rounded-xl font-bold text-sm transition-all duration-200 relative whitespace-nowrap ${isActive
                   ? 'text-white shadow-glow border border-white/10'
                   : 'text-gray-400 hover:text-white hover:bg-white/5 border border-transparent'
-              }`}
+                }`}
             >
               {isActive && (
                 <motion.div
@@ -507,7 +506,7 @@ const Home = () => {
                 <Search className="w-5 h-5 text-indigo-400" />
                 <span>Search Matches for "{searchQuery}"</span>
               </h3>
-              <button 
+              <button
                 onClick={() => { setSearchQuery(''); setIsSearching(false); setSearchResults(null); }}
                 className="p-1 text-gray-500 hover:text-white rounded-lg hover:bg-white/5"
               >
@@ -527,7 +526,7 @@ const Home = () => {
                 ) : (
                   <div className="space-y-2">
                     {searchResults.events.map(ev => (
-                      <div 
+                      <div
                         key={ev._id}
                         onClick={() => { recordView(ev._id); alert(`Event Details:\n\nName: ${ev.name}\nVenue: ${ev.venue}\nDate: ${formatDate(ev.date)}\nDescription: ${ev.description}`); }}
                         className="p-3 bg-white/[0.01] border border-glassBorder rounded-xl cursor-pointer hover:bg-white/[0.04] transition-all"
@@ -552,7 +551,7 @@ const Home = () => {
                 ) : (
                   <div className="space-y-2">
                     {searchResults.questions.map(q => (
-                      <div 
+                      <div
                         key={q._id}
                         onClick={() => viewQuestionDetails(q)}
                         className="p-3 bg-white/[0.01] border border-glassBorder rounded-xl cursor-pointer hover:bg-white/[0.04] transition-all"
@@ -576,7 +575,7 @@ const Home = () => {
                 ) : (
                   <div className="space-y-2">
                     {searchResults.announcements.map(ann => (
-                      <div 
+                      <div
                         key={ann._id}
                         className="p-3 bg-white/[0.01] border border-glassBorder rounded-xl"
                       >
@@ -599,7 +598,7 @@ const Home = () => {
         </div>
       ) : (
         <div className="space-y-8">
-          
+
           {/* TAB 1: EVENTS HUB */}
           {activeTab === 'events' && (
             <div className="space-y-8">
@@ -637,7 +636,7 @@ const Home = () => {
                             <h3 className="text-sm font-bold text-white mt-3 line-clamp-2 hover:text-indigo-400 cursor-pointer transition-colors">
                               {event.name}
                             </h3>
-                            
+
                             <div className="flex items-center text-xs text-gray-500 mt-2 space-x-1">
                               <MapPin className="w-3.5 h-3.5" />
                               <span className="truncate">{event.venue}</span>
@@ -648,26 +647,24 @@ const Home = () => {
                             <span className="text-xs text-gray-400 font-semibold">
                               {formatDate(event.date)}
                             </span>
-                            
+
                             <div className="flex items-center space-x-2">
                               <button
                                 onClick={() => handleLike(event._id)}
-                                className={`p-1.5 rounded-lg border transition-all ${
-                                  isLiked 
-                                    ? 'bg-rose-950/40 border-rose-500/20 text-rose-400' 
+                                className={`p-1.5 rounded-lg border transition-all ${isLiked
+                                    ? 'bg-rose-950/40 border-rose-500/20 text-rose-400'
                                     : 'bg-white/[0.02] border-glassBorder text-gray-500 hover:text-white'
-                                }`}
+                                  }`}
                               >
                                 <Heart className={`w-4 h-4 ${isLiked ? 'fill-rose-400' : ''}`} />
                               </button>
-                              
+
                               <button
                                 onClick={() => handleRegister(event._id)}
-                                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                                  isRegistered
+                                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${isRegistered
                                     ? 'bg-emerald-950 text-emerald-400 border border-emerald-500/20'
                                     : 'glass-button-primary'
-                                }`}
+                                  }`}
                               >
                                 {isRegistered ? 'Registered' : 'Register'}
                               </button>
@@ -710,9 +707,9 @@ const Home = () => {
                             {/* Event Banner */}
                             <div className="h-32 bg-indigo-950/20 relative overflow-hidden">
                               {event.banner ? (
-                                <img 
-                                  src={event.banner} 
-                                  alt={event.name} 
+                                <img
+                                  src={event.banner}
+                                  alt={event.name}
                                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                 />
                               ) : (
@@ -726,7 +723,7 @@ const Home = () => {
                             </div>
 
                             {/* Event Body */}
-                            <div 
+                            <div
                               className="p-5 flex-1 flex flex-col justify-between cursor-pointer"
                               onClick={() => { recordView(event._id); alert(`Event Details:\n\nName: ${event.name}\nDate: ${formatDate(event.date)}\nVenue: ${event.venue}\nCategory: ${event.category}\n\nDescription: ${event.description}`); }}
                             >
@@ -760,22 +757,20 @@ const Home = () => {
                               <div className="flex items-center space-x-2">
                                 <button
                                   onClick={() => handleLike(event._id)}
-                                  className={`p-1.5 rounded-lg border transition-all ${
-                                    isLiked 
-                                      ? 'bg-rose-950/40 border-rose-500/20 text-rose-400' 
+                                  className={`p-1.5 rounded-lg border transition-all ${isLiked
+                                      ? 'bg-rose-950/40 border-rose-500/20 text-rose-400'
                                       : 'bg-white/[0.02] border-glassBorder text-gray-500 hover:text-white'
-                                  }`}
+                                    }`}
                                 >
                                   <Heart className={`w-4 h-4 ${isLiked ? 'fill-rose-400' : ''}`} />
                                 </button>
-                                
+
                                 <button
                                   onClick={() => handleRegister(event._id)}
-                                  className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                                    isRegistered
+                                  className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${isRegistered
                                       ? 'bg-emerald-950 text-emerald-400 border border-emerald-500/20'
                                       : 'glass-button-primary'
-                                  }`}
+                                    }`}
                                 >
                                   {isRegistered ? 'Registered' : 'Register'}
                                 </button>
@@ -800,14 +795,14 @@ const Home = () => {
                   ) : (
                     <div className="glass-panel p-6 rounded-2xl space-y-6">
                       {timeline.map((event) => (
-                        <div 
+                        <div
                           key={event._id}
                           onClick={() => { recordView(event._id); alert(`Event Details:\n\nName: ${event.name}\nVenue: ${event.venue}\nDescription: ${event.description}`); }}
                           className="relative pl-8 timeline-item cursor-pointer group"
                         >
                           {/* Bullet point node */}
                           <div className="absolute left-3 top-1 w-3.5 h-3.5 rounded-full bg-cyan-500 shadow-cyanGlow border-2 border-darkCard transition-transform duration-300 group-hover:scale-125"></div>
-                          
+
                           <div className="space-y-1">
                             <div className="flex items-center space-x-3">
                               <span className="text-xs font-bold text-cyan-400 uppercase tracking-wide">
@@ -871,7 +866,7 @@ const Home = () => {
                           <p className="text-xs sm:text-sm text-gray-400 line-clamp-2 leading-relaxed">
                             {q.content}
                           </p>
-                          
+
                           <div className="flex flex-wrap items-center gap-3 text-[10px] sm:text-xs text-gray-500 pt-1">
                             <span className="font-bold text-gray-400">{q.user?.name}</span>
                             <span>{q.user?.branch} (Year {q.user?.year})</span>
@@ -883,11 +878,10 @@ const Home = () => {
                         <div className="flex sm:flex-col items-center gap-2 self-stretch sm:self-center shrink-0 justify-end">
                           <button
                             onClick={() => handleUpvoteQuestion(q._id)}
-                            className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold transition-all ${
-                              q.upvotes.includes(user._id)
+                            className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold transition-all ${q.upvotes.includes(user._id)
                                 ? 'bg-indigo-950/60 border-indigo-500/20 text-indigo-400'
                                 : 'bg-white/[0.02] border-glassBorder text-gray-400 hover:text-white'
-                            }`}
+                              }`}
                           >
                             <ThumbsUp className="w-3.5 h-3.5" />
                             <span>{q.upvotes.length}</span>
@@ -919,7 +913,7 @@ const Home = () => {
                 ) : (
                   <div className="space-y-3">
                     {[...questions]
-                      .sort((a,b) => b.upvotes.length - a.upvotes.length)
+                      .sort((a, b) => b.upvotes.length - a.upvotes.length)
                       .slice(0, 3)
                       .map((q) => (
                         <div
@@ -989,8 +983,8 @@ const Home = () => {
                         {placements[0]?.placementPercentage}% Placed
                       </span>
                       <div className="w-full h-2 bg-gray-800 rounded-full overflow-hidden mt-3">
-                        <div 
-                          className="h-full bg-emerald-500" 
+                        <div
+                          className="h-full bg-emerald-500"
                           style={{ width: `${placements[0]?.placementPercentage}%` }}
                         ></div>
                       </div>
@@ -1000,13 +994,13 @@ const Home = () => {
                   {/* Top Recruiters & Suggestion Form */}
                   <div className="bg-white/[0.01] border border-glassBorder p-6 rounded-2xl space-y-4">
                     <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400">Top Recruiters & Hiring Partners</h4>
-                    
+
                     {placements[0]?.companiesVisited?.length === 0 ? (
                       <p className="text-xs text-gray-500">No recruiters listed for this year.</p>
                     ) : (
                       <div className="flex flex-wrap gap-2 pt-1">
                         {placements[0].companiesVisited.map(c => (
-                          <span 
+                          <span
                             key={c._id || c.name}
                             className="text-xs bg-indigo-950/40 text-indigo-300 border border-indigo-500/15 px-3.5 py-1.5 rounded-lg font-semibold"
                           >
@@ -1029,7 +1023,7 @@ const Home = () => {
                           className="w-full glass-input py-2 px-3 text-xs"
                         />
                       </div>
-                      <button 
+                      <button
                         type="submit"
                         disabled={submittingRecruiter}
                         className="glass-button-primary text-xs py-2 px-4 whitespace-nowrap w-full sm:w-auto"
@@ -1062,7 +1056,7 @@ const Home = () => {
               ) : (
                 <div className="space-y-4">
                   {announcements.map((ann) => (
-                    <div 
+                    <div
                       key={ann._id}
                       className="bg-white/[0.01] border border-glassBorder p-5 rounded-2xl space-y-3 hover:bg-white/[0.03] hover:border-cyan-500/20 transition-all duration-200"
                     >
@@ -1101,7 +1095,7 @@ const Home = () => {
                   <Calendar className="w-5.5 h-5.5 text-indigo-400" />
                   <span>Propose New Campus Event</span>
                 </h3>
-                <button 
+                <button
                   onClick={() => setIsEventModalOpen(false)}
                   className="p-1 text-gray-400 hover:text-white rounded-lg hover:bg-white/5"
                 >
@@ -1229,7 +1223,7 @@ const Home = () => {
                     <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Event Tags</label>
                     <div className="flex flex-wrap gap-1.5 p-2 bg-white/[0.01] border border-glassBorder rounded-lg min-h-[44px]">
                       {eventForm.tags.map(tag => (
-                        <span 
+                        <span
                           key={tag}
                           className="text-xs bg-indigo-950/60 text-indigo-300 border border-indigo-500/20 px-2.5 py-1 rounded-md flex items-center space-x-1"
                         >
@@ -1245,7 +1239,7 @@ const Home = () => {
                           placeholder="Add tag"
                           value={tagInput}
                           onChange={(e) => setTagInput(e.target.value)}
-                          onKeyDown={(e) => { if(e.key==='Enter') { e.preventDefault(); addCustomTag(); } }}
+                          onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addCustomTag(); } }}
                           className="bg-transparent outline-none text-xs text-white w-full border-none p-0"
                         />
                         <button type="button" onClick={addCustomTag} className="text-[10px] text-gray-400 hover:text-white font-bold">ADD</button>
@@ -1338,7 +1332,7 @@ const Home = () => {
           <div className="fixed inset-0 z-50 flex justify-end bg-black/60 backdrop-blur-xs">
             {/* Click outside to close */}
             <div className="flex-1" onClick={() => setSelectedQuestion(null)}></div>
-            
+
             <motion.div
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
@@ -1349,7 +1343,7 @@ const Home = () => {
               {/* Drawer Header */}
               <div className="flex items-center justify-between p-5 border-b border-glassBorder bg-white/[0.01]">
                 <span className="text-xs font-semibold text-indigo-400 uppercase tracking-wider">Question Thread</span>
-                <button 
+                <button
                   onClick={() => setSelectedQuestion(null)}
                   className="p-1 text-gray-400 hover:text-white rounded-lg hover:bg-white/5"
                 >
@@ -1359,7 +1353,7 @@ const Home = () => {
 
               {/* Drawer Body Scroll */}
               <div className="flex-1 overflow-y-auto p-6 space-y-6">
-                
+
                 {/* 1. Main Question Post */}
                 <div className="space-y-4">
                   <h2 className="text-lg sm:text-xl font-bold text-white leading-snug">{selectedQuestion.title}</h2>
@@ -1376,11 +1370,10 @@ const Home = () => {
 
                     <button
                       onClick={() => handleUpvoteQuestion(selectedQuestion._id)}
-                      className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold transition-all ${
-                        selectedQuestion.upvotes.includes(user._id)
+                      className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold transition-all ${selectedQuestion.upvotes.includes(user._id)
                           ? 'bg-indigo-950/60 border-indigo-500/20 text-indigo-400'
                           : 'bg-white/[0.02] border-glassBorder text-gray-400 hover:text-white'
-                      }`}
+                        }`}
                     >
                       <ThumbsUp className="w-3.5 h-3.5" />
                       <span>{selectedQuestion.upvotes.length} Upvotes</span>
@@ -1391,14 +1384,14 @@ const Home = () => {
                 {/* 2. Embedded Comments Section */}
                 <div className="space-y-3 pt-4 border-t border-glassBorder">
                   <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400">Comments ({selectedQuestion.comments?.length || 0})</h4>
-                  
+
                   {selectedQuestion.comments?.length > 0 && (
                     <div className="space-y-2.5 bg-white/[0.01] border border-glassBorder p-4 rounded-xl">
                       {selectedQuestion.comments.map((comment) => (
                         <div key={comment._id} className="text-xs space-y-1">
                           <div className="flex items-center space-x-1.5 font-bold">
                             <span className="text-gray-300">{comment.userName}</span>
-                            <span className="text-[10px] text-gray-600 font-semibold">{new Date(comment.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                            <span className="text-[10px] text-gray-600 font-semibold">{new Date(comment.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                           </div>
                           <p className="text-gray-400 leading-relaxed pl-1">{comment.content}</p>
                         </div>
@@ -1433,12 +1426,12 @@ const Home = () => {
                   ) : (
                     <div className="space-y-4">
                       {answers.map((answer) => (
-                        <div 
+                        <div
                           key={answer._id}
                           className="bg-white/[0.02] border border-glassBorder p-4 rounded-xl space-y-3"
                         >
                           <p className="text-xs sm:text-sm text-gray-300 leading-relaxed">{answer.content}</p>
-                          
+
                           <div className="flex items-center justify-between text-xs text-gray-500 pt-1">
                             <div className="flex items-center space-x-2">
                               <span className="font-bold text-white">{answer.user?.name}</span>
@@ -1448,11 +1441,10 @@ const Home = () => {
 
                             <button
                               onClick={() => handleUpvoteAnswer(answer._id)}
-                              className={`flex items-center space-x-1 px-2.5 py-1 rounded border text-[10px] font-bold transition-all ${
-                                answer.upvotes.includes(user._id)
+                              className={`flex items-center space-x-1 px-2.5 py-1 rounded border text-[10px] font-bold transition-all ${answer.upvotes.includes(user._id)
                                   ? 'bg-indigo-950/60 border-indigo-500/20 text-indigo-400'
                                   : 'bg-white/[0.02] border-glassBorder text-gray-400 hover:text-white'
-                              }`}
+                                }`}
                             >
                               <ThumbsUp className="w-3 h-3" />
                               <span>{answer.upvotes.length}</span>
@@ -1474,8 +1466,8 @@ const Home = () => {
                   onChange={(e) => setNewAnswerContent(e.target.value)}
                   className="flex-1 glass-input py-2 px-3 text-xs resize-none"
                 ></textarea>
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   className="glass-button-primary px-5 flex items-center justify-center shrink-0"
                 >
                   <Send className="w-4 h-4" />
