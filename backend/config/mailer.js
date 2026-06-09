@@ -23,7 +23,10 @@ const sendEmail = async (options) => {
     auth: {
       user,
       pass
-    }
+    },
+    connectionTimeout: 8000, // 8 seconds timeout
+    greetingTimeout: 8000,
+    socketTimeout: 10000
   } : {
     host,
     port: parseInt(port),

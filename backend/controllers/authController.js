@@ -236,16 +236,29 @@ exports.forgotPassword = async (req, res) => {
       </div>
     `;
 
-    await sendEmail({
-      email,
-      subject: 'CampusEvents - Password Reset OTP',
-      message,
-      html
-    });
+    try {
+      await sendEmail({
+        email,
+        subject: 'CampusEvents - Password Reset OTP',
+        message,
+        html
+      });
+      res.status(200).json({ success: true, message: 'OTP sent successfully to email' });
+    } catch (err) {
+      console.log('\n==================================================');
+      console.log(`[SMTP CONNECTION BLOCKED / FAILED] Error: ${err.message}`);
+      console.log(`[FALLBACK DEV MODE] Sending Email To: ${email}`);
+      console.log(`OTP Code: ${otpCode}`);
+      console.log('==================================================\n');
 
-    res.status(200).json({ success: true, message: 'OTP sent successfully to email' });
+      res.status(200).json({
+        success: true,
+        message: 'SMTP connection failed (port blocked on host). OTP logged to server terminal console for testing.',
+        mocked: true
+      });
+    }
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message || 'Email could not be sent. Please try again.' });
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 

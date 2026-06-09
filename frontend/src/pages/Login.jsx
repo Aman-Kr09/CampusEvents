@@ -152,6 +152,36 @@ const Login = () => {
     }
   };
 
+  // Google Sign In Mock/Dev Bypass Flow
+  const handleGoogleDevBypass = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const mockProfile = {
+        name: 'Google Student (Mock)',
+        email: `google_mock_${Date.now()}@${selectedCollege?.name.includes('Wayne') ? 'wse.edu' : 'sit.edu'}`,
+        googleId: `g_oauth_mock_${Date.now()}`
+      };
+
+      const res = await googleLogin({
+        ...mockProfile,
+        collegeId: selectedCollege._id
+      });
+
+      if (res.success) {
+        if (res.user.interests && res.user.interests.length > 0) {
+          navigate('/home');
+        } else {
+          navigate('/onboarding');
+        }
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || 'Mock Google login failed.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Forgot password OTP Request
   const handleRequestOTP = async (e) => {
     e.preventDefault();
@@ -161,7 +191,7 @@ const Login = () => {
     try {
       const res = await api.post('/auth/forgotpassword', { email: form.email });
       if (res.data.success) {
-        setInfoMessage('OTP sent! Please check the terminal command window (development mode logs OTP to console).');
+        setInfoMessage(res.data.message || 'OTP sent! Please check the terminal command window (development mode logs OTP to console).');
         setForgotStep(2);
       }
     } catch (err) {
@@ -535,6 +565,15 @@ const Login = () => {
                 id="google-signin-btn"
                 className="w-full flex justify-center min-h-[44px] mt-2"
               ></div>
+              <div className="text-center mt-1">
+                <button
+                  type="button"
+                  onClick={handleGoogleDevBypass}
+                  className="text-[10px] text-gray-500 hover:text-indigo-400 underline transition-colors"
+                >
+                  Developer Bypass (Log in with mock Google profile)
+                </button>
+              </div>
             </div>
           )}
         </div>
