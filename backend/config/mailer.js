@@ -18,7 +18,13 @@ const sendEmail = async (options) => {
     return { success: true, mocked: true };
   }
 
-  const transporter = nodemailer.createTransport({
+  const transporterConfig = host === 'smtp.gmail.com' ? {
+    service: 'gmail',
+    auth: {
+      user,
+      pass
+    }
+  } : {
     host,
     port: parseInt(port),
     secure: parseInt(port) === 465, // secure is true only for port 465 (SSL)
@@ -29,7 +35,9 @@ const sendEmail = async (options) => {
     connectionTimeout: 8000, // 8 seconds timeout
     greetingTimeout: 8000,
     socketTimeout: 10000
-  });
+  };
+
+  const transporter = nodemailer.createTransport(transporterConfig);
 
   const mailOptions = {
     from,

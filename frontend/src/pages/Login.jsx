@@ -93,19 +93,48 @@ const Login = () => {
     }
   };
 
-  // Google Sign In Mock Flow
-  const handleGoogleSignIn = async () => {
+  // Initialize and load Google Identity Services GSI
+  useEffect(() => {
+    if (!selectedCollege) return;
+
+    if (!document.getElementById('gsi-client-script')) {
+      const script = document.createElement('script');
+      script.id = 'gsi-client-script';
+      script.src = 'https://accounts.google.com/gsi/client';
+      script.async = true;
+      script.defer = true;
+      script.onload = () => initializeGSI();
+      document.body.appendChild(script);
+    } else if (window.google) {
+      initializeGSI();
+    }
+
+    function initializeGSI() {
+      if (window.google && tab === 'login') {
+        window.google.accounts.id.initialize({
+          client_id: '894653070129-3vj5et75lsou3qcpf11ou8mgik4v9pvn.apps.googleusercontent.com',
+          callback: handleGoogleCredentialResponse
+        });
+
+        const btnDiv = document.getElementById('google-signin-btn');
+        if (btnDiv) {
+          window.google.accounts.id.renderButton(btnDiv, {
+            theme: 'filled_blue',
+            size: 'large',
+            width: 380,
+            text: 'continue_with'
+          });
+        }
+      }
+    }
+  }, [selectedCollege, tab]);
+
+  const handleGoogleCredentialResponse = async (response) => {
     setLoading(true);
     setError('');
     try {
-      const selectedProfile = {
-        name: 'Google Student',
-        email: `google_student_${Date.now()}@${selectedCollege.name.includes('Wayne') ? 'wse.edu' : 'sit.edu'}`,
-        googleId: `g_oauth_${Date.now()}`
-      };
-
       const res = await googleLogin({
-        ...selectedProfile,
+        idToken: response.credential,
         collegeId: selectedCollege._id
       });
 
@@ -502,32 +531,10 @@ const Login = () => {
                 <div className="flex-grow border-t border-glassBorder"></div>
               </div>
 
-              <button
-                onClick={handleGoogleSignIn}
-                disabled={loading}
-                className="w-full py-2.5 px-4 rounded-lg bg-white text-gray-950 font-bold hover:bg-gray-100 transition-all duration-200 flex items-center justify-center space-x-2 shadow-sm text-sm"
-              >
-                {/* SVG Google icon */}
-                <svg className="w-5 h-5" viewBox="0 0 24 24">
-                  <path
-                    fill="#EA4335"
-                    d="M12 5.04c1.66 0 3.2.57 4.38 1.69l3.27-3.27C17.67 1.47 14.99 1 12 1 7.35 1 3.39 3.68 1.41 7.59l3.87 3C6.21 7.59 8.89 5.04 12 5.04z"
-                  />
-                  <path
-                    fill="#4285F4"
-                    d="M23.49 12.27c0-.81-.07-1.59-.2-2.36H12v4.51h6.43c-.28 1.44-1.09 2.66-2.32 3.49l3.61 2.8c2.11-1.95 3.77-5.17 3.77-8.44z"
-                  />
-                  <path
-                    fill="#FBBC05"
-                    d="M5.28 10.59C5.04 9.87 4.9 9.1 4.9 8.3s.14-1.57.38-2.29L1.41 3.01C.51 4.8.02 6.81.02 8.9c0 2.09.49 4.1 1.39 5.89l3.87-3z"
-                  />
-                  <path
-                    fill="#34A853"
-                    d="M12 22.8c2.97 0 5.46-.99 7.28-2.69l-3.61-2.8c-1.01.68-2.3 1.09-3.67 1.09-3.11 0-5.79-2.55-6.72-5.55l-3.87 3C3.39 19.92 7.35 22.8 12 22.8z"
-                  />
-                </svg>
-                <span>Continue with Google</span>
-              </button>
+              <div
+                id="google-signin-btn"
+                className="w-full flex justify-center min-h-[44px] mt-2"
+              ></div>
             </div>
           )}
         </div>

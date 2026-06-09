@@ -101,14 +101,44 @@ exports.login = async (req, res) => {
   }
 };
 
-// @desc    Google OAuth Mock Authentication
+// @desc    Google OAuth Authentication
 // @route   POST /api/auth/google
 // @access  Public
 exports.googleAuth = async (req, res) => {
-  const { name, email, googleId, collegeId } = req.body;
+  const { name, email, googleId, collegeId, idToken } = req.body;
 
   try {
-    let user = await User.findOne({ email }).populate('college');
+    let finalEmail = email;
+    let finalName = name;
+    let finalGoogleId = googleId;
+
+    if (idToken) {
+      try {
+        const verifyRes = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${idToken}`);
+        if (!verifyRes.ok) {
+          return res.status(400).json({ success: false, message: 'Google authentication failed or expired token' });
+        }
+        const ticket = await verifyRes.json();
+        
+        // Match client ID (aud) if configured
+        const clientID = process.env.GOOGLE_CLIENT_ID;
+        if (clientID && ticket.aud !== clientID) {
+          return res.status(400).json({ success: false, message: 'Google client ID verification mismatch' });
+        }
+        
+        finalEmail = ticket.email;
+        finalName = ticket.name || ticket.given_name || 'Google Student';
+        finalGoogleId = ticket.sub;
+      } catch (err) {
+        return res.status(400).json({ success: false, message: 'Failed to verify Google ID token: ' + err.message });
+      }
+    }
+
+    if (!finalEmail) {
+      return res.status(400).json({ success: false, message: 'Google Authentication requires a valid email address' });
+    }
+
+    let user = await User.findOne({ email: finalEmail }).populate('college');
 
     if (user) {
       // If user exists, log in
@@ -118,7 +148,7 @@ exports.googleAuth = async (req, res) => {
 
       // If user doesn't have googleId stored, update it
       if (!user.googleId) {
-        user.googleId = googleId;
+        user.googleId = finalGoogleId;
         await user.save();
       }
 
@@ -138,9 +168,9 @@ exports.googleAuth = async (req, res) => {
       return res.status(200).json({
         success: false,
         needsCollegeSelection: true,
-        email,
-        name,
-        googleId
+        email: finalEmail,
+        name: finalName,
+        googleId: finalGoogleId
       });
     }
 
@@ -152,9 +182,9 @@ exports.googleAuth = async (req, res) => {
 
     // Register user via google credentials
     user = await User.create({
-      name,
-      email,
-      googleId,
+      name: finalName,
+      email: finalEmail,
+      googleId: finalGoogleId,
       role: 'Student',
       college: collegeId,
       interests: []
