@@ -68,27 +68,23 @@ const Home = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-
-      const fetchOrFallback = async (path, setter) => {
-        try {
-          const res = await api.get(path);
-          if (res.data.success) {
-            setter(res.data.data);
-          }
-        } catch (err) {
-          console.error(`Failed to load dashboard endpoint [${path}]:`, err.message);
-        }
-      };
-
-      await Promise.all([
-        fetchOrFallback('/events/recommended', setRecommended),
-        fetchOrFallback('/events', setEvents),
-        fetchOrFallback('/events/timeline', setTimeline),
-        fetchOrFallback('/events/trending', setTrending),
-        fetchOrFallback('/placements', setPlacements),
-        fetchOrFallback('/announcements', setAnnouncements),
-        fetchOrFallback('/qa/questions', setQuestions)
+      const [resRec, resEv, resTime, resTrend, resPl, resAnn, resQ] = await Promise.all([
+        api.get('/events/recommended'),
+        api.get('/events'),
+        api.get('/events/timeline'),
+        api.get('/events/trending'),
+        api.get('/placements'),
+        api.get('/announcements'),
+        api.get('/qa/questions')
       ]);
+
+      if (resRec.data.success) setRecommended(resRec.data.data);
+      if (resEv.data.success) setEvents(resEv.data.data);
+      if (resTime.data.success) setTimeline(resTime.data.data);
+      if (resTrend.data.success) setTrending(resTrend.data.data);
+      if (resPl.data.success) setPlacements(resPl.data.data);
+      if (resAnn.data.success) setAnnouncements(resAnn.data.data);
+      if (resQ.data.success) setQuestions(resQ.data.data);
     } catch (err) {
       console.error('Failed to load dashboard data:', err);
     } finally {
@@ -288,17 +284,15 @@ const Home = () => {
   // Handle student recruiter suggest submission
   const handleSuggestRecruiter = async (e) => {
     e.preventDefault();
-    const activePlacement = placements[selectedPlacementYearIndex] || placements[0];
-    if (!recruiterInput.trim() || !activePlacement) return;
+    if (!recruiterInput.trim() || !placements[0]) return;
 
     setSubmittingRecruiter(true);
     setRecruiterSuccessMsg('');
     try {
-      const res = await api.post(`/placements/${activePlacement._id}/companies`, { companyName: recruiterInput });
+      const res = await api.post(`/placements/${placements[0]._id}/companies`, { companyName: recruiterInput });
       if (res.data.success) {
         setRecruiterInput('');
         setRecruiterSuccessMsg('Thank you! Your suggestion has been added successfully.');
-        fetchData(); // Refresh page data to display the newly suggested company immediately!
         setTimeout(() => setRecruiterSuccessMsg(''), 5000);
       }
     } catch (err) {
@@ -960,112 +954,87 @@ const Home = () => {
                 <p className="text-xs text-gray-500 py-12 text-center">No placement history published yet.</p>
               ) : (
                 <div className="space-y-8">
-                  {/* Year Selection Tabs */}
-                  <div className="flex flex-wrap items-center gap-2 border-b border-glassBorder pb-4">
-                    <span className="text-xs text-gray-500 font-bold uppercase tracking-wider mr-2">Select Year:</span>
-                    {placements.map((p, index) => (
-                      <button
-                        key={p._id || p.year}
-                        onClick={() => setSelectedPlacementYearIndex(index)}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 border ${
-                          selectedPlacementYearIndex === index
-                            ? 'bg-emerald-950 text-emerald-400 border-emerald-500/30 shadow-glow'
-                            : 'bg-white/[0.02] border-glassBorder text-gray-400 hover:text-white hover:bg-white/5'
-                        }`}
-                      >
-                        Year {p.year}
-                      </button>
-                    ))}
+                  {/* Metrics Row */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="bg-white/[0.02] border border-glassBorder p-5 rounded-2xl flex flex-col justify-between">
+                      <span className="text-xs text-gray-500 font-bold uppercase tracking-wider">Highest LPA Offered</span>
+                      <span className="text-2xl font-black text-white mt-2">
+                        {placements[0]?.highestPackage} LPA
+                      </span>
+                      <p className="text-[10px] text-gray-500 mt-1">Record package in current academic batch.</p>
+                    </div>
+
+                    <div className="bg-white/[0.02] border border-glassBorder p-5 rounded-2xl flex flex-col justify-between">
+                      <span className="text-xs text-gray-500 font-bold uppercase tracking-wider">Average LPA Offered</span>
+                      <span className="text-2xl font-black text-white mt-2">
+                        {placements[0]?.averagePackage} LPA
+                      </span>
+                      <p className="text-[10px] text-gray-500 mt-1">Median average package calculated systemwide.</p>
+                    </div>
+
+                    <div className="bg-white/[0.02] border border-glassBorder p-5 rounded-2xl flex flex-col justify-between">
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs text-gray-500 font-bold uppercase tracking-wider">Placement Ratio</span>
+                        <span className="text-sm font-bold text-emerald-400">
+                          {placements[0]?.placementPercentage}%
+                        </span>
+                      </div>
+                      <span className="text-2xl font-black text-white mt-2">
+                        {placements[0]?.placementPercentage}% Placed
+                      </span>
+                      <div className="w-full h-2 bg-gray-800 rounded-full overflow-hidden mt-3">
+                        <div
+                          className="h-full bg-emerald-500"
+                          style={{ width: `${placements[0]?.placementPercentage}%` }}
+                        ></div>
+                      </div>
+                    </div>
                   </div>
 
-                  {(() => {
-                    const activePlacement = placements[selectedPlacementYearIndex] || placements[0];
-                    return (
-                      <div className="space-y-8">
-                        {/* Metrics Row */}
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                          <div className="bg-white/[0.02] border border-glassBorder p-5 rounded-2xl flex flex-col justify-between">
-                            <span className="text-xs text-gray-500 font-bold uppercase tracking-wider">Highest LPA Offered</span>
-                            <span className="text-2xl font-black text-white mt-2">
-                              {activePlacement?.highestPackage} LPA
-                            </span>
-                            <p className="text-[10px] text-gray-500 mt-1">Record package in current academic batch.</p>
-                          </div>
+                  {/* Top Recruiters & Suggestion Form */}
+                  <div className="bg-white/[0.01] border border-glassBorder p-6 rounded-2xl space-y-4">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400">Top Recruiters & Hiring Partners</h4>
 
-                          <div className="bg-white/[0.02] border border-glassBorder p-5 rounded-2xl flex flex-col justify-between">
-                            <span className="text-xs text-gray-500 font-bold uppercase tracking-wider">Average LPA Offered</span>
-                            <span className="text-2xl font-black text-white mt-2">
-                              {activePlacement?.averagePackage} LPA
-                            </span>
-                            <p className="text-[10px] text-gray-500 mt-1">Median average package calculated systemwide.</p>
-                          </div>
-
-                          <div className="bg-white/[0.02] border border-glassBorder p-5 rounded-2xl flex flex-col justify-between">
-                            <div className="flex justify-between items-center">
-                              <span className="text-xs text-gray-500 font-bold uppercase tracking-wider">Placement Ratio</span>
-                              <span className="text-sm font-bold text-emerald-400">
-                                {activePlacement?.placementPercentage}%
-                              </span>
-                            </div>
-                            <span className="text-2xl font-black text-white mt-2">
-                              {activePlacement?.placementPercentage}% Placed
-                            </span>
-                            <div className="w-full h-2 bg-gray-800 rounded-full overflow-hidden mt-3">
-                              <div
-                                className="h-full bg-emerald-500"
-                                style={{ width: `${activePlacement?.placementPercentage}%` }}
-                              ></div>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Top Recruiters & Suggestion Form */}
-                        <div className="bg-white/[0.01] border border-glassBorder p-6 rounded-2xl space-y-4">
-                          <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400">Top Recruiters & Hiring Partners</h4>
-
-                          {activePlacement?.companiesVisited?.length === 0 ? (
-                            <p className="text-xs text-gray-500">No recruiters listed for this year.</p>
-                          ) : (
-                            <div className="flex flex-wrap gap-2 pt-1">
-                              {activePlacement?.companiesVisited?.map(c => (
-                                <span
-                                  key={c._id || c.name}
-                                  className="text-xs bg-indigo-950/40 text-indigo-300 border border-indigo-500/15 px-3.5 py-1.5 rounded-lg font-semibold"
-                                >
-                                  {c.name}
-                                </span>
-                              ))}
-                            </div>
-                          )}
-
-                          {/* Recruiter Suggestion Form */}
-                          <form onSubmit={handleSuggestRecruiter} className="pt-4 border-t border-white/[0.03] flex flex-col sm:flex-row gap-3 items-end">
-                            <div className="flex-1 w-full">
-                              <label className="block text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-1.5">Suggest a Hiring Recruiter</label>
-                              <input
-                                type="text"
-                                placeholder="Enter recruiter/company name..."
-                                value={recruiterInput}
-                                onChange={(e) => setRecruiterInput(e.target.value)}
-                                required
-                                className="w-full glass-input py-2 px-3 text-xs"
-                              />
-                            </div>
-                            <button
-                              type="submit"
-                              disabled={submittingRecruiter}
-                              className="glass-button-primary text-xs py-2 px-4 whitespace-nowrap w-full sm:w-auto"
-                            >
-                              {submittingRecruiter ? 'Submitting...' : 'Suggest Recruiter'}
-                            </button>
-                          </form>
-                          {recruiterSuccessMsg && (
-                            <p className="text-xs text-emerald-400 font-semibold mt-2">{recruiterSuccessMsg}</p>
-                          )}
-                        </div>
+                    {placements[0]?.companiesVisited?.length === 0 ? (
+                      <p className="text-xs text-gray-500">No recruiters listed for this year.</p>
+                    ) : (
+                      <div className="flex flex-wrap gap-2 pt-1">
+                        {placements[0].companiesVisited.map(c => (
+                          <span
+                            key={c._id || c.name}
+                            className="text-xs bg-indigo-950/40 text-indigo-300 border border-indigo-500/15 px-3.5 py-1.5 rounded-lg font-semibold"
+                          >
+                            {c.name}
+                          </span>
+                        ))}
                       </div>
-                    );
-                  })()}
+                    )}
+
+                    {/* Recruiter Suggestion Form */}
+                    <form onSubmit={handleSuggestRecruiter} className="pt-4 border-t border-white/[0.03] flex flex-col sm:flex-row gap-3 items-end">
+                      <div className="flex-1 w-full">
+                        <label className="block text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-1.5">Suggest a Hiring Recruiter</label>
+                        <input
+                          type="text"
+                          placeholder="Enter recruiter/company name..."
+                          value={recruiterInput}
+                          onChange={(e) => setRecruiterInput(e.target.value)}
+                          required
+                          className="w-full glass-input py-2 px-3 text-xs"
+                        />
+                      </div>
+                      <button
+                        type="submit"
+                        disabled={submittingRecruiter}
+                        className="glass-button-primary text-xs py-2 px-4 whitespace-nowrap w-full sm:w-auto"
+                      >
+                        {submittingRecruiter ? 'Submitting...' : 'Suggest Recruiter'}
+                      </button>
+                    </form>
+                    {recruiterSuccessMsg && (
+                      <p className="text-xs text-emerald-400 font-semibold mt-2">{recruiterSuccessMsg}</p>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
