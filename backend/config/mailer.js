@@ -20,11 +20,15 @@ const sendEmail = async (options) => {
 
   const transporter = nodemailer.createTransport({
     host,
-    port,
+    port: parseInt(port),
+    secure: parseInt(port) === 465, // secure is true only for port 465 (SSL)
     auth: {
       user,
       pass
-    }
+    },
+    connectionTimeout: 8000, // 8 seconds timeout
+    greetingTimeout: 8000,
+    socketTimeout: 10000
   });
 
   const mailOptions = {
