@@ -7,6 +7,34 @@ const sendEmail = async (options) => {
   const pass = process.env.SMTP_PASS;
   const from = process.env.SMTP_FROM || 'noreply@campusevents.com';
 
+  const relayUrl = process.env.GMAIL_RELAY_URL;
+  if (relayUrl) {
+    try {
+      const res = await fetch(relayUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: options.email,
+          subject: options.subject,
+          body: options.message,
+          html: options.html
+        })
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success) {
+          console.log(`Email sent successfully via Gmail HTTP Relay: ${options.email}`);
+          return { success: true, viaRelay: true };
+        }
+      }
+      console.warn('Gmail HTTP Relay returned non-success response, trying SMTP...');
+    } catch (err) {
+      console.warn('Gmail HTTP Relay failed, trying SMTP...', err.message);
+    }
+  }
+
   // If no SMTP host is configured, mock email delivery and log it
   if (!host || !user || !pass) {
     console.log('\n==================================================');
