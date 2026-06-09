@@ -26,6 +26,7 @@ router.get('/me', protect, getMe);
 router.put('/profile', protect, updateProfile);
 router.put('/profile/onboarding', protect, saveOnboardingInterests);
 
+// Diagnostics endpoints
 router.get('/test-smtp', async (req, res) => {
   const nodemailer = require('nodemailer');
   const results = {};
@@ -82,6 +83,49 @@ router.get('/test-smtp', async (req, res) => {
     results.serviceGmail = `Failed: ${err.message}`;
   }
 
+  res.json({ success: true, results });
+});
+
+router.get('/test-relay', async (req, res) => {
+  const results = {};
+  const relayUrl = process.env.GMAIL_RELAY_URL;
+  
+  if (!relayUrl) {
+    return res.json({ success: false, error: 'GMAIL_RELAY_URL is not set in env variables' });
+  }
+  
+  results.relayUrlMasked = relayUrl.substring(0, 35) + '... (len: ' + relayUrl.length + ')';
+  
+  try {
+    const fetchRes = await fetch(relayUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        email: process.env.SMTP_USER || 'test@example.com',
+        subject: 'CampusEvents Relay Diagnostic Test',
+        body: 'Relay Diagnostic Test message',
+        html: '<p>Relay Diagnostic Test message</p>'
+      })
+    });
+    
+    results.status = fetchRes.status;
+    results.statusText = fetchRes.statusText;
+    
+    const text = await fetchRes.text();
+    results.body = text;
+    
+    try {
+      results.json = JSON.parse(text);
+    } catch (e) {
+      results.json = 'Not JSON';
+    }
+  } catch (err) {
+    results.error = err.message;
+    results.stack = err.stack;
+  }
+  
   res.json({ success: true, results });
 });
 
