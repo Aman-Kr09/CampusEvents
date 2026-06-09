@@ -4,7 +4,7 @@ import { useCollege } from '../context/CollegeContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Calendar, MapPin, Clock, Search, Send, Plus, ArrowRight, Heart, Users,
-  Megaphone, TrendingUp, BarChart3, HelpCircle, Tags, ChevronRight, X, AlertCircle, Sparkles, MessageSquare, ThumbsUp, Check
+  Megaphone, TrendingUp, BarChart3, HelpCircle, Tags, ChevronRight, X, AlertCircle, Sparkles, MessageSquare, ThumbsUp, Check, Briefcase
 } from 'lucide-react';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, BarChart, Bar, CartesianGrid } from 'recharts';
 
@@ -944,97 +944,75 @@ const Home = () => {
             <div className="glass-panel p-6 sm:p-8 rounded-2xl space-y-6 max-w-4xl mx-auto">
               <div className="border-b border-glassBorder pb-4">
                 <h3 className="font-bold text-white text-lg flex items-center space-x-2">
-                  <BarChart3 className="w-5 h-5 text-indigo-400" />
-                  <span>Placement Statistics</span>
+                  <Briefcase className="w-5 h-5 text-indigo-400" />
+                  <span>Placement Cell</span>
                 </h3>
-                <p className="text-gray-400 text-xs sm:text-sm mt-0.5">Recruitment package graphs, ratios, and top hiring firms.</p>
+                <p className="text-gray-400 text-xs sm:text-sm mt-0.5">Explore active recruiters and approved company listings visiting the campus.</p>
               </div>
 
-              {placements.length === 0 ? (
-                <p className="text-xs text-gray-500 py-12 text-center">No placement history published yet.</p>
+              {placements.length === 0 || !placements.some(pr => pr.companiesVisited?.some(c => c.status === 'Approved')) ? (
+                <div className="py-12 text-center space-y-3">
+                  <Briefcase className="w-12 h-12 text-gray-600 mx-auto opacity-30" />
+                  <p className="text-xs text-gray-500 font-semibold">No recruiters listed for this year.</p>
+                </div>
               ) : (
                 <div className="space-y-8">
-                  {/* Metrics Row */}
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div className="bg-white/[0.02] border border-glassBorder p-5 rounded-2xl flex flex-col justify-between">
-                      <span className="text-xs text-gray-500 font-bold uppercase tracking-wider">Highest LPA Offered</span>
-                      <span className="text-2xl font-black text-white mt-2">
-                        {placements[0]?.highestPackage} LPA
-                      </span>
-                      <p className="text-[10px] text-gray-500 mt-1">Record package in current academic batch.</p>
-                    </div>
+                  {[...placements]
+                    .sort((a, b) => b.year - a.year)
+                    .map(pr => {
+                      const approvedCompanies = pr.companiesVisited?.filter(c => c.status === 'Approved') || [];
+                      if (approvedCompanies.length === 0) return null;
 
-                    <div className="bg-white/[0.02] border border-glassBorder p-5 rounded-2xl flex flex-col justify-between">
-                      <span className="text-xs text-gray-500 font-bold uppercase tracking-wider">Average LPA Offered</span>
-                      <span className="text-2xl font-black text-white mt-2">
-                        {placements[0]?.averagePackage} LPA
-                      </span>
-                      <p className="text-[10px] text-gray-500 mt-1">Median average package calculated systemwide.</p>
-                    </div>
+                      return (
+                        <div key={pr._id} className="space-y-4">
+                          <div className="flex items-center space-x-3">
+                            <span className="text-[10px] font-bold tracking-widest text-indigo-400 uppercase bg-indigo-950/60 border border-indigo-500/20 px-3 py-1 rounded-full">
+                              Academic Year {pr.year}
+                            </span>
+                            <div className="h-px bg-glassBorder flex-1"></div>
+                          </div>
 
-                    <div className="bg-white/[0.02] border border-glassBorder p-5 rounded-2xl flex flex-col justify-between">
-                      <div className="flex justify-between items-center">
-                        <span className="text-xs text-gray-500 font-bold uppercase tracking-wider">Placement Ratio</span>
-                        <span className="text-sm font-bold text-emerald-400">
-                          {placements[0]?.placementPercentage}%
-                        </span>
-                      </div>
-                      <span className="text-2xl font-black text-white mt-2">
-                        {placements[0]?.placementPercentage}% Placed
-                      </span>
-                      <div className="w-full h-2 bg-gray-800 rounded-full overflow-hidden mt-3">
-                        <div
-                          className="h-full bg-emerald-500"
-                          style={{ width: `${placements[0]?.placementPercentage}%` }}
-                        ></div>
-                      </div>
-                    </div>
-                  </div>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                            {approvedCompanies.map(c => (
+                              <div
+                                key={c._id || c.name}
+                                className="bg-white/[0.01] border border-glassBorder rounded-2xl p-5 flex flex-col justify-between hover:border-indigo-500/20 hover:bg-white/[0.03] transition-all duration-200"
+                              >
+                                <div className="space-y-2">
+                                  <div className="flex items-start justify-between">
+                                    <h4 className="font-bold text-white text-sm sm:text-base leading-snug">
+                                      {c.name}
+                                    </h4>
+                                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
+                                      c.type === 'Blocking'
+                                        ? 'bg-red-950/50 text-red-300 border-red-500/20'
+                                        : 'bg-cyan-950/50 text-cyan-300 border-cyan-500/20'
+                                    }`}>
+                                      {c.type || 'Non-Blocking'}
+                                    </span>
+                                  </div>
+                                </div>
 
-                  {/* Top Recruiters & Suggestion Form */}
-                  <div className="bg-white/[0.01] border border-glassBorder p-6 rounded-2xl space-y-4">
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400">Top Recruiters & Hiring Partners</h4>
-
-                    {placements[0]?.companiesVisited?.length === 0 ? (
-                      <p className="text-xs text-gray-500">No recruiters listed for this year.</p>
-                    ) : (
-                      <div className="flex flex-wrap gap-2 pt-1">
-                        {placements[0].companiesVisited.map(c => (
-                          <span
-                            key={c._id || c.name}
-                            className="text-xs bg-indigo-950/40 text-indigo-300 border border-indigo-500/15 px-3.5 py-1.5 rounded-lg font-semibold"
-                          >
-                            {c.name}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-
-                    {/* Recruiter Suggestion Form */}
-                    <form onSubmit={handleSuggestRecruiter} className="pt-4 border-t border-white/[0.03] flex flex-col sm:flex-row gap-3 items-end">
-                      <div className="flex-1 w-full">
-                        <label className="block text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-1.5">Suggest a Hiring Recruiter</label>
-                        <input
-                          type="text"
-                          placeholder="Enter recruiter/company name..."
-                          value={recruiterInput}
-                          onChange={(e) => setRecruiterInput(e.target.value)}
-                          required
-                          className="w-full glass-input py-2 px-3 text-xs"
-                        />
-                      </div>
-                      <button
-                        type="submit"
-                        disabled={submittingRecruiter}
-                        className="glass-button-primary text-xs py-2 px-4 whitespace-nowrap w-full sm:w-auto"
-                      >
-                        {submittingRecruiter ? 'Submitting...' : 'Suggest Recruiter'}
-                      </button>
-                    </form>
-                    {recruiterSuccessMsg && (
-                      <p className="text-xs text-emerald-400 font-semibold mt-2">{recruiterSuccessMsg}</p>
-                    )}
-                  </div>
+                                <div className="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-white/[0.03] text-xs">
+                                  <div className="flex flex-col">
+                                    <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">CPA Cutoff</span>
+                                    <span className="font-bold text-indigo-300 mt-0.5">
+                                      {c.cpaRequired != null ? `${c.cpaRequired}` : '—'}
+                                    </span>
+                                  </div>
+                                  <div className="flex flex-col">
+                                    <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Package</span>
+                                    <span className="font-bold text-emerald-400 mt-0.5">
+                                      {c.package != null ? `${c.package} LPA` : '—'}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
                 </div>
               )}
             </div>
