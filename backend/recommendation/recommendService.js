@@ -3,17 +3,22 @@ const path = require('path');
 
 const runPythonScript = (scriptName, inputData) => {
   return new Promise((resolve, reject) => {
-    // Locate the python executable inside backend/venv/ (Scripts/python.exe on Windows, bin/python on Linux/macOS)
     const isWindows = process.platform === 'win32';
+    // Use 'python3' globally on Linux, since the committed venv contains Windows binaries.
     const pythonPath = isWindows
       ? path.join(__dirname, '..', 'venv', 'Scripts', 'python.exe')
-      : path.join(__dirname, '..', 'venv', 'bin', 'python');
+      : 'python3';
     const scriptPath = path.join(__dirname, scriptName);
 
     const pyProcess = spawn(pythonPath, [scriptPath]);
 
     let stdoutData = '';
     let stderrData = '';
+
+    pyProcess.on('error', (err) => {
+      console.error(`Failed to spawn Python process (${pythonPath}):`, err.message);
+      reject(err);
+    });
 
     pyProcess.stdout.on('data', (data) => {
       stdoutData += data.toString();
@@ -38,12 +43,17 @@ const runPythonScript = (scriptName, inputData) => {
     });
 
     // Write input data to Python script stdin
-    if (typeof inputData === 'string') {
-      pyProcess.stdin.write(inputData);
-    } else {
-      pyProcess.stdin.write(JSON.stringify(inputData));
+    if (pyProcess.stdin) {
+      pyProcess.stdin.on('error', (err) => {
+        console.error('Python stdin error:', err.message);
+      });
+      if (typeof inputData === 'string') {
+        pyProcess.stdin.write(inputData);
+      } else {
+        pyProcess.stdin.write(JSON.stringify(inputData));
+      }
+      pyProcess.stdin.end();
     }
-    pyProcess.stdin.end();
   });
 };
 
