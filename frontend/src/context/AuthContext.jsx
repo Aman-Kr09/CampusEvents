@@ -74,18 +74,7 @@ export const AuthProvider = ({ children }) => {
     return res.data;
   };
 
-  const googleLogin = async (googlePayload) => {
-    const res = await api.post('/auth/google', googlePayload);
-    if (res.data.success && res.data.token) {
-      setToken(res.data.token);
-      setUser(res.data.user);
-      localStorage.setItem('campusevents_token', res.data.token);
-      if (res.data.user.college) {
-        selectCollege(res.data.user.college);
-      }
-    }
-    return res.data;
-  };
+
 
   const completeOnboarding = async (interests, branch, year) => {
     const res = await api.put('/auth/profile/onboarding', { interests, branch, year });
@@ -116,7 +105,6 @@ export const AuthProvider = ({ children }) => {
       loading,
       login,
       register,
-      googleLogin,
       completeOnboarding,
       logout,
       updateProfile

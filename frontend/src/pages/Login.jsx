@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Lock, User, GraduationCap, Calendar, ArrowRight, ShieldAlert, Key, Sparkles } from 'lucide-react';
 
 const Login = () => {
-  const { login, register, googleLogin, token } = useAuth();
+  const { login, register, token } = useAuth();
   const { selectedCollege } = useCollege();
   const navigate = useNavigate();
 
@@ -93,94 +93,7 @@ const Login = () => {
     }
   };
 
-  // Initialize and load Google Identity Services GSI
-  useEffect(() => {
-    if (!selectedCollege) return;
 
-    if (!document.getElementById('gsi-client-script')) {
-      const script = document.createElement('script');
-      script.id = 'gsi-client-script';
-      script.src = 'https://accounts.google.com/gsi/client';
-      script.async = true;
-      script.defer = true;
-      script.onload = () => initializeGSI();
-      document.body.appendChild(script);
-    } else if (window.google) {
-      initializeGSI();
-    }
-
-    function initializeGSI() {
-      if (window.google && tab === 'login') {
-        window.google.accounts.id.initialize({
-          client_id: '894653070129-3vj5et75lsou3qcpf11ou8mgik4v9pvn.apps.googleusercontent.com',
-          callback: handleGoogleCredentialResponse
-        });
-
-        const btnDiv = document.getElementById('google-signin-btn');
-        if (btnDiv) {
-          window.google.accounts.id.renderButton(btnDiv, {
-            theme: 'filled_blue',
-            size: 'large',
-            width: 380,
-            text: 'continue_with'
-          });
-        }
-      }
-    }
-  }, [selectedCollege, tab]);
-
-  const handleGoogleCredentialResponse = async (response) => {
-    setLoading(true);
-    setError('');
-    try {
-      const res = await googleLogin({
-        idToken: response.credential,
-        collegeId: selectedCollege._id
-      });
-
-      if (res.success) {
-        if (res.user.interests && res.user.interests.length > 0) {
-          navigate('/home');
-        } else {
-          navigate('/onboarding');
-        }
-      }
-    } catch (err) {
-      setError(err.response?.data?.message || 'Google Authentication failed.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Google Sign In Mock/Dev Bypass Flow
-  const handleGoogleDevBypass = async () => {
-    setLoading(true);
-    setError('');
-    try {
-      const mockProfile = {
-        name: 'Google Student (Mock)',
-        email: `google_mock_${Date.now()}@${selectedCollege?.name.includes('Wayne') ? 'wse.edu' : 'sit.edu'}`,
-        googleId: `g_oauth_mock_${Date.now()}`
-      };
-
-      const res = await googleLogin({
-        ...mockProfile,
-        collegeId: selectedCollege._id
-      });
-
-      if (res.success) {
-        if (res.user.interests && res.user.interests.length > 0) {
-          navigate('/home');
-        } else {
-          navigate('/onboarding');
-        }
-      }
-    } catch (err) {
-      setError(err.response?.data?.message || 'Mock Google login failed.');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // Forgot password OTP Request
   const handleRequestOTP = async (e) => {
@@ -552,30 +465,7 @@ const Login = () => {
             )}
           </AnimatePresence>
 
-          {/* Social Sign-in option */}
-          {tab !== 'forgot' && (
-            <div className="space-y-4 pt-4 border-t border-glassBorder">
-              <div className="relative flex py-1 items-center">
-                <div className="flex-grow border-t border-glassBorder"></div>
-                <span className="flex-shrink mx-4 text-gray-500 text-xs font-semibold uppercase">Or continue with</span>
-                <div className="flex-grow border-t border-glassBorder"></div>
-              </div>
 
-              <div
-                id="google-signin-btn"
-                className="w-full flex justify-center min-h-[44px] mt-2"
-              ></div>
-              <div className="text-center mt-1">
-                <button
-                  type="button"
-                  onClick={handleGoogleDevBypass}
-                  className="text-[10px] text-gray-500 hover:text-indigo-400 underline transition-colors"
-                >
-                  Developer Bypass (Log in with mock Google profile)
-                </button>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Alternate link back to Landing directory */}
