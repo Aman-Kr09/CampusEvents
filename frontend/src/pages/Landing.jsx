@@ -303,20 +303,7 @@ const Landing = () => {
                   {!adminLoading && <ArrowRight className="w-4 h-4" />}
                 </button>
 
-                {/* Credentials reference */}
-                <div className="pt-1 border-t border-glassBorder space-y-1.5">
-                  <p className="text-[9px] text-gray-600 font-bold uppercase tracking-wider">Default Credentials</p>
-                  <div className="text-[10px] space-y-1">
-                    <div className="flex justify-between items-center text-gray-500">
-                      <span>Super Admin</span>
-                      <span className="font-mono text-indigo-400">superadmin@campusevents.com</span>
-                    </div>
-                    <div className="flex justify-between items-center text-gray-500">
-                      <span>Password</span>
-                      <span className="font-mono text-amber-400">SuperAdminSecure123!</span>
-                    </div>
-                  </div>
-                </div>
+
               </form>
             </motion.div>
           </div>
