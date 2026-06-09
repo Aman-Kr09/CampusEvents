@@ -52,17 +52,19 @@ const Navbar = () => {
 
           {/* Navigation Links */}
           <div className="hidden md:flex items-center space-x-1">
-            <Link
-              to="/home"
-              className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center space-x-1.5 ${
-                isActive('/home')
-                  ? 'text-white bg-white/10'
-                  : 'text-gray-400 hover:text-white hover:bg-white/5'
-              }`}
-            >
-              <Calendar className="w-4 h-4 text-indigo-400" />
-              <span>Events Hub</span>
-            </Link>
+            {user?.role !== 'SuperAdmin' && (
+              <Link
+                to="/home"
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center space-x-1.5 ${
+                  isActive('/home')
+                    ? 'text-white bg-white/10'
+                    : 'text-gray-400 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                <Calendar className="w-4 h-4 text-indigo-400" />
+                <span>Events Hub</span>
+              </Link>
+            )}
 
             {user?.role === 'Student' && (
               <Link

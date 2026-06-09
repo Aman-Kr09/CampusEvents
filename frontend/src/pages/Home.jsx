@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { api, useAuth } from '../context/AuthContext';
 import { useCollege } from '../context/CollegeContext';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -11,7 +12,14 @@ import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, BarChart, 
 const Home = () => {
   const { user } = useAuth();
   const { selectedCollege } = useCollege();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('events'); // 'events' | 'qa' | 'placements' | 'announcements'
+
+  useEffect(() => {
+    if (user?.role === 'SuperAdmin') {
+      navigate('/superadmin');
+    }
+  }, [user, navigate]);
 
   // API Data states
   const [recommended, setRecommended] = useState([]);
