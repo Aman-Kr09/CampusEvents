@@ -49,28 +49,34 @@ const AdminDashboard = () => {
     try {
       setLoading(true);
 
-      const [resPending, resEv, resPl, resAnn, resStudents, resQ] = await Promise.all([
-        api.get('/events/admin/pending'),
-        api.get('/events'),
-        api.get('/placements'),
-        api.get('/announcements'),
-        api.get('/qa/users'),
-        api.get('/qa/questions')
-      ]);
+      const fetchOrFallback = async (path, setter) => {
+        try {
+          const res = await api.get(path);
+          if (res.data.success) {
+            setter(res.data.data);
+            return res.data.count || res.data.data?.length || 0;
+          }
+        } catch (err) {
+          console.error(`Failed to load admin dashboard endpoint [${path}]:`, err.message);
+        }
+        return 0;
+      };
 
-      if (resPending.data.success) setPendingEvents(resPending.data.data);
-      if (resEv.data.success) setAllEvents(resEv.data.data);
-      if (resPl.data.success) setPlacementRecords(resPl.data.data);
-      if (resAnn.data.success) setAnnouncements(resAnn.data.data);
-      if (resStudents.data.success) setStudents(resStudents.data.data);
-      if (resQ.data.success) setQuestions(resQ.data.data);
+      const [countPending, countEv, , , countStudents, countQ] = await Promise.all([
+        fetchOrFallback('/events/admin/pending', setPendingEvents),
+        fetchOrFallback('/events', setAllEvents),
+        fetchOrFallback('/placements', setPlacementRecords),
+        fetchOrFallback('/announcements', setAnnouncements),
+        fetchOrFallback('/qa/users', setStudents),
+        fetchOrFallback('/qa/questions', setQuestions)
+      ]);
 
       // Map metrics overview
       setOverview({
-        students: resStudents.data.count || 0,
-        events: resEv.data.count || 0,
-        pending: resPending.data.count || 0,
-        questions: resQ.data.count || 0
+        students: countStudents,
+        events: countEv,
+        pending: countPending,
+        questions: countQ
       });
     } catch (err) {
       console.error(err);
