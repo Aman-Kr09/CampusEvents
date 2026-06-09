@@ -7,7 +7,17 @@ The platform enforces **strict college-based content isolation**, ensuring stude
 ## 🌐 Live Demo
 
 🔗 **Live Website:** https://campus-events-phi.vercel.app/
+<p align="center">
+  <a href="https://campus-events-phi.vercel.app/" target="_blank">
+    <img src="https://img.shields.io/badge/🚀%20Live%20Demo-Visit%20CampusEvents-blue?style=for-the-badge" alt="Live Demo">
+  </a>
+</p>
 
+<p align="center">
+  <a href="https://campus-events-phi.vercel.app/" target="_blank">
+    <img src="https://img.shields.io/badge/Open%20Website-CampusEvents-success?style=for-the-badge&logo=vercel" />
+  </a>
+</p>
 ---
 
 ## ✨ Features
