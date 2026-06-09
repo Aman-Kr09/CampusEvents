@@ -68,23 +68,27 @@ const Home = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [resRec, resEv, resTime, resTrend, resPl, resAnn, resQ] = await Promise.all([
-        api.get('/events/recommended'),
-        api.get('/events'),
-        api.get('/events/timeline'),
-        api.get('/events/trending'),
-        api.get('/placements'),
-        api.get('/announcements'),
-        api.get('/qa/questions')
-      ]);
 
-      if (resRec.data.success) setRecommended(resRec.data.data);
-      if (resEv.data.success) setEvents(resEv.data.data);
-      if (resTime.data.success) setTimeline(resTime.data.data);
-      if (resTrend.data.success) setTrending(resTrend.data.data);
-      if (resPl.data.success) setPlacements(resPl.data.data);
-      if (resAnn.data.success) setAnnouncements(resAnn.data.data);
-      if (resQ.data.success) setQuestions(resQ.data.data);
+      const fetchOrFallback = async (path, setter) => {
+        try {
+          const res = await api.get(path);
+          if (res.data.success) {
+            setter(res.data.data);
+          }
+        } catch (err) {
+          console.error(`Failed to load dashboard endpoint [${path}]:`, err.message);
+        }
+      };
+
+      await Promise.all([
+        fetchOrFallback('/events/recommended', setRecommended),
+        fetchOrFallback('/events', setEvents),
+        fetchOrFallback('/events/timeline', setTimeline),
+        fetchOrFallback('/events/trending', setTrending),
+        fetchOrFallback('/placements', setPlacements),
+        fetchOrFallback('/announcements', setAnnouncements),
+        fetchOrFallback('/qa/questions', setQuestions)
+      ]);
     } catch (err) {
       console.error('Failed to load dashboard data:', err);
     } finally {
