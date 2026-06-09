@@ -18,7 +18,6 @@ The platform enforces **strict college-based content isolation**, ensuring stude
     <img src="https://img.shields.io/badge/Open%20Website-CampusEvents-success?style=for-the-badge&logo=vercel" />
   </a>
 </p>
----
 
 ## ✨ Features
 
