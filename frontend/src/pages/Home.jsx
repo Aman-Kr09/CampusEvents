@@ -483,8 +483,8 @@ const Home = () => {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center space-x-2 px-5 py-3 rounded-xl font-bold text-sm transition-all duration-200 relative whitespace-nowrap ${isActive
-                  ? 'text-white shadow-glow border border-white/10'
-                  : 'text-gray-400 hover:text-white hover:bg-white/5 border border-transparent'
+                ? 'text-white shadow-glow border border-white/10'
+                : 'text-gray-400 hover:text-white hover:bg-white/5 border border-transparent'
                 }`}
             >
               {isActive && (
@@ -661,8 +661,8 @@ const Home = () => {
                               <button
                                 onClick={() => handleLike(event._id)}
                                 className={`p-1.5 rounded-lg border transition-all ${isLiked
-                                    ? 'bg-rose-950/40 border-rose-500/20 text-rose-400'
-                                    : 'bg-white/[0.02] border-glassBorder text-gray-500 hover:text-white'
+                                  ? 'bg-rose-950/40 border-rose-500/20 text-rose-400'
+                                  : 'bg-white/[0.02] border-glassBorder text-gray-500 hover:text-white'
                                   }`}
                               >
                                 <Heart className={`w-4 h-4 ${isLiked ? 'fill-rose-400' : ''}`} />
@@ -671,8 +671,8 @@ const Home = () => {
                               <button
                                 onClick={() => handleRegister(event._id)}
                                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${isRegistered
-                                    ? 'bg-emerald-950 text-emerald-400 border border-emerald-500/20'
-                                    : 'glass-button-primary'
+                                  ? 'bg-emerald-950 text-emerald-400 border border-emerald-500/20'
+                                  : 'glass-button-primary'
                                   }`}
                               >
                                 {isRegistered ? 'Registered' : 'Register'}
@@ -767,8 +767,8 @@ const Home = () => {
                                 <button
                                   onClick={() => handleLike(event._id)}
                                   className={`p-1.5 rounded-lg border transition-all ${isLiked
-                                      ? 'bg-rose-950/40 border-rose-500/20 text-rose-400'
-                                      : 'bg-white/[0.02] border-glassBorder text-gray-500 hover:text-white'
+                                    ? 'bg-rose-950/40 border-rose-500/20 text-rose-400'
+                                    : 'bg-white/[0.02] border-glassBorder text-gray-500 hover:text-white'
                                     }`}
                                 >
                                   <Heart className={`w-4 h-4 ${isLiked ? 'fill-rose-400' : ''}`} />
@@ -777,8 +777,8 @@ const Home = () => {
                                 <button
                                   onClick={() => handleRegister(event._id)}
                                   className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${isRegistered
-                                      ? 'bg-emerald-950 text-emerald-400 border border-emerald-500/20'
-                                      : 'glass-button-primary'
+                                    ? 'bg-emerald-950 text-emerald-400 border border-emerald-500/20'
+                                    : 'glass-button-primary'
                                     }`}
                                 >
                                   {isRegistered ? 'Registered' : 'Register'}
@@ -888,8 +888,8 @@ const Home = () => {
                           <button
                             onClick={() => handleUpvoteQuestion(q._id)}
                             className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold transition-all ${q.upvotes.includes(user._id)
-                                ? 'bg-indigo-950/60 border-indigo-500/20 text-indigo-400'
-                                : 'bg-white/[0.02] border-glassBorder text-gray-400 hover:text-white'
+                              ? 'bg-indigo-950/60 border-indigo-500/20 text-indigo-400'
+                              : 'bg-white/[0.02] border-glassBorder text-gray-400 hover:text-white'
                               }`}
                           >
                             <ThumbsUp className="w-3.5 h-3.5" />
@@ -967,7 +967,9 @@ const Home = () => {
                   </div>
                   <div>
                     <span className="block text-[10px] text-gray-500 font-bold uppercase tracking-wider">Training & Placement Head</span>
-                    <span className="font-extrabold text-white text-sm">Harsh Sudhakar</span>
+                    <span className="font-extrabold text-white text-sm">
+                      {selectedCollege?.name?.toLowerCase().includes('National Institute of Technology Delhi') || user?.college?.name?.toLowerCase().includes('nit delhi') ? 'Harsh Sudhakar' : 'To Be Appointed'}
+                    </span>
                   </div>
                 </div>
                 <div className="text-[10px] text-gray-400 bg-white/[0.02] border border-glassBorder px-2.5 py-1 rounded-md self-start sm:self-center font-semibold">
@@ -1008,11 +1010,10 @@ const Home = () => {
                                     <h4 className="font-bold text-white text-sm sm:text-base leading-snug">
                                       {c.name}
                                     </h4>
-                                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
-                                      c.type === 'Blocking'
+                                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${c.type === 'Blocking'
                                         ? 'bg-red-950/50 text-red-300 border-red-500/20'
                                         : 'bg-cyan-950/50 text-cyan-300 border-cyan-500/20'
-                                    }`}>
+                                      }`}>
                                       {c.type || 'Non-Blocking'}
                                     </span>
                                   </div>
@@ -1374,8 +1375,8 @@ const Home = () => {
                     <button
                       onClick={() => handleUpvoteQuestion(selectedQuestion._id)}
                       className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold transition-all ${selectedQuestion.upvotes.includes(user._id)
-                          ? 'bg-indigo-950/60 border-indigo-500/20 text-indigo-400'
-                          : 'bg-white/[0.02] border-glassBorder text-gray-400 hover:text-white'
+                        ? 'bg-indigo-950/60 border-indigo-500/20 text-indigo-400'
+                        : 'bg-white/[0.02] border-glassBorder text-gray-400 hover:text-white'
                         }`}
                     >
                       <ThumbsUp className="w-3.5 h-3.5" />
@@ -1445,8 +1446,8 @@ const Home = () => {
                             <button
                               onClick={() => handleUpvoteAnswer(answer._id)}
                               className={`flex items-center space-x-1 px-2.5 py-1 rounded border text-[10px] font-bold transition-all ${answer.upvotes.includes(user._id)
-                                  ? 'bg-indigo-950/60 border-indigo-500/20 text-indigo-400'
-                                  : 'bg-white/[0.02] border-glassBorder text-gray-400 hover:text-white'
+                                ? 'bg-indigo-950/60 border-indigo-500/20 text-indigo-400'
+                                : 'bg-white/[0.02] border-glassBorder text-gray-400 hover:text-white'
                                 }`}
                             >
                               <ThumbsUp className="w-3 h-3" />
@@ -1569,21 +1570,19 @@ const Home = () => {
                 <div className="flex items-center space-x-2">
                   <button
                     onClick={() => { handleLike(selectedEventDetails._id); setSelectedEventDetails(prev => ({ ...prev, likes: prev.likes?.includes(user._id) ? prev.likes.filter(id => id !== user._id) : [...(prev.likes || []), user._id] })); }}
-                    className={`p-2 rounded-xl border transition-all ${
-                      selectedEventDetails.likes?.includes(user._id)
+                    className={`p-2 rounded-xl border transition-all ${selectedEventDetails.likes?.includes(user._id)
                         ? 'bg-rose-950/40 border-rose-500/20 text-rose-400'
                         : 'bg-white/[0.02] border-glassBorder text-gray-500 hover:text-white'
-                    }`}
+                      }`}
                   >
                     <Heart className={`w-4 h-4 ${selectedEventDetails.likes?.includes(user._id) ? 'fill-rose-400' : ''}`} />
                   </button>
                   <button
                     onClick={() => { handleRegister(selectedEventDetails._id); setSelectedEventDetails(prev => ({ ...prev, registrations: prev.registrations?.includes(user._id) ? prev.registrations.filter(id => id !== user._id) : [...(prev.registrations || []), user._id] })); }}
-                    className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                      selectedEventDetails.registrations?.includes(user._id)
+                    className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${selectedEventDetails.registrations?.includes(user._id)
                         ? 'bg-emerald-950 text-emerald-400 border border-emerald-500/20'
                         : 'glass-button-primary'
-                    }`}
+                      }`}
                   >
                     {selectedEventDetails.registrations?.includes(user._id) ? 'Registered' : 'Register / Join'}
                   </button>

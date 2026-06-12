@@ -443,7 +443,9 @@ const AdminDashboard = () => {
                       </div>
                       <div>
                         <span className="block text-[10px] text-gray-500 font-bold uppercase tracking-wider">Training & Placement Head</span>
-                        <span className="font-extrabold text-white text-sm">Harsh Sudhakar</span>
+                        <span className="font-extrabold text-white text-sm">
+                          {user?.college?.name?.toLowerCase().includes('nit delhi') ? 'Harsh Sudhakar' : 'To Be Appointed'}
+                        </span>
                       </div>
                     </div>
                     <div className="text-[10px] text-gray-400 bg-white/[0.02] border border-glassBorder px-2.5 py-1 rounded-md self-start sm:self-center font-semibold">
