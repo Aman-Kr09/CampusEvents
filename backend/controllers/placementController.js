@@ -46,6 +46,9 @@ exports.addPlacementRecord = async (req, res) => {
       }
       return {
         name: c.name || c,
+        cpaRequired: c.cpaRequired !== undefined ? c.cpaRequired : null,
+        package: c.package !== undefined ? c.package : null,
+        type: c.type || 'Non-Blocking',
         status: c.status || 'Approved',
         addedBy: c.addedBy || req.user._id
       };
