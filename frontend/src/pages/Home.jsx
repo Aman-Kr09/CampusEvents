@@ -1018,8 +1018,8 @@ const Home = () => {
                                     </h4>
                                     <div className="flex flex-col items-end gap-1.5 shrink-0">
                                       <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${c.type === 'Blocking'
-                                          ? 'bg-red-950/50 text-red-300 border-red-500/20'
-                                          : 'bg-cyan-950/50 text-cyan-300 border-cyan-500/20'
+                                        ? 'bg-red-950/50 text-red-300 border-red-500/20'
+                                        : 'bg-cyan-950/50 text-cyan-300 border-cyan-500/20'
                                         }`}>
                                         {c.type || 'Non-Blocking'}
                                       </span>
@@ -1040,10 +1040,24 @@ const Home = () => {
                                   <div className="flex flex-col">
                                     <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Package</span>
                                     <span className="font-bold text-emerald-400 mt-0.5">
-                                      {c.package != null ? (c.package.toLowerCase() === 'nil' ? 'nil' : `${c.package} LPA`) : '—'}
+                                      {c.package != null ? (c.package.toLowerCase() === 'nil' ? 'nil' : `${c.package}`) : '—'}
                                     </span>
                                   </div>
                                 </div>
+
+                                {c.branchesEligible && c.branchesEligible.trim().toLowerCase() !== 'nil' && (
+                                  <div className="text-xs text-gray-400 mt-3 pt-2.5 border-t border-white/[0.03]">
+                                    <span className="font-bold text-gray-500 uppercase text-[9px] tracking-wider block">Branches Eligible</span>
+                                    <span className="text-white mt-0.5 block">{c.branchesEligible}</span>
+                                  </div>
+                                )}
+
+                                {c.deadline && c.deadline.trim().toLowerCase() !== 'nil' && (
+                                  <div className="text-xs text-gray-400 mt-2">
+                                    <span className="font-bold text-amber-500/80 uppercase text-[9px] tracking-wider block">Form Deadline</span>
+                                    <span className="text-amber-400 font-semibold mt-0.5 block">{c.deadline}</span>
+                                  </div>
+                                )}
 
                                 {c.googleFormLink && c.googleFormLink.trim().toLowerCase() !== 'nil' && (
                                   <div className="mt-4 pt-3 border-t border-white/[0.03]">
@@ -1596,8 +1610,8 @@ const Home = () => {
                   <button
                     onClick={() => { handleLike(selectedEventDetails._id); setSelectedEventDetails(prev => ({ ...prev, likes: prev.likes?.includes(user._id) ? prev.likes.filter(id => id !== user._id) : [...(prev.likes || []), user._id] })); }}
                     className={`p-2 rounded-xl border transition-all ${selectedEventDetails.likes?.includes(user._id)
-                        ? 'bg-rose-950/40 border-rose-500/20 text-rose-400'
-                        : 'bg-white/[0.02] border-glassBorder text-gray-500 hover:text-white'
+                      ? 'bg-rose-950/40 border-rose-500/20 text-rose-400'
+                      : 'bg-white/[0.02] border-glassBorder text-gray-500 hover:text-white'
                       }`}
                   >
                     <Heart className={`w-4 h-4 ${selectedEventDetails.likes?.includes(user._id) ? 'fill-rose-400' : ''}`} />
@@ -1605,8 +1619,8 @@ const Home = () => {
                   <button
                     onClick={() => { handleRegister(selectedEventDetails._id); setSelectedEventDetails(prev => ({ ...prev, registrations: prev.registrations?.includes(user._id) ? prev.registrations.filter(id => id !== user._id) : [...(prev.registrations || []), user._id] })); }}
                     className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${selectedEventDetails.registrations?.includes(user._id)
-                        ? 'bg-emerald-950 text-emerald-400 border border-emerald-500/20'
-                        : 'glass-button-primary'
+                      ? 'bg-emerald-950 text-emerald-400 border border-emerald-500/20'
+                      : 'glass-button-primary'
                       }`}
                   >
                     {selectedEventDetails.registrations?.includes(user._id) ? 'Registered' : 'Register / Join'}

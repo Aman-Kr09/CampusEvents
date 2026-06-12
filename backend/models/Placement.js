@@ -48,6 +48,14 @@ const PlacementSchema = new mongoose.Schema({
         type: String,
         default: null
       },
+      deadline: {
+        type: String,
+        default: null
+      },
+      branchesEligible: {
+        type: String,
+        default: null
+      },
       status: {
         type: String,
         enum: ['Pending', 'Approved', 'Rejected'],

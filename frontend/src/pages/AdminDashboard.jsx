@@ -43,7 +43,9 @@ const AdminDashboard = () => {
     package: '',
     type: 'Non-Blocking',
     googleFormLink: '',
-    jobType: 'FTE'
+    jobType: 'FTE',
+    deadline: '',
+    branchesEligible: ''
   });
 
   const [showAnnounceModal, setShowAnnounceModal] = useState(false);
@@ -137,7 +139,9 @@ const AdminDashboard = () => {
             package: placementForm.package ? placementForm.package.trim() : null,
             type: placementForm.type,
             jobType: placementForm.jobType,
-            googleFormLink: placementForm.googleFormLink ? placementForm.googleFormLink.trim() : null
+            googleFormLink: placementForm.googleFormLink ? placementForm.googleFormLink.trim() : null,
+            deadline: placementForm.deadline ? placementForm.deadline.trim() : null,
+            branchesEligible: placementForm.branchesEligible ? placementForm.branchesEligible.trim() : null
           }
         ]
       };
@@ -145,7 +149,17 @@ const AdminDashboard = () => {
       const res = await api.post('/placements', payload);
       if (res.data.success) {
         setShowPlacementModal(false);
-        setPlacementForm({ year: '', companyName: '', cpaRequired: '', package: '', type: 'Non-Blocking', googleFormLink: '', jobType: 'FTE' });
+        setPlacementForm({
+          year: '',
+          companyName: '',
+          cpaRequired: '',
+          package: '',
+          type: 'Non-Blocking',
+          googleFormLink: '',
+          jobType: 'FTE',
+          deadline: '',
+          branchesEligible: ''
+        });
         fetchAdminData();
       }
     } catch (err) {
@@ -512,6 +526,16 @@ const AdminDashboard = () => {
                                              {c.type || 'Non-Blocking'}
                                            </span>
                                          </div>
+                                         {c.branchesEligible && c.branchesEligible.trim().toLowerCase() !== 'nil' && (
+                                            <div className="text-[10px] text-gray-400 mt-1.5">
+                                              <span className="font-semibold text-gray-500">Branches:</span> {c.branchesEligible}
+                                            </div>
+                                          )}
+                                          {c.deadline && c.deadline.trim().toLowerCase() !== 'nil' && (
+                                            <div className="text-[10px] text-amber-400 mt-1">
+                                              <span className="font-semibold text-amber-500/80">Deadline:</span> {c.deadline}
+                                            </div>
+                                          )}
                                        </div>
                                        {c.googleFormLink && c.googleFormLink.trim().toLowerCase() !== 'nil' && (
                                          <div className="mt-1 pt-1.5 border-t border-white/[0.03]">
@@ -550,6 +574,16 @@ const AdminDashboard = () => {
                                            <span className={c.type === 'Blocking' ? 'text-red-300' : 'text-cyan-300'}>{c.type || 'Non-Blocking'}</span>
                                            <span className="text-purple-300 font-semibold">{c.jobType || 'FTE'}</span>
                                          </div>
+                                         {c.branchesEligible && c.branchesEligible.trim().toLowerCase() !== 'nil' && (
+                                           <div className="text-[10px] text-gray-400 mt-0.5">
+                                             <span className="text-gray-500">Branches:</span> {c.branchesEligible}
+                                           </div>
+                                         )}
+                                         {c.deadline && c.deadline.trim().toLowerCase() !== 'nil' && (
+                                           <div className="text-[10px] text-amber-400 mt-0.5">
+                                             <span className="text-amber-500/80">Deadline:</span> {c.deadline}
+                                           </div>
+                                         )}
                                          {c.googleFormLink && c.googleFormLink.trim().toLowerCase() !== 'nil' && (
                                            <div className="mt-0.5">
                                              <a
@@ -757,6 +791,30 @@ const AdminDashboard = () => {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
+                  {/* Deadline of Form */}
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Deadline of Form</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. June 15, 5 PM (or nil)"
+                      value={placementForm.deadline}
+                      onChange={(e) => setPlacementForm({ ...placementForm, deadline: e.target.value })}
+                      className="w-full glass-input"
+                    />
+                  </div>
+
+                  {/* Branches Eligible */}
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Branches Eligible</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. CSE, ECE, EEE (or nil)"
+                      value={placementForm.branchesEligible}
+                      onChange={(e) => setPlacementForm({ ...placementForm, branchesEligible: e.target.value })}
+                      className="w-full glass-input"
+                    />
+                  </div>
+
                   {/* Academic Year */}
                   <div>
                     <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Academic Year</label>

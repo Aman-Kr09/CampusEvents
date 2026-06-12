@@ -45,6 +45,8 @@ exports.addPlacementRecord = async (req, res) => {
         type: c.type || 'Non-Blocking',
         jobType: c.jobType || 'FTE',
         googleFormLink: c.googleFormLink !== undefined && c.googleFormLink !== null ? String(c.googleFormLink).trim() : null,
+        deadline: c.deadline !== undefined && c.deadline !== null ? String(c.deadline).trim() : null,
+        branchesEligible: c.branchesEligible !== undefined && c.branchesEligible !== null ? String(c.branchesEligible).trim() : null,
         status: c.status || 'Approved',
         addedBy: c.addedBy || req.user._id
       };
