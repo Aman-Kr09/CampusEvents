@@ -42,6 +42,7 @@ const Home = () => {
 
   // View Question detail drawer state
   const [selectedQuestion, setSelectedQuestion] = useState(null);
+  const [selectedEventDetails, setSelectedEventDetails] = useState(null);
   const [answers, setAnswers] = useState([]);
   const [newAnswerContent, setNewAnswerContent] = useState('');
   const [newCommentContent, setNewCommentContent] = useState('');
@@ -536,7 +537,7 @@ const Home = () => {
                     {searchResults.events.map(ev => (
                       <div
                         key={ev._id}
-                        onClick={() => { recordView(ev._id); alert(`Event Details:\n\nName: ${ev.name}\nVenue: ${ev.venue}\nDate: ${formatDate(ev.date)}\nDescription: ${ev.description}`); }}
+                        onClick={() => { recordView(ev._id); setSelectedEventDetails(ev); }}
                         className="p-3 bg-white/[0.01] border border-glassBorder rounded-xl cursor-pointer hover:bg-white/[0.04] transition-all"
                       >
                         <span className="text-xs font-bold text-indigo-400 block">{ev.category}</span>
@@ -630,7 +631,7 @@ const Home = () => {
                           key={event._id}
                           className="glass-panel p-5 rounded-2xl w-[280px] sm:w-[320px] shrink-0 border-glassBorder flex flex-col justify-between h-[200px] hover:border-indigo-500/30 transition-all duration-200"
                         >
-                          <div onClick={() => { recordView(event._id); alert(`Event Details:\n\nName: ${event.name}\nDate: ${formatDate(event.date)}\nVenue: ${event.venue}\nCategory: ${event.category}\n\nDescription: ${event.description}`); }}>
+                          <div onClick={() => { recordView(event._id); setSelectedEventDetails(event); }} className="cursor-pointer">
                             <div className="flex justify-between items-start">
                               <span className="text-[10px] font-bold tracking-wider text-indigo-400 uppercase bg-indigo-950/40 px-2.5 py-1 rounded-md border border-indigo-500/10">
                                 {event.category}
@@ -733,7 +734,7 @@ const Home = () => {
                             {/* Event Body */}
                             <div
                               className="p-5 flex-1 flex flex-col justify-between cursor-pointer"
-                              onClick={() => { recordView(event._id); alert(`Event Details:\n\nName: ${event.name}\nDate: ${formatDate(event.date)}\nVenue: ${event.venue}\nCategory: ${event.category}\n\nDescription: ${event.description}`); }}
+                              onClick={() => { recordView(event._id); setSelectedEventDetails(event); }}
                             >
                               <div>
                                 <h3 className="font-bold text-white group-hover:text-indigo-400 transition-colors line-clamp-1">
@@ -1459,6 +1460,119 @@ const Home = () => {
                   <Send className="w-4 h-4" />
                 </button>
               </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* EVENT DETAILS MODAL */}
+      <AnimatePresence>
+        {selectedEventDetails && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="glass-panel w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl relative border-indigo-500/20"
+            >
+              {/* Event Banner */}
+              <div className="h-44 bg-indigo-950/20 relative overflow-hidden">
+                {selectedEventDetails.banner ? (
+                  <img
+                    src={selectedEventDetails.banner}
+                    alt={selectedEventDetails.name}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-indigo-950/40 to-purple-950/40 flex items-center justify-center">
+                    <Calendar className="w-12 h-12 text-indigo-500/40" />
+                  </div>
+                )}
+                <span className="absolute top-3 left-3 text-[10px] font-bold bg-darkCard/90 border border-glassBorder px-2.5 py-1 rounded-md text-indigo-400 uppercase">
+                  {selectedEventDetails.category}
+                </span>
+                <button
+                  onClick={() => setSelectedEventDetails(null)}
+                  className="absolute top-3 right-3 p-1.5 bg-black/60 hover:bg-black/80 text-gray-400 hover:text-white rounded-full transition-all"
+                >
+                  <X className="w-4.5 h-4.5" />
+                </button>
+              </div>
+
+              {/* Event Body */}
+              <div className="p-6 space-y-4">
+                <div className="space-y-1.5">
+                  <h3 className="text-lg sm:text-xl font-extrabold text-white leading-snug">
+                    {selectedEventDetails.name}
+                  </h3>
+                  <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-gray-400">
+                    <span className="flex items-center space-x-1">
+                      <Clock className="w-3.5 h-3.5 text-indigo-400" />
+                      <span>{selectedEventDetails.time}</span>
+                    </span>
+                    <span className="flex items-center space-x-1">
+                      <MapPin className="w-3.5 h-3.5 text-indigo-400" />
+                      <span>{selectedEventDetails.venue}</span>
+                    </span>
+                    <span className="flex items-center space-x-1">
+                      <Calendar className="w-3.5 h-3.5 text-indigo-400" />
+                      <span>{formatDate(selectedEventDetails.date)}</span>
+                    </span>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <span className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider">About the Event</span>
+                  <p className="text-xs sm:text-sm text-gray-300 leading-relaxed bg-white/[0.01] border border-glassBorder/60 p-4 rounded-xl max-h-[150px] overflow-y-auto">
+                    {selectedEventDetails.description}
+                  </p>
+                </div>
+
+                {/* Registration Link / Form Link */}
+                {selectedEventDetails.registrationLink && (
+                  <div className="space-y-2 pt-2">
+                    <span className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider font-semibold">Registration / Form Link</span>
+                    <a
+                      href={selectedEventDetails.registrationLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-between p-3.5 rounded-xl border border-indigo-500/20 bg-indigo-950/40 hover:bg-indigo-900/40 text-indigo-400 hover:text-indigo-300 transition-all font-bold text-xs sm:text-sm group"
+                    >
+                      <span className="truncate pr-4">{selectedEventDetails.registrationLink}</span>
+                      <ArrowRight className="w-4 h-4 shrink-0 transform group-hover:translate-x-0.5 transition-transform" />
+                    </a>
+                  </div>
+                )}
+              </div>
+
+              {/* Footer Actions */}
+              <div className="px-6 py-4 border-t border-glassBorder bg-white/[0.01] flex items-center justify-between">
+                <span className="text-[10px] text-gray-500 font-semibold">
+                  Views: {selectedEventDetails.views || 0} &bull; Likes: {selectedEventDetails.likes?.length || 0}
+                </span>
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={() => { handleLike(selectedEventDetails._id); setSelectedEventDetails(prev => ({ ...prev, likes: prev.likes?.includes(user._id) ? prev.likes.filter(id => id !== user._id) : [...(prev.likes || []), user._id] })); }}
+                    className={`p-2 rounded-xl border transition-all ${
+                      selectedEventDetails.likes?.includes(user._id)
+                        ? 'bg-rose-950/40 border-rose-500/20 text-rose-400'
+                        : 'bg-white/[0.02] border-glassBorder text-gray-500 hover:text-white'
+                    }`}
+                  >
+                    <Heart className={`w-4 h-4 ${selectedEventDetails.likes?.includes(user._id) ? 'fill-rose-400' : ''}`} />
+                  </button>
+                  <button
+                    onClick={() => { handleRegister(selectedEventDetails._id); setSelectedEventDetails(prev => ({ ...prev, registrations: prev.registrations?.includes(user._id) ? prev.registrations.filter(id => id !== user._id) : [...(prev.registrations || []), user._id] })); }}
+                    className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                      selectedEventDetails.registrations?.includes(user._id)
+                        ? 'bg-emerald-950 text-emerald-400 border border-emerald-500/20'
+                        : 'glass-button-primary'
+                    }`}
+                  >
+                    {selectedEventDetails.registrations?.includes(user._id) ? 'Registered' : 'Register / Join'}
+                  </button>
+                </div>
+              </div>
             </motion.div>
           </div>
         )}
