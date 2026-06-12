@@ -435,6 +435,22 @@ const AdminDashboard = () => {
                     </button>
                   </div>
 
+                  {/* Training & Placement Head details */}
+                  <div className="bg-white/[0.01] border border-glassBorder p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-glow/5">
+                    <div className="flex items-center space-x-3">
+                      <div className="p-2.5 bg-indigo-500/10 rounded-lg text-indigo-400">
+                        <Users className="w-4.5 h-4.5" />
+                      </div>
+                      <div>
+                        <span className="block text-[10px] text-gray-500 font-bold uppercase tracking-wider">Training & Placement Head</span>
+                        <span className="font-extrabold text-white text-sm">Harsh Sudhakar</span>
+                      </div>
+                    </div>
+                    <div className="text-[10px] text-gray-400 bg-white/[0.02] border border-glassBorder px-2.5 py-1 rounded-md self-start sm:self-center font-semibold">
+                      T&P Cell Contact Point
+                    </div>
+                  </div>
+
                   {placementRecords.length === 0 ? (
                     <p className="text-xs text-gray-500 text-center py-12">No company listings recorded yet.</p>
                   ) : (

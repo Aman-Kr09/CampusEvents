@@ -959,6 +959,22 @@ const Home = () => {
                 <p className="text-gray-400 text-xs sm:text-sm mt-0.5">Explore active recruiters and approved company listings visiting the campus.</p>
               </div>
 
+              {/* Training & Placement Head details */}
+              <div className="bg-white/[0.01] border border-glassBorder p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-glow/5">
+                <div className="flex items-center space-x-3">
+                  <div className="p-2.5 bg-indigo-500/10 rounded-lg text-indigo-400">
+                    <Users className="w-4.5 h-4.5" />
+                  </div>
+                  <div>
+                    <span className="block text-[10px] text-gray-500 font-bold uppercase tracking-wider">Training & Placement Head</span>
+                    <span className="font-extrabold text-white text-sm">Harsh Sudhakar</span>
+                  </div>
+                </div>
+                <div className="text-[10px] text-gray-400 bg-white/[0.02] border border-glassBorder px-2.5 py-1 rounded-md self-start sm:self-center font-semibold">
+                  T&P Cell Contact Point
+                </div>
+              </div>
+
               {placements.length === 0 || !placements.some(pr => pr.companiesVisited?.some(c => c.status === 'Approved')) ? (
                 <div className="py-12 text-center space-y-3">
                   <Briefcase className="w-12 h-12 text-gray-600 mx-auto opacity-30" />
