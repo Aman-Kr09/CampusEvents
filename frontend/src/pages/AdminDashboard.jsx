@@ -5,6 +5,12 @@ import {
   Users, Calendar, AlertCircle, HelpCircle, BarChart3, Megaphone, ShieldAlert, Check, X, Trash2, Edit2, Plus, AlertTriangle, Eye
 } from 'lucide-react';
 
+const isNITDelhi = (college) => {
+  if (!college) return false;
+  const name = typeof college === 'string' ? college.toLowerCase() : college.name?.toLowerCase();
+  return name && (name.includes('nit delhi') || name.includes('national institute of technology delhi'));
+};
+
 const AdminDashboard = () => {
   const { user } = useAuth();
 
@@ -444,7 +450,7 @@ const AdminDashboard = () => {
                       <div>
                         <span className="block text-[10px] text-gray-500 font-bold uppercase tracking-wider">Training & Placement Head</span>
                         <span className="font-extrabold text-white text-sm">
-                          {user?.college?.name?.toLowerCase().includes('nit delhi') ? 'Harsh Sudhakar' : 'To Be Appointed'}
+                          {isNITDelhi(user?.college) ? 'Harsh Sudhakar' : 'To Be Appointed'}
                         </span>
                       </div>
                     </div>

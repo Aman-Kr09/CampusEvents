@@ -9,6 +9,12 @@ import {
 } from 'lucide-react';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, BarChart, Bar, CartesianGrid } from 'recharts';
 
+const isNITDelhi = (college) => {
+  if (!college) return false;
+  const name = typeof college === 'string' ? college.toLowerCase() : college.name?.toLowerCase();
+  return name && (name.includes('nit delhi') || name.includes('national institute of technology delhi'));
+};
+
 const Home = () => {
   const { user } = useAuth();
   const { selectedCollege } = useCollege();
@@ -968,7 +974,7 @@ const Home = () => {
                   <div>
                     <span className="block text-[10px] text-gray-500 font-bold uppercase tracking-wider">Training & Placement Head</span>
                     <span className="font-extrabold text-white text-sm">
-                      {selectedCollege?.name?.toLowerCase().includes('National Institute of Technology Delhi') || user?.college?.name?.toLowerCase().includes('nit delhi') ? 'Harsh Sudhakar' : 'To Be Appointed'}
+                      {isNITDelhi(selectedCollege) || isNITDelhi(user?.college) ? 'Harsh Sudhakar' : 'To Be Appointed'}
                     </span>
                   </div>
                 </div>
