@@ -27,17 +27,26 @@ const PlacementSchema = new mongoose.Schema({
         required: true
       },
       cpaRequired: {
-        type: Number, // Minimum CPA / CGPA cutoff
+        type: String, // Minimum CPA / CGPA cutoff (allows text, e.g. "nil")
         default: null
       },
       package: {
-        type: Number, // Offered package in LPA
+        type: String, // Offered package in LPA (allows text, e.g. "nil")
         default: null
       },
       type: {
         type: String,
         enum: ['Blocking', 'Non-Blocking'],
         default: 'Non-Blocking'
+      },
+      jobType: {
+        type: String,
+        enum: ['Internship', 'FTE', 'FTE+PPO'],
+        default: 'FTE'
+      },
+      googleFormLink: {
+        type: String,
+        default: null
       },
       status: {
         type: String,

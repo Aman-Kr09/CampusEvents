@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { api, useAuth } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Users, Calendar, AlertCircle, HelpCircle, BarChart3, Megaphone, ShieldAlert, Check, X, Trash2, Edit2, Plus, AlertTriangle, Eye
+  Users, Calendar, AlertCircle, HelpCircle, BarChart3, Megaphone, ShieldAlert, Check, X, Trash2, Edit2, Plus, AlertTriangle, Eye, Link2
 } from 'lucide-react';
 
 const isNITDelhi = (college) => {
@@ -41,7 +41,9 @@ const AdminDashboard = () => {
     companyName: '',
     cpaRequired: '',
     package: '',
-    type: 'Non-Blocking'
+    type: 'Non-Blocking',
+    googleFormLink: '',
+    jobType: 'FTE'
   });
 
   const [showAnnounceModal, setShowAnnounceModal] = useState(false);
@@ -131,9 +133,11 @@ const AdminDashboard = () => {
         companiesVisited: [
           {
             name: placementForm.companyName.trim(),
-            cpaRequired: placementForm.cpaRequired ? parseFloat(placementForm.cpaRequired) : null,
-            package: placementForm.package ? parseFloat(placementForm.package) : null,
-            type: placementForm.type
+            cpaRequired: placementForm.cpaRequired ? placementForm.cpaRequired.trim() : null,
+            package: placementForm.package ? placementForm.package.trim() : null,
+            type: placementForm.type,
+            jobType: placementForm.jobType,
+            googleFormLink: placementForm.googleFormLink ? placementForm.googleFormLink.trim() : null
           }
         ]
       };
@@ -141,7 +145,7 @@ const AdminDashboard = () => {
       const res = await api.post('/placements', payload);
       if (res.data.success) {
         setShowPlacementModal(false);
-        setPlacementForm({ year: '', companyName: '', cpaRequired: '', package: '', type: 'Non-Blocking' });
+        setPlacementForm({ year: '', companyName: '', cpaRequired: '', package: '', type: 'Non-Blocking', googleFormLink: '', jobType: 'FTE' });
         fetchAdminData();
       }
     } catch (err) {
@@ -479,74 +483,108 @@ const AdminDashboard = () => {
                               </button>
                             </div>
 
-                            {/* Approved company cards */}
-                            {approved.length > 0 && (
-                              <div className="space-y-2">
-                                <span className="block text-[10px] text-gray-500 font-bold uppercase tracking-wider">Listed Companies</span>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                  {approved.map(c => (
-                                    <div key={c._id || c.name} className="bg-white/[0.02] border border-glassBorder rounded-lg p-3 flex flex-col gap-1.5">
-                                      <span className="font-bold text-white text-sm">{c.name}</span>
-                                      <div className="flex flex-wrap gap-2 text-[10px]">
-                                        <span className="bg-indigo-950/60 text-indigo-300 border border-indigo-500/20 px-2 py-0.5 rounded font-semibold">
-                                          CPA: {c.cpaRequired != null ? c.cpaRequired : '—'}
-                                        </span>
-                                        <span className="bg-emerald-950/60 text-emerald-300 border border-emerald-500/20 px-2 py-0.5 rounded font-semibold">
-                                          PKG: {c.package != null ? `${c.package} LPA` : '—'}
-                                        </span>
-                                        <span className={`px-2 py-0.5 rounded font-bold border ${
-                                          c.type === 'Blocking'
-                                            ? 'bg-red-950/50 text-red-300 border-red-500/20'
-                                            : 'bg-cyan-950/50 text-cyan-300 border-cyan-500/20'
-                                        }`}>
-                                          {c.type || 'Non-Blocking'}
-                                        </span>
-                                      </div>
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
-                            {approved.length === 0 && (
-                              <span className="text-[10px] text-gray-600 italic">No approved companies yet.</span>
-                            )}
-
-                            {/* Pending suggestions */}
-                            {pending.length > 0 && (
-                              <div className="space-y-2 bg-amber-950/10 border border-amber-500/10 p-3.5 rounded-xl">
-                                <span className="block text-[10px] text-amber-400 font-bold uppercase tracking-wider mb-1">Pending Suggestions</span>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                  {pending.map(c => (
-                                    <div key={c._id} className="flex items-center justify-between bg-white/[0.02] border border-glassBorder p-2.5 rounded-lg">
-                                      <div className="flex flex-col gap-0.5">
-                                        <span className="font-semibold text-white text-xs">{c.name}</span>
-                                        <div className="flex gap-1.5 text-[10px]">
-                                          <span className="text-indigo-300">CPA: {c.cpaRequired ?? '—'}</span>
-                                          <span className="text-emerald-300">PKG: {c.package != null ? `${c.package} LPA` : '—'}</span>
-                                          <span className={c.type === 'Blocking' ? 'text-red-300' : 'text-cyan-300'}>{c.type || 'Non-Blocking'}</span>
-                                        </div>
-                                      </div>
-                                      <div className="flex items-center gap-1.5">
-                                        <button
-                                          onClick={() => handleReviewRecruiter(pr._id, c._id, 'Approved')}
-                                          className="p-1 text-emerald-400 hover:text-emerald-300 bg-emerald-950/40 border border-emerald-500/20 rounded-md transition-all hover:bg-emerald-900/40"
-                                          title="Approve"
-                                        >
-                                          <Check className="w-3.5 h-3.5" />
-                                        </button>
-                                        <button
-                                          onClick={() => handleReviewRecruiter(pr._id, c._id, 'Rejected')}
-                                          className="p-1 text-red-400 hover:text-red-300 bg-red-950/40 border border-red-500/20 rounded-md transition-all hover:bg-red-900/40"
-                                          title="Reject"
-                                        >
-                                          <X className="w-3.5 h-3.5" />
-                                        </button>
-                                      </div>
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
+                             {/* Approved company cards */}
+                             {approved.length > 0 && (
+                               <div className="space-y-2">
+                                 <span className="block text-[10px] text-gray-500 font-bold uppercase tracking-wider">Listed Companies</span>
+                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                   {approved.map(c => (
+                                     <div key={c._id || c.name} className="bg-white/[0.02] border border-glassBorder rounded-lg p-3 flex flex-col gap-1.5 justify-between">
+                                       <div>
+                                         <div className="flex justify-between items-start">
+                                           <span className="font-bold text-white text-sm">{c.name}</span>
+                                           <span className="bg-purple-950/60 text-purple-300 border border-purple-500/20 px-2 py-0.5 rounded text-[10px] font-bold">
+                                             {c.jobType || 'FTE'}
+                                           </span>
+                                         </div>
+                                         <div className="flex flex-wrap gap-2 text-[10px] mt-1.5">
+                                           <span className="bg-indigo-950/60 text-indigo-300 border border-indigo-500/20 px-2 py-0.5 rounded font-semibold">
+                                             CPA: {c.cpaRequired != null ? c.cpaRequired : '—'}
+                                           </span>
+                                           <span className="bg-emerald-950/60 text-emerald-300 border border-emerald-500/20 px-2 py-0.5 rounded font-semibold">
+                                             PKG: {c.package != null ? (c.package.toLowerCase() === 'nil' ? 'nil' : `${c.package} LPA`) : '—'}
+                                           </span>
+                                           <span className={`px-2 py-0.5 rounded font-bold border ${
+                                             c.type === 'Blocking'
+                                               ? 'bg-red-950/50 text-red-300 border-red-500/20'
+                                               : 'bg-cyan-950/50 text-cyan-300 border-cyan-500/20'
+                                           }`}>
+                                             {c.type || 'Non-Blocking'}
+                                           </span>
+                                         </div>
+                                       </div>
+                                       {c.googleFormLink && c.googleFormLink.trim().toLowerCase() !== 'nil' && (
+                                         <div className="mt-1 pt-1.5 border-t border-white/[0.03]">
+                                           <a
+                                             href={c.googleFormLink.startsWith('http') ? c.googleFormLink : `https://${c.googleFormLink}`}
+                                             target="_blank"
+                                             rel="noopener noreferrer"
+                                             className="inline-flex items-center space-x-1 text-[10px] text-indigo-400 hover:text-indigo-300 font-semibold transition-colors"
+                                           >
+                                             <Link2 className="w-3 h-3" />
+                                             <span>Google Form</span>
+                                           </a>
+                                         </div>
+                                       )}
+                                     </div>
+                                   ))}
+                                 </div>
+                               </div>
+                             )}
+                             {approved.length === 0 && (
+                               <span className="text-[10px] text-gray-600 italic">No approved companies yet.</span>
+                             )}
+ 
+                             {/* Pending suggestions */}
+                             {pending.length > 0 && (
+                               <div className="space-y-2 bg-amber-950/10 border border-amber-500/10 p-3.5 rounded-xl">
+                                 <span className="block text-[10px] text-amber-400 font-bold uppercase tracking-wider mb-1">Pending Suggestions</span>
+                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                   {pending.map(c => (
+                                     <div key={c._id} className="flex items-center justify-between bg-white/[0.02] border border-glassBorder p-2.5 rounded-lg">
+                                       <div className="flex flex-col gap-0.5">
+                                         <span className="font-semibold text-white text-xs">{c.name}</span>
+                                         <div className="flex flex-wrap gap-1.5 text-[10px]">
+                                           <span className="text-indigo-300">CPA: {c.cpaRequired ?? '—'}</span>
+                                           <span className="text-emerald-300">PKG: {c.package != null ? (c.package.toLowerCase() === 'nil' ? 'nil' : `${c.package} LPA`) : '—'}</span>
+                                           <span className={c.type === 'Blocking' ? 'text-red-300' : 'text-cyan-300'}>{c.type || 'Non-Blocking'}</span>
+                                           <span className="text-purple-300 font-semibold">{c.jobType || 'FTE'}</span>
+                                         </div>
+                                         {c.googleFormLink && c.googleFormLink.trim().toLowerCase() !== 'nil' && (
+                                           <div className="mt-0.5">
+                                             <a
+                                               href={c.googleFormLink.startsWith('http') ? c.googleFormLink : `https://${c.googleFormLink}`}
+                                               target="_blank"
+                                               rel="noopener noreferrer"
+                                               className="inline-flex items-center space-x-0.5 text-[9px] text-indigo-400 hover:text-indigo-300 font-semibold"
+                                             >
+                                               <Link2 className="w-2.5 h-2.5" />
+                                               <span>Google Form Link</span>
+                                             </a>
+                                           </div>
+                                         )}
+                                       </div>
+                                       <div className="flex items-center gap-1.5">
+                                         <button
+                                           onClick={() => handleReviewRecruiter(pr._id, c._id, 'Approved')}
+                                           className="p-1 text-emerald-400 hover:text-emerald-300 bg-emerald-950/40 border border-emerald-500/20 rounded-md transition-all hover:bg-emerald-900/40"
+                                           title="Approve"
+                                         >
+                                           <Check className="w-3.5 h-3.5" />
+                                         </button>
+                                         <button
+                                           onClick={() => handleReviewRecruiter(pr._id, c._id, 'Rejected')}
+                                           className="p-1 text-red-400 hover:text-red-300 bg-red-950/40 border border-red-500/20 rounded-md transition-all hover:bg-red-900/40"
+                                           title="Reject"
+                                         >
+                                           <X className="w-3.5 h-3.5" />
+                                         </button>
+                                       </div>
+                                     </div>
+                                   ))}
+                                 </div>
+                               </div>
+                             )}
                           </div>
                         );
                       })}
@@ -706,6 +744,18 @@ const AdminDashboard = () => {
                   />
                 </div>
 
+                {/* Google Form Link */}
+                <div>
+                  <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Google Form Link</label>
+                  <input
+                    type="url"
+                    placeholder="e.g. https://forms.gle/xyz (or nil)"
+                    value={placementForm.googleFormLink}
+                    onChange={(e) => setPlacementForm({ ...placementForm, googleFormLink: e.target.value })}
+                    className="w-full glass-input"
+                  />
+                </div>
+
                 <div className="grid grid-cols-2 gap-4">
                   {/* Academic Year */}
                   <div>
@@ -720,15 +770,26 @@ const AdminDashboard = () => {
                     />
                   </div>
 
+                  {/* Job Type */}
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Job Type</label>
+                    <select
+                      value={placementForm.jobType}
+                      onChange={(e) => setPlacementForm({ ...placementForm, jobType: e.target.value })}
+                      className="w-full glass-input"
+                    >
+                      <option value="FTE">FTE</option>
+                      <option value="Internship">Internship</option>
+                      <option value="FTE+PPO">FTE+PPO</option>
+                    </select>
+                  </div>
+
                   {/* CPA Required */}
                   <div>
                     <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">CPA Required</label>
                     <input
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      max="10"
-                      placeholder="e.g. 7.5"
+                      type="text"
+                      placeholder="e.g. 7.5 or nil"
                       value={placementForm.cpaRequired}
                       onChange={(e) => setPlacementForm({ ...placementForm, cpaRequired: e.target.value })}
                       className="w-full glass-input"
@@ -739,10 +800,8 @@ const AdminDashboard = () => {
                   <div>
                     <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Package (LPA)</label>
                     <input
-                      type="number"
-                      step="0.1"
-                      min="0"
-                      placeholder="e.g. 18.5"
+                      type="text"
+                      placeholder="e.g. 18.5 or nil"
                       value={placementForm.package}
                       onChange={(e) => setPlacementForm({ ...placementForm, package: e.target.value })}
                       className="w-full glass-input"
@@ -750,7 +809,7 @@ const AdminDashboard = () => {
                   </div>
 
                   {/* Blocking / Non-Blocking */}
-                  <div>
+                  <div className="col-span-2">
                     <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Placement Type</label>
                     <select
                       value={placementForm.type}

@@ -5,7 +5,7 @@ import { useCollege } from '../context/CollegeContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Calendar, MapPin, Clock, Search, Send, Plus, ArrowRight, Heart, Users,
-  Megaphone, TrendingUp, BarChart3, HelpCircle, Tags, ChevronRight, X, AlertCircle, Sparkles, MessageSquare, ThumbsUp, Check, Briefcase
+  Megaphone, TrendingUp, BarChart3, HelpCircle, Tags, ChevronRight, X, AlertCircle, Sparkles, MessageSquare, ThumbsUp, Check, Briefcase, Link2
 } from 'lucide-react';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, BarChart, Bar, CartesianGrid } from 'recharts';
 
@@ -1016,12 +1016,17 @@ const Home = () => {
                                     <h4 className="font-bold text-white text-sm sm:text-base leading-snug">
                                       {c.name}
                                     </h4>
-                                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${c.type === 'Blocking'
-                                        ? 'bg-red-950/50 text-red-300 border-red-500/20'
-                                        : 'bg-cyan-950/50 text-cyan-300 border-cyan-500/20'
-                                      }`}>
-                                      {c.type || 'Non-Blocking'}
-                                    </span>
+                                    <div className="flex flex-col items-end gap-1.5 shrink-0">
+                                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${c.type === 'Blocking'
+                                          ? 'bg-red-950/50 text-red-300 border-red-500/20'
+                                          : 'bg-cyan-950/50 text-cyan-300 border-cyan-500/20'
+                                        }`}>
+                                        {c.type || 'Non-Blocking'}
+                                      </span>
+                                      <span className="bg-purple-950/60 text-purple-300 border border-purple-500/20 px-2 py-0.5 rounded text-[10px] font-bold">
+                                        {c.jobType || 'FTE'}
+                                      </span>
+                                    </div>
                                   </div>
                                 </div>
 
@@ -1035,10 +1040,24 @@ const Home = () => {
                                   <div className="flex flex-col">
                                     <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Package</span>
                                     <span className="font-bold text-emerald-400 mt-0.5">
-                                      {c.package != null ? `${c.package} LPA` : '—'}
+                                      {c.package != null ? (c.package.toLowerCase() === 'nil' ? 'nil' : `${c.package} LPA`) : '—'}
                                     </span>
                                   </div>
                                 </div>
+
+                                {c.googleFormLink && c.googleFormLink.trim().toLowerCase() !== 'nil' && (
+                                  <div className="mt-4 pt-3 border-t border-white/[0.03]">
+                                    <a
+                                      href={c.googleFormLink.startsWith('http') ? c.googleFormLink : `https://${c.googleFormLink}`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="inline-flex items-center space-x-1.5 text-xs font-bold text-indigo-400 hover:text-indigo-300 transition-colors"
+                                    >
+                                      <Link2 className="w-3.5 h-3.5" />
+                                      <span>Apply via Google Form</span>
+                                    </a>
+                                  </div>
+                                )}
                               </div>
                             ))}
                           </div>

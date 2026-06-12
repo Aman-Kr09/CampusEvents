@@ -40,9 +40,11 @@ exports.addPlacementRecord = async (req, res) => {
       }
       return {
         name: c.name || c,
-        cpaRequired: c.cpaRequired !== undefined ? c.cpaRequired : null,
-        package: c.package !== undefined ? c.package : null,
+        cpaRequired: c.cpaRequired !== undefined && c.cpaRequired !== null ? String(c.cpaRequired).trim() : null,
+        package: c.package !== undefined && c.package !== null ? String(c.package).trim() : null,
         type: c.type || 'Non-Blocking',
+        jobType: c.jobType || 'FTE',
+        googleFormLink: c.googleFormLink !== undefined && c.googleFormLink !== null ? String(c.googleFormLink).trim() : null,
         status: c.status || 'Approved',
         addedBy: c.addedBy || req.user._id
       };
