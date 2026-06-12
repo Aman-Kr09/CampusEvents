@@ -15,10 +15,10 @@ const Footer = () => {
   return (
     <footer className="w-full glass-panel border-t border-glassBorder bg-opacity-40 backdrop-blur-lg mt-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-6">
-        
+
         {/* Main Grid Layout */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-          
+
           {/* Column 1: Brand details */}
           <div className="space-y-4">
             <div className="flex items-center space-x-2.5">
@@ -80,17 +80,6 @@ const Footer = () => {
                   Campus Directory
                 </Link>
               </li>
-              <li>
-                <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-xs text-gray-400 hover:text-indigo-400 transition-colors duration-200 flex items-center space-x-1">
-                  <span>System Documentation</span>
-                  <ExternalLink className="w-3 h-3 text-gray-600" />
-                </a>
-              </li>
-              <li>
-                <Link to="/admin" className="text-xs text-gray-400 hover:text-indigo-400 transition-colors duration-200 flex items-center space-x-1">
-                  <span>Institutional Control Panel</span>
-                </Link>
-              </li>
             </ul>
           </div>
 
@@ -100,16 +89,16 @@ const Footer = () => {
             <p className="text-xs text-gray-400 leading-relaxed">
               Explore professional opportunities, academic achievements, and coordinate event management from a unified core dashboard.
             </p>
-            
+
             {/* Social Icons Row */}
             <div className="flex space-x-3 pt-1">
-              <a href="https://github.com" target="_blank" rel="noopener noreferrer" title="Project Repository" className="w-8 h-8 rounded-lg border border-glassBorder bg-white/[0.02] flex items-center justify-center text-gray-400 hover:text-white hover:border-white/20 hover:bg-white/5 transition-all duration-200">
+              <a href="https://github.com/Aman-Kr09" target="_blank" rel="noopener noreferrer" title="Project Repository" className="w-8 h-8 rounded-lg border border-glassBorder bg-white/[0.02] flex items-center justify-center text-gray-400 hover:text-white hover:border-white/20 hover:bg-white/5 transition-all duration-200">
                 <Terminal className="w-4 h-4" />
               </a>
-              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" title="Professional Directory" className="w-8 h-8 rounded-lg border border-glassBorder bg-white/[0.02] flex items-center justify-center text-gray-400 hover:text-white hover:border-white/20 hover:bg-white/5 transition-all duration-200">
+              <a href="www.linkedin.com/in/aman-kumar-455192296" target="_blank" rel="noopener noreferrer" title="Professional Directory" className="w-8 h-8 rounded-lg border border-glassBorder bg-white/[0.02] flex items-center justify-center text-gray-400 hover:text-white hover:border-white/20 hover:bg-white/5 transition-all duration-200">
                 <Briefcase className="w-4 h-4" />
               </a>
-              <a href="https://google.com" target="_blank" rel="noopener noreferrer" title="University Portal" className="w-8 h-8 rounded-lg border border-glassBorder bg-white/[0.02] flex items-center justify-center text-gray-400 hover:text-white hover:border-white/20 hover:bg-white/5 transition-all duration-200">
+              <a href="https://nitdelhi.ac.in/" target="_blank" rel="noopener noreferrer" title="University Portal" className="w-8 h-8 rounded-lg border border-glassBorder bg-white/[0.02] flex items-center justify-center text-gray-400 hover:text-white hover:border-white/20 hover:bg-white/5 transition-all duration-200">
                 <Globe className="w-4 h-4" />
               </a>
             </div>
@@ -121,7 +110,7 @@ const Footer = () => {
           <p className="text-[11px] text-gray-500">
             &copy; {new Date().getFullYear()} CampusEvents. All rights reserved. Empowering connected academic networks.
           </p>
-          
+
           {/* Status Indicator */}
           <div className="flex items-center space-x-2 bg-white/[0.02] px-3 py-1 rounded-full border border-glassBorder">
             <span className="relative flex h-2 w-2">
