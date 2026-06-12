@@ -33,12 +33,6 @@ exports.addPlacementRecord = async (req, res) => {
   try {
     const collegeId = req.user.college._id;
 
-    // Check if record already exists for the year
-    const existing = await Placement.findOne({ college: collegeId, year });
-    if (existing) {
-      return res.status(400).json({ success: false, message: `Placement data for year ${year} already exists. Please edit that record instead.` });
-    }
-
     // Normalize companies visited input list to objects
     const normalizedCompanies = (companiesVisited || []).map(c => {
       if (typeof c === 'string') {
