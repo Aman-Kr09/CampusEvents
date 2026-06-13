@@ -24,7 +24,7 @@ exports.createAnnouncement = async (req, res) => {
 
   try {
     if (!title || !content) {
-      return res.status(400).json({ success: false, message: 'Please provide title and content' });
+      return res.status(400).json({ success: false, message: 'Please provide TITLE and CONTENT' });
     }
 
     const collegeId = req.user.college._id;
