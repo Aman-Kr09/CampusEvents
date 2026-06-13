@@ -14,8 +14,8 @@ const seedData = async () => {
     console.log('Creating Super Admin...');
     await User.create({
       name: 'Super Admin User',
-      email: 'superadmin@campusevents.com',
-      password: 'SuperAdminSecure123!',
+      email: process.env.SUPER_ADMIN_EMAIL,
+      password: process.env.SUPER_ADMIN_PASSWORD,
       role: 'SuperAdmin'
     });
 
