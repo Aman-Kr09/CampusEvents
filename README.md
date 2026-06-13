@@ -28,10 +28,13 @@ The platform enforces **strict college-based content isolation**, ensuring stude
 * Personalized Onboarding
 * AI-Powered Event Recommendations
 * Browse Upcoming & Trending Events
-* Event Registration & Participation Tracking
-* Like and Save Events
-* Academic Q&A Discussion Forum
-* Placement Statistics Dashboard
+* Beautiful, Custom **Event Details Modal** (supports direct registration/join actions, clickable external links, bookmarks, views/likes counters, and description text)
+* Interactive **Training & Placement Cell** portal:
+  * View active recruiters and placement metrics (highest/average packages, placement rate)
+  * View detailed company listings (CGPA requirements, job types, eligible branches, application deadlines)
+  * Directly apply using integrated external **Google Forms** links
+  * Recommend/suggest new recruiter profiles to the T&P Cell
+* Academic Q&A Discussion Forum (upvoting, commenting, and answering)
 * College-Specific Announcements
 * Profile Management
 
@@ -40,7 +43,12 @@ The platform enforces **strict college-based content isolation**, ensuring stude
 * Create, Edit, and Delete Events
 * Review Student Event Proposals
 * Approve or Reject Events
-* Manage Placement Records
+* **Training & Placement (TnP) Cell Management**:
+  * Create, edit, and delete detailed placement records
+  * Allow multiple placement records to be registered under the same academic year
+  * Manage active recruiters with detailed profiles: CGPA cutoff, job type (Internship, FTE, FTE+PPO), blocking status, package details, form links, eligible branches, and deadlines
+  * **Moderation queue** to review (Approve/Reject) recruiter entries suggested by students
+  * Display dedicated contact details for the Training & Placement Cell Head
 * Publish Announcements
 * Moderate Q&A Discussions
 * Ban/Unban Student Accounts
@@ -64,18 +72,13 @@ The recommendation engine uses **Scikit-Learn** to generate personalized event s
 #### Workflow
 
 1. Combine:
-
    * Event Title
    * Description
    * Category
    * Tags
-
 2. Generate TF-IDF vectors for all events.
-
 3. Convert user interests into a profile vector.
-
 4. Compute Cosine Similarity between user interests and event vectors.
-
 5. Return ranked event recommendations.
 
 ### Automatic Tag Generation
@@ -93,6 +96,9 @@ The recommendation engine uses **Scikit-Learn** to generate personalized event s
 
 * React.js (Vite)
 * Tailwind CSS
+* Lucide React Icons
+* Framer Motion Animations
+* Recharts (Data Visualization)
 * React Router DOM
 * Context API
 
@@ -100,8 +106,7 @@ The recommendation engine uses **Scikit-Learn** to generate personalized event s
 
 * Node.js
 * Express.js
-* MongoDB
-* Mongoose
+* MongoDB & Mongoose
 * JWT Authentication
 * Nodemailer
 
@@ -143,8 +148,10 @@ CampusEvents/
 │   │   └── main.jsx
 │   ├── tailwind.config.js
 │   ├── App.css
+│   ├── vercel.json
 │   └── package.json
 │
+├── vercel.json
 └── README.md
 ```
 
@@ -167,8 +174,8 @@ CampusEvents/
 * Email
 * Password
 * GoogleId
-* Role
-* College
+* Role (Student, Admin, SuperAdmin)
+* College (Ref College)
 * Interests
 * Branch
 * Year
@@ -187,9 +194,9 @@ CampusEvents/
 * Category
 * Tags
 * RegistrationLink
-* College
-* CreatedBy
-* Status
+* College (Ref College)
+* CreatedBy (Ref User)
+* Status (Pending, Approved, Rejected)
 * Views
 * Likes
 * Registrations
@@ -203,11 +210,22 @@ CampusEvents/
 
 ### Placement
 
-* Highest Package
-* Average Package
-* Placement Percentage
-* Companies Visited
-* Year
+* **college**: Reference to College
+* **highestPackage**: Highest Package offered (Number in LPA)
+* **averagePackage**: Average Package offered (Number in LPA)
+* **placementPercentage**: Placement percentage metric (Number)
+* **companiesVisited**: Array of recruiter objects:
+  * **name**: Company Name (String)
+  * **cpaRequired**: CGPA/CPA Cutoff requirement (String, e.g., "7.5" or "nil")
+  * **package**: Offered package package (String, e.g., "12 LPA" or "nil")
+  * **type**: Placement drive classification (Enum: `Blocking`, `Non-Blocking`)
+  * **jobType**: Position availability (Enum: `Internship`, `FTE`, `FTE+PPO`)
+  * **googleFormLink**: External application form link (String)
+  * **deadline**: Form submission deadline (String)
+  * **branchesEligible**: Allowed academic disciplines (String)
+  * **status**: Verification status (Enum: `Pending`, `Approved`, `Rejected`)
+  * **addedBy**: User ID of the suggestion sender (Ref User)
+* **year**: Academic Year (Number)
 
 ### Announcement
 
@@ -225,7 +243,7 @@ CampusEvents/
 
 * JWT Authentication
 * Role-Based Access Control (RBAC)
-* College-Level Data Isolation
+* College-Level Data Isolation (strict filters ensuring students only view their own institution's events, discussion forums, placements, and announcements)
 * OTP-Based Password Reset
 * Protected API Routes
 * User Moderation Controls
@@ -240,28 +258,57 @@ CampusEvents/
 * MongoDB
 * Python 3
 
+### Environment Configuration
+
+Create a `.env` file in the `/backend` folder. Below is a reference template:
+
+```env
+PORT=5000
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret_key
+
+# Email SMTP configuration (Optional, for OTP verification and password reset)
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=465
+SMTP_USER=your_email@gmail.com
+SMTP_PASS=your_app_password
+SMTP_FROM=your_email@gmail.com
+GMAIL_RELAY_URL=optional_gmail_relay_macro_url
+
+# Google OAuth Configuration (Optional, for Google Sign-In)
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+FRONTEND_URL=http://localhost:5173
+
+# Super Admin Seeding Credentials (Loaded by npm run seed)
+SUPER_ADMIN_EMAIL=superadmin@campusevents.com
+SUPER_ADMIN_PASSWORD=SuperAdminSecure123!
+```
+
+---
+
 ### Backend Setup
 
+1. Navigate to the backend directory and install dependencies:
 ```bash
 cd backend
 npm install
 ```
 
-Create Python environment and install dependencies:
-
+2. Create a virtual environment and install recommendation system packages:
 ```bash
 python -m venv venv
 ./venv/Scripts/python.exe -m pip install scikit-learn pandas numpy
 ```
 
-Seed database:
+3. Configure your local environment file (`backend/.env`) with database credentials, setup parameters, and desired Super Admin seeding credentials.
 
+4. Seed the database with colleges, categories, and the initial Super Admin:
 ```bash
 npm run seed
 ```
 
-Start backend server:
-
+5. Run the backend server:
 ```bash
 npm run dev
 ```
@@ -270,22 +317,37 @@ npm run dev
 
 ### Frontend Setup
 
+1. Navigate to the frontend directory:
 ```bash
 cd frontend
 npm install
+```
+
+2. Run the React development server:
+```bash
 npm run dev
 ```
 
 Frontend runs at:
-
 ```text
 http://localhost:5173
 ```
 
-Backend runs at:
-
+Backend API runs at:
 ```text
 http://localhost:5000
+```
+
+---
+
+## 🌐 Production Deployment & SPA Routing
+
+The React frontend handles routing via React Router DOM. To prevent `404 Not Found` errors when refreshing routes in production on Vercel, the project uses `vercel.json` configurations at the root and frontend directories:
+
+```json
+{
+  "rewrites": [{ "source": "/(.*)", "destination": "/" }]
+}
 ```
 
 ---
@@ -324,6 +386,8 @@ http://localhost:5000
 * Add Statistics
 * Edit Statistics
 * Delete Statistics
+* Suggest Company Recruiter (Student / Admin)
+* Approve / Reject Suggested Recruiter (Admin Only)
 
 ### Announcements
 
@@ -342,16 +406,14 @@ http://localhost:5000
 
 ## 🌟 Key Highlights
 
-* Full-Stack MERN Application
-* AI-Powered Event Recommendation Engine
-* College-Specific Content Isolation
-* Multi-Role Dashboard System
-* Scalable MongoDB Architecture
-* Responsive Modern UI
-* Automated Tag Generation
-* Placement Analytics Module
-* Academic Q&A Forum
-* Production Deployment on Vercel
+* **Full-Stack MERN Application** with clean, modern glassmorphism UI.
+* **AI-Powered Event Recommendation Engine** utilizing TF-IDF and Cosine Similarity.
+* **T&P Cell Portal & Recruiter Moderation Queue** to suggest, approve, track, and apply for placement drives.
+* **Beautiful Event Details Modal** with rich metadata, bookmarks, registration buttons, and external hyperlinks.
+* **Strict College-Specific Content Isolation** to shield and filter events/forum/placement records per college domain.
+* **Multi-Role Dashboards** (Students, College Admins, and Super Admins).
+* **Robust Security Suite** containing JWT, protected API routes, RBAC, and SMTP OTP verification.
+* **Production Deployment Ready** featuring favicon branding, customized page titles, and Vercel routing configs.
 
 ---
 
