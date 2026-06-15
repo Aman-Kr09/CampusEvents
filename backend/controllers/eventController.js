@@ -12,7 +12,7 @@ exports.getEvents = async (req, res) => {
     // Fetch approved events for the user's college
     const events = await Event.find({ college: collegeId, status: 'Approved' })
       .populate('createdBy', 'name email')
-      .sort({ date: 1 });
+      .sort({ createdAt: -1 });
 
     res.status(200).json({
       success: true,
