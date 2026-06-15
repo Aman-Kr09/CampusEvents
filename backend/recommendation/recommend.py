@@ -43,8 +43,9 @@ def main():
         # Compute cosine similarity
         similarities = cosine_similarity(user_vector, tfidf_matrix).flatten()
 
-        # Sort indices by similarity score descending
-        ranked_indices = np.argsort(similarities)[::-1]
+        # Sort indices: primary key similarity (descending), secondary key index (ascending)
+        # (Since events list is already sorted newest-first, smaller index = newer event)
+        ranked_indices = sorted(range(len(events)), key=lambda i: (similarities[i], -i), reverse=True)
 
         # Extract ranked IDs
         ranked_ids = [events[idx]['_id'] for idx in ranked_indices]

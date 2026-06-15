@@ -33,7 +33,7 @@ exports.getRecommendedEvents = async (req, res) => {
     const interests = req.user.interests || [];
 
     // Fetch approved events for this college
-    const events = await Event.find({ college: collegeId, status: 'Approved' });
+    const events = await Event.find({ college: collegeId, status: 'Approved' }).sort({ createdAt: -1 });
 
     if (events.length === 0) {
       return res.status(200).json({ success: true, data: [] });

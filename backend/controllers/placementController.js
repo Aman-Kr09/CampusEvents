@@ -8,17 +8,19 @@ exports.getPlacementStats = async (req, res) => {
     const collegeId = req.user.college._id;
     const records = await Placement.find({ college: collegeId }).sort({ year: -1 });
 
-    // If student, filter out pending/rejected companies
-    if (req.user.role === 'Student') {
-      const filteredRecords = records.map(record => {
-        const doc = record.toObject();
-        doc.companiesVisited = doc.companiesVisited.filter(c => c.status === 'Approved');
-        return doc;
-      });
-      return res.status(200).json({ success: true, count: filteredRecords.length, data: filteredRecords });
-    }
+    // Format records to reverse the company list order (newest first)
+    const formattedRecords = records.map(record => {
+      const doc = record.toObject();
+      if (doc.companiesVisited) {
+        if (req.user.role === 'Student') {
+          doc.companiesVisited = doc.companiesVisited.filter(c => c.status === 'Approved');
+        }
+        doc.companiesVisited = doc.companiesVisited.reverse();
+      }
+      return doc;
+    });
 
-    res.status(200).json({ success: true, count: records.length, data: records });
+    res.status(200).json({ success: true, count: formattedRecords.length, data: formattedRecords });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
