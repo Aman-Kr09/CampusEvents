@@ -991,7 +991,7 @@ const Home = () => {
               ) : (
                 <div className="space-y-8">
                   {[...placements]
-                    .sort((a, b) => b.year - a.year)
+                    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
                     .map(pr => {
                       const approvedCompanies = pr.companiesVisited?.filter(c => c.status === 'Approved') || [];
                       if (approvedCompanies.length === 0) return null;

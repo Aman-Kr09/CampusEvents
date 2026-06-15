@@ -6,7 +6,7 @@ const Placement = require('../models/Placement');
 exports.getPlacementStats = async (req, res) => {
   try {
     const collegeId = req.user.college._id;
-    const records = await Placement.find({ college: collegeId }).sort({ year: -1 });
+    const records = await Placement.find({ college: collegeId }).sort({ createdAt: -1 });
 
     // Format records to reverse the company list order (newest first)
     const formattedRecords = records.map(record => {
