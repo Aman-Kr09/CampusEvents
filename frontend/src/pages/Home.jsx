@@ -1230,16 +1230,18 @@ const Home = () => {
                     <select
                       value={eventForm.category}
                       onChange={(e) => setEventForm({ ...eventForm, category: e.target.value })}
-                      className="w-full glass-input appearance-none bg-darkCard"
+                      style={{ backgroundColor: '#0d0f1a', color: '#fff' }}
+                      className="w-full glass-input appearance-none"
                     >
-                      {['Coding', 'AI/ML', 'Data Science', 'Robotics', 'Sports', 'Design', 'Startups', 'Research', 'Placements', 'Hackathons', 'Music', 'Photography', 'Cultural Events', 'Entrepreneurship'].map(cat => (
-                        <option key={cat} value={cat}>{cat}</option>
+                      {['Coding', 'AI/ML', 'Data Science', 'Robotics', 'Sports', 'Design', 'Startups', 'Research', 'Placements', 'Hackathons', 'Music', 'Photography', 'Cultural Events', 'Entrepreneurship', 'Competition', 'Dancing', 'Arts & Crafts', 'Drama & Theatre', 'Workshop', 'Social Work', 'Fest', 'Gaming', 'Literature'].map(cat => (
+                        <option key={cat} value={cat} style={{ backgroundColor: '#0d0f1a', color: '#fff' }}>{cat}</option>
                       ))}
                     </select>
                   </div>
 
+
                   <div className="md:col-span-2">
-                    <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Registration Link</label>
+                    <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Registration Link <span className="text-gray-600 normal-case font-normal">(Optional)</span></label>
                     <input
                       type="url"
                       placeholder="e.g. https://google.form/register-link"
