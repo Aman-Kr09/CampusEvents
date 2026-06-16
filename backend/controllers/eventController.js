@@ -39,7 +39,7 @@ exports.getRecommendedEvents = async (req, res) => {
       return res.status(200).json({ success: true, data: [] });
     }
 
-    // Call python recommendation service
+    // Call JS recommendation engine (TF-IDF + cosine similarity, no Python needed)
     const recommendedIds = await getRecommendations(interests, events);
 
     // Map events by ID for fast lookup
