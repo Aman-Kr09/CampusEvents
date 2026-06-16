@@ -11,9 +11,12 @@ const Login = () => {
   const { selectedCollege } = useCollege();
   const navigate = useNavigate();
 
-  // Redirect to home if user is already logged in
+  // Tracks whether auth was just completed by a handler (so we skip the auto-redirect)
+  const [justAuthed, setJustAuthed] = useState(false);
+
+  // Redirect to home ONLY if user was already logged in when they visited /login
   useEffect(() => {
-    if (token) {
+    if (token && !justAuthed) {
       navigate('/home');
     }
   }, [token, navigate]);
@@ -57,6 +60,7 @@ const Login = () => {
     try {
       const res = await login(form.email, form.password);
       if (res.success) {
+        setJustAuthed(true);
         if (res.user.interests && res.user.interests.length > 0) {
           navigate('/home');
         } else {
@@ -84,6 +88,7 @@ const Login = () => {
         parseInt(form.year)
       );
       if (res.success) {
+        setJustAuthed(true);
         navigate('/onboarding');
       }
     } catch (err) {
