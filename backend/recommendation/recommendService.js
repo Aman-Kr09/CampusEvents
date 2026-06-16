@@ -111,11 +111,12 @@ const getRecommendations = (interests, events) => {
       i
     }));
 
-    // Keep only events that actually match (sim > 0), sort best-first
-    // On tie in similarity, prefer newer events (lower index = newer in DB)
+    // Keep only events that actually match (sim > 0)
+    // Sort: newest first (lower index = newer, since DB sorts by createdAt desc)
+    // Use similarity as tiebreaker when dates are the same
     return scored
       .filter(({ sim }) => sim > 0)
-      .sort((a, b) => b.sim - a.sim || a.i - b.i)
+      .sort((a, b) => a.i - b.i || b.sim - a.sim)
       .map(({ id }) => id);
 
   } catch (error) {
