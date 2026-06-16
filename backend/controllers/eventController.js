@@ -48,18 +48,11 @@ exports.getRecommendedEvents = async (req, res) => {
       eventMap[e._id.toString()] = e;
     });
 
-    // Reorder events based on recommended order
+    // Reorder events based on recommended order (only matched events)
     const orderedEvents = [];
     recommendedIds.forEach(id => {
       if (eventMap[id]) {
         orderedEvents.push(eventMap[id]);
-      }
-    });
-
-    // Append any events that might have been left out
-    events.forEach(e => {
-      if (!recommendedIds.includes(e._id.toString())) {
-        orderedEvents.push(e);
       }
     });
 
