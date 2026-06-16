@@ -71,9 +71,9 @@ const getRecommendations = async (interests, events) => {
     const eventIds = await runPythonScript('recommend.py', { interests, events: eventPayload });
     return eventIds;
   } catch (error) {
-    console.error('AI Recommendations failed. Falling back to default order.', error.message);
-    // Return event IDs in original DB order on error
-    return events.map(e => e._id.toString());
+    console.error('AI Recommendations failed. Returning empty list.', error.message);
+    // Return empty array on error so no unrelated events are shown as "recommended"
+    return [];
   }
 };
 
