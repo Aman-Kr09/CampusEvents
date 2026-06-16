@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { motion } from 'framer-motion';
-import { Sparkles, Code, Cpu, LineChart, Shield, Trophy, Palette, Rocket, GraduationCap, Laptop, Music, Camera, PartyPopper, Lightbulb, Check } from 'lucide-react';
+import { Sparkles, Code, Cpu, LineChart, Shield, Trophy, Palette, Rocket, GraduationCap, Laptop, Music, Camera, PartyPopper, Lightbulb, Check, Swords, Waves, Brush, Wrench, Heart, Star, Gamepad2, BookOpen } from 'lucide-react';
 
 // Card definitions with icon mapping and design colors
 const INTERESTS_LIST = [
@@ -19,7 +19,16 @@ const INTERESTS_LIST = [
   { name: 'Music', icon: Music, color: 'from-lime-500/20 to-green-500/20 border-lime-500/30 text-lime-400' },
   { name: 'Photography', icon: Camera, color: 'from-sky-500/20 to-cyan-500/20 border-sky-500/30 text-sky-400' },
   { name: 'Cultural Events', icon: PartyPopper, color: 'from-fuchsia-500/20 to-pink-500/20 border-fuchsia-500/30 text-fuchsia-400' },
-  { name: 'Entrepreneurship', icon: Lightbulb, color: 'from-yellow-500/20 to-amber-500/20 border-yellow-500/30 text-yellow-400' }
+  { name: 'Entrepreneurship', icon: Lightbulb, color: 'from-yellow-500/20 to-amber-500/20 border-yellow-500/30 text-yellow-400' },
+  { name: 'Competition', icon: Swords, color: 'from-red-500/20 to-rose-500/20 border-red-500/30 text-red-400' },
+  { name: 'Dancing', icon: Waves, color: 'from-pink-500/20 to-fuchsia-500/20 border-pink-500/30 text-pink-400' },
+  { name: 'Arts & Crafts', icon: Brush, color: 'from-orange-500/20 to-amber-500/20 border-orange-500/30 text-orange-400' },
+  { name: 'Drama & Theatre', icon: Star, color: 'from-purple-500/20 to-violet-500/20 border-purple-500/30 text-purple-400' },
+  { name: 'Workshop', icon: Wrench, color: 'from-slate-500/20 to-gray-500/20 border-slate-500/30 text-slate-400' },
+  { name: 'Social Work', icon: Heart, color: 'from-rose-500/20 to-pink-500/20 border-rose-500/30 text-rose-400' },
+  { name: 'Fest', icon: PartyPopper, color: 'from-indigo-500/20 to-cyan-500/20 border-indigo-500/30 text-indigo-400' },
+  { name: 'Gaming', icon: Gamepad2, color: 'from-green-500/20 to-emerald-500/20 border-green-500/30 text-green-400' },
+  { name: 'Literature', icon: BookOpen, color: 'from-teal-500/20 to-cyan-500/20 border-teal-500/30 text-teal-400' },
 ];
 
 const Onboarding = () => {

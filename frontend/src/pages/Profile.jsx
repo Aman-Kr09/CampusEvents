@@ -6,7 +6,9 @@ import { User, GraduationCap, Calendar, Award, BookOpen, Compass, CheckCircle2, 
 const INTERESTS_PRESETS = [
   'Coding', 'AI/ML', 'Data Science', 'Robotics', 'Sports', 'Design',
   'Startups', 'Research', 'Placements', 'Hackathons', 'Music',
-  'Photography', 'Cultural Events', 'Entrepreneurship'
+  'Photography', 'Cultural Events', 'Entrepreneurship',
+  'Competition', 'Dancing', 'Arts & Crafts', 'Drama & Theatre',
+  'Workshop', 'Social Work', 'Fest', 'Gaming', 'Literature'
 ];
 
 const Profile = () => {
