@@ -18,6 +18,18 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Handle 401 responses — session expired or invalid token → redirect to login
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('campusevents_token');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
