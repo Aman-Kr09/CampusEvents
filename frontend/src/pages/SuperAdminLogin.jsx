@@ -86,7 +86,7 @@ const SuperAdminLogin = () => {
                 <input
                   type="email"
                   required
-                  placeholder="superadmin@campusevents.com"
+                  placeholder="abc@gmail.com"
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
                   className="w-full pl-10 glass-input"
