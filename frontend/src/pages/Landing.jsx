@@ -325,7 +325,7 @@ const Landing = () => {
               <div className="flex items-center justify-between px-6 py-4 border-b border-glassBorder bg-white/[0.01]">
                 <h3 className="font-bold text-white text-lg flex items-center space-x-2">
                   <Plus className="w-5 h-5 text-indigo-400" />
-                  <span>Request New College Onboarding</span>
+                  <span>Request New College Onboarding(Charges: Rs.1200/Month)</span>
                 </h3>
                 <button onClick={() => setIsCollegeModalOpen(false)} className="p-1 text-gray-400 hover:text-white rounded-lg hover:bg-white/5">
                   <X className="w-5 h-5" />
@@ -334,11 +334,10 @@ const Landing = () => {
 
               <form onSubmit={handleRequestSubmit} className="p-6 space-y-4">
                 {message && (
-                  <div className={`p-3.5 rounded-lg border text-sm flex items-center space-x-2 ${
-                    message.type === 'success'
+                  <div className={`p-3.5 rounded-lg border text-sm flex items-center space-x-2 ${message.type === 'success'
                       ? 'bg-emerald-950/40 text-emerald-300 border-emerald-500/20'
                       : 'bg-red-950/40 text-red-300 border-red-500/20'
-                  }`}>
+                    }`}>
                     {message.type === 'success' && <CheckCircle2 className="w-4 h-4" />}
                     <span>{message.text}</span>
                   </div>
