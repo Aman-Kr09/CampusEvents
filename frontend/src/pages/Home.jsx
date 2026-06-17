@@ -989,95 +989,88 @@ const Home = () => {
                   <p className="text-xs text-gray-500 font-semibold">No recruiters listed for this year.</p>
                 </div>
               ) : (
-                <div className="space-y-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                   {[...placements]
                     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-                    .map(pr => {
-                      const approvedCompanies = pr.companiesVisited?.filter(c => c.status === 'Approved') || [];
-                      if (approvedCompanies.length === 0) return null;
+                    .flatMap(pr =>
+                      (pr.companiesVisited?.filter(c => c.status === 'Approved') || [])
+                        .map(c => ({ ...c, _year: pr.year, _prId: pr._id }))
+                    )
+                    .map(c => (
+                      <div
+                        key={`${c._prId}-${c._id || c.name}`}
+                        className="bg-white/[0.01] border border-glassBorder rounded-2xl p-5 flex flex-col justify-between hover:border-indigo-500/20 hover:bg-white/[0.03] transition-all duration-200"
+                      >
+                        {/* Year badge at top of each card */}
+                        <div className="mb-3">
+                          <span className="text-[9px] font-bold tracking-widest text-indigo-400 uppercase bg-indigo-950/60 border border-indigo-500/20 px-2 py-0.5 rounded-full">
+                            AY {c._year}
+                          </span>
+                        </div>
 
-                      return (
-                        <div key={pr._id} className="space-y-4">
-                          <div className="flex items-center space-x-3">
-                            <span className="text-[10px] font-bold tracking-widest text-indigo-400 uppercase bg-indigo-950/60 border border-indigo-500/20 px-3 py-1 rounded-full">
-                              Academic Year {pr.year}
-                            </span>
-                            <div className="h-px bg-glassBorder flex-1"></div>
-                          </div>
-
-                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                            {approvedCompanies.map(c => (
-                              <div
-                                key={c._id || c.name}
-                                className="bg-white/[0.01] border border-glassBorder rounded-2xl p-5 flex flex-col justify-between hover:border-indigo-500/20 hover:bg-white/[0.03] transition-all duration-200"
-                              >
-                                <div className="space-y-2">
-                                  <div className="flex items-start justify-between">
-                                    <h4 className="font-bold text-white text-sm sm:text-base leading-snug">
-                                      {c.name}
-                                    </h4>
-                                    <div className="flex flex-col items-end gap-1.5 shrink-0">
-                                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${c.type === 'Blocking'
-                                        ? 'bg-red-950/50 text-red-300 border-red-500/20'
-                                        : 'bg-cyan-950/50 text-cyan-300 border-cyan-500/20'
-                                        }`}>
-                                        {c.type || 'Non-Blocking'}
-                                      </span>
-                                      <span className="bg-purple-950/60 text-purple-300 border border-purple-500/20 px-2 py-0.5 rounded text-[10px] font-bold">
-                                        {c.jobType || 'FTE'}
-                                      </span>
-                                    </div>
-                                  </div>
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-white/[0.03] text-xs">
-                                  <div className="flex flex-col">
-                                    <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">CPA Cutoff</span>
-                                    <span className="font-bold text-indigo-300 mt-0.5">
-                                      {c.cpaRequired != null ? `${c.cpaRequired}` : '—'}
-                                    </span>
-                                  </div>
-                                  <div className="flex flex-col">
-                                    <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Package</span>
-                                    <span className="font-bold text-emerald-400 mt-0.5">
-                                      {c.package != null ? (c.package.toLowerCase() === 'nil' ? 'nil' : `${c.package}`) : '—'}
-                                    </span>
-                                  </div>
-                                </div>
-
-                                {c.branchesEligible && c.branchesEligible.trim().toLowerCase() !== 'nil' && (
-                                  <div className="text-xs text-gray-400 mt-3 pt-2.5 border-t border-white/[0.03]">
-                                    <span className="font-bold text-gray-500 uppercase text-[9px] tracking-wider block">Branches Eligible</span>
-                                    <span className="text-white mt-0.5 block">{c.branchesEligible}</span>
-                                  </div>
-                                )}
-
-                                {c.deadline && c.deadline.trim().toLowerCase() !== 'nil' && (
-                                  <div className="text-xs text-gray-400 mt-2">
-                                    <span className="font-bold text-amber-500/80 uppercase text-[9px] tracking-wider block">Form Deadline</span>
-                                    <span className="text-amber-400 font-semibold mt-0.5 block">{c.deadline}</span>
-                                  </div>
-                                )}
-
-                                {c.googleFormLink && c.googleFormLink.trim().toLowerCase() !== 'nil' && (
-                                  <div className="mt-4 pt-3 border-t border-white/[0.03]">
-                                    <a
-                                      href={c.googleFormLink.startsWith('http') ? c.googleFormLink : `https://${c.googleFormLink}`}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="inline-flex items-center space-x-1.5 text-xs font-bold text-indigo-400 hover:text-indigo-300 transition-colors"
-                                    >
-                                      <Link2 className="w-3.5 h-3.5" />
-                                      <span>Apply via Google Form</span>
-                                    </a>
-                                  </div>
-                                )}
-                              </div>
-                            ))}
+                        <div className="space-y-2">
+                          <div className="flex items-start justify-between">
+                            <h4 className="font-bold text-white text-sm sm:text-base leading-snug">
+                              {c.name}
+                            </h4>
+                            <div className="flex flex-col items-end gap-1.5 shrink-0">
+                              <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${c.type === 'Blocking'
+                                ? 'bg-red-950/50 text-red-300 border-red-500/20'
+                                : 'bg-cyan-950/50 text-cyan-300 border-cyan-500/20'
+                                }`}>
+                                {c.type || 'Non-Blocking'}
+                              </span>
+                              <span className="bg-purple-950/60 text-purple-300 border border-purple-500/20 px-2 py-0.5 rounded text-[10px] font-bold">
+                                {c.jobType || 'FTE'}
+                              </span>
+                            </div>
                           </div>
                         </div>
-                      );
-                    })}
+
+                        <div className="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-white/[0.03] text-xs">
+                          <div className="flex flex-col">
+                            <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">CPA Cutoff</span>
+                            <span className="font-bold text-indigo-300 mt-0.5">
+                              {c.cpaRequired != null ? `${c.cpaRequired}` : '—'}
+                            </span>
+                          </div>
+                          <div className="flex flex-col">
+                            <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Package</span>
+                            <span className="font-bold text-emerald-400 mt-0.5">
+                              {c.package != null ? (c.package.toLowerCase() === 'nil' ? 'nil' : `${c.package}`) : '—'}
+                            </span>
+                          </div>
+                        </div>
+
+                        {c.branchesEligible && c.branchesEligible.trim().toLowerCase() !== 'nil' && (
+                          <div className="text-xs text-gray-400 mt-3 pt-2.5 border-t border-white/[0.03]">
+                            <span className="font-bold text-gray-500 uppercase text-[9px] tracking-wider block">Branches Eligible</span>
+                            <span className="text-white mt-0.5 block">{c.branchesEligible}</span>
+                          </div>
+                        )}
+
+                        {c.deadline && c.deadline.trim().toLowerCase() !== 'nil' && (
+                          <div className="text-xs text-gray-400 mt-2">
+                            <span className="font-bold text-amber-500/80 uppercase text-[9px] tracking-wider block">Form Deadline</span>
+                            <span className="text-amber-400 font-semibold mt-0.5 block">{c.deadline}</span>
+                          </div>
+                        )}
+
+                        {c.googleFormLink && c.googleFormLink.trim().toLowerCase() !== 'nil' && (
+                          <div className="mt-4 pt-3 border-t border-white/[0.03]">
+                            <a
+                              href={c.googleFormLink.startsWith('http') ? c.googleFormLink : `https://${c.googleFormLink}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center space-x-1.5 text-xs font-bold text-indigo-400 hover:text-indigo-300 transition-colors"
+                            >
+                              <Link2 className="w-3.5 h-3.5" />
+                              <span>Apply via Google Form</span>
+                            </a>
+                          </div>
+                        )}
+                      </div>
+                    ))}
                 </div>
               )}
             </div>
