@@ -956,7 +956,7 @@ const Home = () => {
 
           {/* TAB 3: PLACEMENT STATISTICS */}
           {activeTab === 'placements' && (
-            <div className="glass-panel p-6 sm:p-8 rounded-2xl space-y-6 max-w-4xl mx-auto">
+            <div className="glass-panel p-6 sm:p-8 rounded-2xl space-y-6">
               <div className="border-b border-glassBorder pb-4">
                 <h3 className="font-bold text-white text-lg flex items-center space-x-2">
                   <Briefcase className="w-5 h-5 text-indigo-400" />
@@ -1005,7 +1005,7 @@ const Home = () => {
                             <div className="h-px bg-glassBorder flex-1"></div>
                           </div>
 
-                          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                             {approvedCompanies.map(c => (
                               <div
                                 key={c._id || c.name}
