@@ -12,6 +12,7 @@ import Profile from './pages/Profile';
 import AdminDashboard from './pages/AdminDashboard';
 import SuperAdminDashboard from './pages/SuperAdminDashboard';
 import SuperAdminLogin from './pages/SuperAdminLogin';
+import Contact from './pages/Contact';
 
 // Import Components
 import Navbar from './components/Navbar';
@@ -60,6 +61,7 @@ function App() {
                 <Route path="/" element={<Landing />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/superadmin-login" element={<SuperAdminLogin />} />
+                <Route path="/contact" element={<Contact />} />
 
                 {/* Onboarding interest selector */}
                 <Route

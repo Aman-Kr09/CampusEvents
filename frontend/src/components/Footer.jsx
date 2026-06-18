@@ -8,7 +8,7 @@ const Footer = () => {
   const { selectedCollege } = useCollege();
 
   // Hide footer on credentials onboarding & login page to maximize space
-  if (location.pathname === '/' || location.pathname === '/login' || location.pathname === '/onboarding' || location.pathname === '/superadmin-login') {
+  if (location.pathname === '/login' || location.pathname === '/onboarding' || location.pathname === '/superadmin-login') {
     return null;
   }
 
@@ -78,6 +78,12 @@ const Footer = () => {
               <li>
                 <Link to="/" className="text-xs text-gray-400 hover:text-indigo-400 transition-colors duration-200">
                   Campus Directory
+                </Link>
+              </li>
+              <li>
+                <Link to="/contact" className="text-xs text-gray-400 hover:text-indigo-400 transition-colors duration-200 flex items-center space-x-1">
+                  <Mail className="w-3 h-3" />
+                  <span>Contact Us</span>
                 </Link>
               </li>
             </ul>
