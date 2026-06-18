@@ -168,11 +168,10 @@ const Contact = () => {
         EMAILJS_SERVICE_ID,
         EMAILJS_TEMPLATE_ID,
         {
-          from_name:    form.name,
-          from_email:   form.email,
-          subject:      form.subject,
-          message:      form.message,
-          reply_to:     form.email,
+          name:    form.name,
+          email:   form.email,
+          title:   form.subject,
+          message: form.message,
         },
         EMAILJS_PUBLIC_KEY
       );
