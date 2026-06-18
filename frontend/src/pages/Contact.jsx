@@ -17,7 +17,7 @@ const faqs = [
   },
   {
     q: 'Who can I contact for technical issues or bugs?',
-    a: 'Use the contact form on this page or email us directly at support@campusevents.dev. For urgent bugs, please include a description and screenshots. We typically respond within 24 hours.',
+    a: 'Use the contact form on this page or email us directly at u5813051@gmail.com. For urgent bugs, please include a description and screenshots. We typically respond within 24 hours.',
   },
   {
     q: 'Can students moderate content themselves?',
@@ -33,32 +33,32 @@ const infoCards = [
   {
     icon: Mail,
     title: 'Email Support',
-    value: 'support@campusevents.dev',
+    value: 'u5813051@gmail.com',
     sub: 'Response within 24 hours',
     color: 'indigo',
-    href: 'mailto:support@campusevents.dev',
+    href: 'mailto:u5813051@gmail.com',
   },
   {
     icon: Phone,
     title: 'Phone / WhatsApp',
-    value: '+91 98765 43210',
-    sub: 'Mon – Fri, 10 AM – 6 PM IST',
+    value: '+91 7042017583',
+    sub: 'Mon – Sun, 8 AM – 11 PM IST',
     color: 'emerald',
-    href: 'tel:+919876543210',
+    href: 'tel:+917042017583',
   },
   {
     icon: MapPin,
-    title: 'Registered Office',
-    value: 'NIT Delhi, Narela',
-    sub: 'Delhi – 110040, India',
+    title: 'Location',
+    value: 'NIT Delhi',
+    sub: 'NIT Delhi Campus, Delhi, India',
     color: 'purple',
-    href: 'https://maps.google.com/?q=NIT+Delhi',
+    href: 'https://www.google.com/maps/search/National+Institute+of+Technology+New+Delhi/@28.5883858,76.893559,9z/data=!3m1!4b1?entry=ttu&g_ep=EgoyMDI2MDYxMy4wIKXMDSoASAFQAw%3D%3D No. FA7, Zone P1, GT Karnal Road, New Delhi - 110036, Delhi NCR, India',
   },
   {
     icon: Clock,
     title: 'Support Hours',
     value: '10 AM – 6 PM IST',
-    sub: 'Monday to Friday',
+    sub: 'Monday to Sunday',
     color: 'cyan',
     href: null,
   },
@@ -393,7 +393,7 @@ const Contact = () => {
               <h3 className="text-sm font-bold text-white uppercase tracking-widest">Why Reach Out?</h3>
               {[
                 { icon: Zap, text: 'Fast onboarding for new institutions', color: 'text-yellow-400' },
-                { icon: Shield, text: 'Enterprise-grade support & SLAs', color: 'text-indigo-400' },
+                { icon: Shield, text: 'Smooth Operation of Events', color: 'text-indigo-400' },
                 { icon: Users, text: 'Dedicated account manager for colleges', color: 'text-purple-400' },
                 { icon: Globe, text: 'Custom integrations & feature requests', color: 'text-cyan-400' },
               ].map(({ icon: Icon, text, color }, i) => (
