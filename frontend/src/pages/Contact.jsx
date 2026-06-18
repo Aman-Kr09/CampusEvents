@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
+import emailjs from '@emailjs/browser';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Mail, Phone, MapPin, Send, CheckCircle2, AlertCircle,
@@ -138,23 +139,51 @@ const FAQItem = ({ q, a, index }) => {
   );
 };
 
+// ── EmailJS config ── read from .env / Vercel env vars
+const EMAILJS_SERVICE_ID  = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+const EMAILJS_PUBLIC_KEY  = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+
 const Contact = () => {
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
   const [status, setStatus] = useState(null); // 'success' | 'error' | null
   const [submitting, setSubmitting] = useState(false);
+  const hideTimer = useRef(null);
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+
+  // Auto-hide status banner after 5 seconds
+  const showStatus = (type) => {
+    setStatus(type);
+    if (hideTimer.current) clearTimeout(hideTimer.current);
+    hideTimer.current = setTimeout(() => setStatus(null), 5000);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
     setStatus(null);
-    // Simulate API call
-    await new Promise((r) => setTimeout(r, 1400));
-    // In production: replace with actual API call
-    setStatus('success');
-    setSubmitting(false);
-    setForm({ name: '', email: '', subject: '', message: '' });
+    try {
+      await emailjs.send(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
+        {
+          from_name:    form.name,
+          from_email:   form.email,
+          subject:      form.subject,
+          message:      form.message,
+          reply_to:     form.email,
+        },
+        EMAILJS_PUBLIC_KEY
+      );
+      showStatus('success');
+      setForm({ name: '', email: '', subject: '', message: '' });
+    } catch (err) {
+      console.error('EmailJS error:', err);
+      showStatus('error');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -270,24 +299,26 @@ const Contact = () => {
               <AnimatePresence>
                 {status === 'success' && (
                   <motion.div
+                    key="success"
                     initial={{ opacity: 0, y: -6, height: 0 }}
                     animate={{ opacity: 1, y: 0, height: 'auto' }}
                     exit={{ opacity: 0, height: 0 }}
                     className="flex items-center space-x-2.5 bg-emerald-950/40 border border-emerald-500/20 text-emerald-300 rounded-xl px-4 py-3 text-sm"
                   >
                     <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
-                    <span>Message sent! We'll get back to you within 24 hours.</span>
+                    <span>✅ Your message has been sent! We'll respond within 24 hours.</span>
                   </motion.div>
                 )}
                 {status === 'error' && (
                   <motion.div
+                    key="error"
                     initial={{ opacity: 0, y: -6, height: 0 }}
                     animate={{ opacity: 1, y: 0, height: 'auto' }}
                     exit={{ opacity: 0, height: 0 }}
                     className="flex items-center space-x-2.5 bg-red-950/40 border border-red-500/20 text-red-300 rounded-xl px-4 py-3 text-sm"
                   >
                     <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                    <span>Something went wrong. Please try again or email us directly.</span>
+                    <span>⚠️ Failed to send. Please email us directly at u5813051@gmail.com</span>
                   </motion.div>
                 )}
               </AnimatePresence>
