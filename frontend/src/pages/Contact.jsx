@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Mail, Phone, MapPin, Send, CheckCircle2, AlertCircle,
-  ChevronDown, Globe,
+  ChevronDown, Globe, MessageSquare,
   Clock, Shield, Zap, Users, Terminal, Briefcase
 } from 'lucide-react';
 
@@ -166,6 +166,37 @@ const Contact = () => {
 
       <div className="max-w-6xl mx-auto space-y-16">
 
+        {/* ── Header ── */}
+        <div className="text-center space-y-4">
+          <motion.div
+            initial={{ opacity: 0, y: -16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="inline-flex items-center space-x-2 bg-indigo-950/40 text-indigo-400 border border-indigo-500/20 px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase"
+          >
+            <MessageSquare className="w-3.5 h-3.5" />
+            <span>Get In Touch</span>
+          </motion.div>
+
+          <motion.h1
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="text-4xl sm:text-5xl font-extrabold tracking-tight"
+          >
+            We'd Love to{' '}
+            <span className="gradient-text-indigo-cyan">Hear From You</span>
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="text-gray-400 max-w-xl mx-auto text-base leading-relaxed"
+          >
+            Have a question, feedback, or want to onboard your institution? Drop us a message and our team will get back to you promptly.
+          </motion.p>
+        </div>
 
         {/* ── Info Cards ── */}
         <motion.div
