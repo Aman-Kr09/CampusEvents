@@ -146,7 +146,8 @@ const EMAILJS_PUBLIC_KEY  = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
 
 const Contact = () => {
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
-  const [status, setStatus] = useState(null); // 'success' | 'error' | null
+  const [status, setStatus] = useState(null);
+  const [errorDetail, setErrorDetail] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const hideTimer = useRef(null);
 
@@ -163,8 +164,10 @@ const Contact = () => {
     e.preventDefault();
     setSubmitting(true);
     setStatus(null);
+    setErrorDetail('');
+    console.log('EmailJS IDs:', EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, EMAILJS_PUBLIC_KEY);
     try {
-      await emailjs.send(
+      const result = await emailjs.send(
         EMAILJS_SERVICE_ID,
         EMAILJS_TEMPLATE_ID,
         {
@@ -175,10 +178,13 @@ const Contact = () => {
         },
         EMAILJS_PUBLIC_KEY
       );
+      console.log('EmailJS success:', result);
       showStatus('success');
       setForm({ name: '', email: '', subject: '', message: '' });
     } catch (err) {
       console.error('EmailJS error:', err);
+      const detail = err?.text || err?.message || JSON.stringify(err);
+      setErrorDetail(detail);
       showStatus('error');
     } finally {
       setSubmitting(false);
@@ -314,10 +320,15 @@ const Contact = () => {
                     initial={{ opacity: 0, y: -6, height: 0 }}
                     animate={{ opacity: 1, y: 0, height: 'auto' }}
                     exit={{ opacity: 0, height: 0 }}
-                    className="flex items-center space-x-2.5 bg-red-950/40 border border-red-500/20 text-red-300 rounded-xl px-4 py-3 text-sm"
+                    className="flex flex-col space-y-1 bg-red-950/40 border border-red-500/20 text-red-300 rounded-xl px-4 py-3 text-sm"
                   >
-                    <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                    <span>⚠️ Failed to send. Please email us directly at u5813051@gmail.com</span>
+                    <div className="flex items-center space-x-2.5">
+                      <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                      <span>⚠️ Failed to send. Please email us directly at u5813051@gmail.com</span>
+                    </div>
+                    {errorDetail && (
+                      <p className="text-[11px] text-red-400/70 pl-6 font-mono break-all">{errorDetail}</p>
+                    )}
                   </motion.div>
                 )}
               </AnimatePresence>
