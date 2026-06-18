@@ -24,7 +24,7 @@ const Navbar = () => {
   const isActive = (path) => location.pathname === path;
 
   // Render nothing on landing or login routes
-  if (location.pathname === '/' || location.pathname === '/login' || location.pathname === '/onboarding') {
+  if (location.pathname === '/' || location.pathname === '/login' || location.pathname === '/onboarding' || location.pathname === '/contact') {
     return null;
   }
 
