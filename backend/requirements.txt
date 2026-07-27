@@ -1,5 +1,2 @@
-scikit-learn==1.7.1
-numpy
-scipy
-joblib
-threadpoolctl
+scikit-learn
+pandas
