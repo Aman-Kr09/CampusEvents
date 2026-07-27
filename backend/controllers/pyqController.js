@@ -300,16 +300,39 @@ exports.getAcademicYears = async (req, res) => {
 // ─── Stream Helper ─────────────────────────────────────────────────────────────
 const fetchRemoteStream = (url) => {
   return new Promise((resolve, reject) => {
-    const client = url.startsWith('https') ? https : http;
-    client.get(url, (remoteRes) => {
-      if (remoteRes.statusCode >= 300 && remoteRes.statusCode < 400 && remoteRes.headers.location) {
-        return fetchRemoteStream(remoteRes.headers.location).then(resolve).catch(reject);
-      }
-      if (remoteRes.statusCode !== 200) {
-        return reject(new Error(`Failed to fetch file (Status ${remoteRes.statusCode})`));
-      }
-      resolve(remoteRes);
-    }).on('error', reject);
+    try {
+      const parsedUrl = new URL(url);
+      const client = parsedUrl.protocol === 'https:' ? https : http;
+      const options = {
+        hostname: parsedUrl.hostname,
+        port: parsedUrl.port || (parsedUrl.protocol === 'https:' ? 443 : 80),
+        path: parsedUrl.pathname + parsedUrl.search,
+        method: 'GET',
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'Accept': '*/*'
+        }
+      };
+
+      const req = client.request(options, (remoteRes) => {
+        if (remoteRes.statusCode >= 300 && remoteRes.statusCode < 400 && remoteRes.headers.location) {
+          let redirectUrl = remoteRes.headers.location;
+          if (!redirectUrl.startsWith('http')) {
+            redirectUrl = `${parsedUrl.protocol}//${parsedUrl.hostname}${redirectUrl}`;
+          }
+          return fetchRemoteStream(redirectUrl).then(resolve).catch(reject);
+        }
+        if (remoteRes.statusCode !== 200 && remoteRes.statusCode !== 206) {
+          return reject(new Error(`Failed to fetch file from remote storage (Status ${remoteRes.statusCode})`));
+        }
+        resolve(remoteRes);
+      });
+
+      req.on('error', reject);
+      req.end();
+    } catch (err) {
+      reject(err);
+    }
   });
 };
 
@@ -329,14 +352,19 @@ exports.viewPYQFile = async (req, res) => {
       return res.status(404).send('PYQ document not found.');
     }
 
-    const remoteStream = await fetchRemoteStream(pyq.fileUrl);
-    const contentType  = pyq.fileType === 'pdf' ? 'application/pdf' : (remoteStream.headers['content-type'] || 'image/jpeg');
-    const safeName     = `${pyq.subjectName.replace(/[^a-zA-Z0-9_-]/g, '_')}_${pyq.courseCode}.${pyq.fileType === 'pdf' ? 'pdf' : 'jpg'}`;
+    try {
+      const remoteStream = await fetchRemoteStream(pyq.fileUrl);
+      const contentType  = pyq.fileType === 'pdf' ? 'application/pdf' : (remoteStream.headers['content-type'] || 'image/jpeg');
+      const safeName     = `${pyq.subjectName.replace(/[^a-zA-Z0-9_-]/g, '_')}_${pyq.courseCode}.${pyq.fileType === 'pdf' ? 'pdf' : 'jpg'}`;
 
-    res.setHeader('Content-Type', contentType);
-    res.setHeader('Content-Disposition', `inline; filename="${safeName}"`);
+      res.setHeader('Content-Type', contentType);
+      res.setHeader('Content-Disposition', `inline; filename="${safeName}"`);
 
-    remoteStream.pipe(res);
+      return remoteStream.pipe(res);
+    } catch (streamErr) {
+      console.error('viewPYQFile stream failed, falling back to direct redirect:', streamErr.message);
+      return res.redirect(pyq.fileUrl);
+    }
   } catch (error) {
     console.error('viewPYQFile error:', error.message);
     return res.status(500).send('Error streaming PYQ preview.');
@@ -359,14 +387,19 @@ exports.downloadPYQFile = async (req, res) => {
       return res.status(404).send('PYQ document not found.');
     }
 
-    const remoteStream = await fetchRemoteStream(pyq.fileUrl);
-    const contentType  = pyq.fileType === 'pdf' ? 'application/pdf' : 'application/octet-stream';
-    const safeName     = `${pyq.subjectName.replace(/[^a-zA-Z0-9_-]/g, '_')}_${pyq.courseCode}.${pyq.fileType === 'pdf' ? 'pdf' : 'jpg'}`;
+    try {
+      const remoteStream = await fetchRemoteStream(pyq.fileUrl);
+      const contentType  = pyq.fileType === 'pdf' ? 'application/pdf' : 'application/octet-stream';
+      const safeName     = `${pyq.subjectName.replace(/[^a-zA-Z0-9_-]/g, '_')}_${pyq.courseCode}.${pyq.fileType === 'pdf' ? 'pdf' : 'jpg'}`;
 
-    res.setHeader('Content-Type', contentType);
-    res.setHeader('Content-Disposition', `attachment; filename="${safeName}"`);
+      res.setHeader('Content-Type', contentType);
+      res.setHeader('Content-Disposition', `attachment; filename="${safeName}"`);
 
-    remoteStream.pipe(res);
+      return remoteStream.pipe(res);
+    } catch (streamErr) {
+      console.error('downloadPYQFile stream failed, falling back to direct redirect:', streamErr.message);
+      return res.redirect(pyq.fileUrl);
+    }
   } catch (error) {
     console.error('downloadPYQFile error:', error.message);
     return res.status(500).send('Error downloading PYQ file.');
