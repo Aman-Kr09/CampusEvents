@@ -107,6 +107,9 @@ The recommendation engine uses **Scikit-Learn** to generate personalized event s
 * Node.js
 * Express.js
 * MongoDB & Mongoose
+* Redis
+* BullMQ
+* Socket.IO
 * JWT Authentication
 * Nodemailer
 
@@ -414,6 +417,40 @@ The React frontend handles routing via React Router DOM. To prevent `404 Not Fou
 * **Multi-Role Dashboards** (Students, College Admins, and Super Admins).
 * **Robust Security Suite** containing JWT, protected API routes, RBAC, and SMTP OTP verification.
 * **Production Deployment Ready** featuring favicon branding, customized page titles, and Vercel routing configs.
+
+---
+
+# ⚡ Performance & Scalability Enhancements
+
+### 🚀 Redis Caching
+- Cached AI event recommendations (10 min TTL) per user.
+- Cached trending events (5 min TTL).
+- Cached placement statistics and college announcements (15 min TTL).
+- Automatic cache invalidation whenever events, interests, placements, or announcements are updated.
+
+### ⚙️ Asynchronous Background Jobs (BullMQ + Redis)
+- Email sending (OTP & password reset) processed asynchronously using BullMQ workers.
+- Automatic AI tag generation executed in background through Python workers.
+- Non-blocking request handling for faster API responses.
+
+### 📊 Redis Write-Back Buffer
+- Event views and likes are buffered in Redis.
+- Metrics are periodically flushed to MongoDB using bulk write operations and Redis pipelining.
+- Significantly reduces database write load under high traffic.
+
+### 🔴 Real-Time Communication
+- Integrated Socket.IO for live Q&A discussions.
+- Real-time updates for:
+  - New Questions
+  - Answers
+  - Comments
+  - Upvotes
+- College and question-based Socket.IO rooms for efficient event broadcasting.
+
+### 🛡️ Security & Reliability
+- Redis-backed rate limiting for authentication endpoints.
+- IP and account-level protection against brute-force attacks.
+- Background workers improve resilience by isolating long-running tasks.
 
 ---
 
