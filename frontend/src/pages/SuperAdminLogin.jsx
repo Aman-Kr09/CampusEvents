@@ -26,6 +26,21 @@ const SuperAdminLogin = () => {
     e.preventDefault();
     setLoading(true);
     setError('');
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(form.email)) {
+      setError('Please enter a valid email address.');
+      setLoading(false);
+      return;
+    }
+
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+    if (!passwordRegex.test(form.password)) {
+      setError('Invalid email or password format. Ensure your password is at least 8 characters long and meets strength requirements.');
+      setLoading(false);
+      return;
+    }
+
     try {
       const res = await login(form.email, form.password);
       if (res.success) {

@@ -4,7 +4,27 @@ import { useAuth } from '../context/AuthContext';
 import { useCollege } from '../context/CollegeContext';
 import { api } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Lock, User, GraduationCap, Calendar, ArrowRight, ShieldAlert, Key, Sparkles } from 'lucide-react';
+import { Mail, Lock, User, GraduationCap, Calendar, ArrowRight, ShieldAlert, Key, Sparkles, Check, X } from 'lucide-react';
+
+const checkPasswordStrength = (password) => {
+  if (!password) return { score: 0, feedback: '', met: {} };
+  
+  const met = {
+    length: password.length >= 8,
+    uppercase: /[A-Z]/.test(password),
+    lowercase: /[a-z]/.test(password),
+    number: /\d/.test(password),
+    special: /[\W_]/.test(password),
+  };
+  
+  const score = Object.values(met).filter(Boolean).length;
+  let feedback = 'Very Weak';
+  if (score === 5) feedback = 'Strong';
+  else if (score >= 3) feedback = 'Medium';
+  else if (score >= 1) feedback = 'Weak';
+  
+  return { score, feedback, met };
+};
 
 const Login = () => {
   const { login, register, token } = useAuth();
@@ -42,6 +62,9 @@ const Login = () => {
     newPassword: ''
   });
 
+  const strength = checkPasswordStrength(form.password);
+  const resetStrength = checkPasswordStrength(form.newPassword);
+
   // Check if college is selected
   useEffect(() => {
     if (!selectedCollege && tab !== 'forgot') {
@@ -57,6 +80,21 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     setError('');
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(form.email)) {
+      setError('Please enter a valid email address.');
+      setLoading(false);
+      return;
+    }
+
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+    if (!passwordRegex.test(form.password)) {
+      setError('Invalid email or password format. Ensure your password is at least 8 characters long and meets strength requirements.');
+      setLoading(false);
+      return;
+    }
+
     try {
       const res = await login(form.email, form.password);
       if (res.success) {
@@ -78,6 +116,20 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     setError('');
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(form.email)) {
+      setError('Please enter a valid email address.');
+      setLoading(false);
+      return;
+    }
+
+    if (strength.score < 5) {
+      setError('Your password does not meet the security strength requirements.');
+      setLoading(false);
+      return;
+    }
+
     try {
       const res = await register(
         form.name,
@@ -98,14 +150,20 @@ const Login = () => {
     }
   };
 
-
-
   // Forgot password OTP Request
   const handleRequestOTP = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
     setInfoMessage('');
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(form.email)) {
+      setError('Please enter a valid email address.');
+      setLoading(false);
+      return;
+    }
+
     try {
       const res = await api.post('/auth/forgotpassword', { email: form.email });
       if (res.data.success) {
@@ -125,6 +183,20 @@ const Login = () => {
     setLoading(true);
     setError('');
     setInfoMessage('');
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(form.email)) {
+      setError('Please enter a valid email address.');
+      setLoading(false);
+      return;
+    }
+
+    if (resetStrength.score < 5) {
+      setError('Your new password does not meet the security strength requirements.');
+      setLoading(false);
+      return;
+    }
+
     try {
       const res = await api.post('/auth/resetpassword', {
         email: form.email,
@@ -350,12 +422,85 @@ const Login = () => {
                       type="password"
                       name="password"
                       required
-                      placeholder="Minimum 6 characters"
+                      placeholder="At least 8 strong characters"
                       value={form.password}
                       onChange={handleChange}
                       className="w-full pl-10 glass-input"
                     />
                   </div>
+
+                  {form.password && (
+                    <div className="mt-3.5 space-y-2.5 p-3.5 rounded-xl bg-white/[0.01] border border-glassBorder">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-gray-400 font-medium">Password Strength:</span>
+                        <span className={`font-extrabold transition-colors ${
+                          strength.score <= 2 ? 'text-red-400' : strength.score <= 4 ? 'text-amber-400' : 'text-emerald-400'
+                        }`}>
+                          {strength.feedback}
+                        </span>
+                      </div>
+                      
+                      <div className="flex gap-1.5 h-1">
+                        {[1, 2, 3, 4, 5].map((index) => (
+                          <div
+                            key={index}
+                            className={`flex-1 rounded-full transition-all duration-300 ${
+                              index <= strength.score
+                                ? strength.score <= 2
+                                  ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]'
+                                  : strength.score <= 4
+                                    ? 'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]'
+                                    : 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]'
+                                : 'bg-white/10'
+                            }`}
+                          />
+                        ))}
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-x-3 gap-y-2 pt-1 text-[10px]">
+                        <div className="flex items-center space-x-1.5">
+                          {strength.met.length ? (
+                            <Check className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+                          ) : (
+                            <X className="w-3.5 h-3.5 text-red-500/60 flex-shrink-0" />
+                          )}
+                          <span className={strength.met.length ? 'text-gray-300 font-medium' : 'text-gray-500'}>8+ Characters</span>
+                        </div>
+                        <div className="flex items-center space-x-1.5">
+                          {strength.met.uppercase ? (
+                            <Check className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+                          ) : (
+                            <X className="w-3.5 h-3.5 text-red-500/60 flex-shrink-0" />
+                          )}
+                          <span className={strength.met.uppercase ? 'text-gray-300 font-medium' : 'text-gray-500'}>1 Uppercase (A-Z)</span>
+                        </div>
+                        <div className="flex items-center space-x-1.5">
+                          {strength.met.lowercase ? (
+                            <Check className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+                          ) : (
+                            <X className="w-3.5 h-3.5 text-red-500/60 flex-shrink-0" />
+                          )}
+                          <span className={strength.met.lowercase ? 'text-gray-300 font-medium' : 'text-gray-500'}>1 Lowercase (a-z)</span>
+                        </div>
+                        <div className="flex items-center space-x-1.5">
+                          {strength.met.number ? (
+                            <Check className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+                          ) : (
+                            <X className="w-3.5 h-3.5 text-red-500/60 flex-shrink-0" />
+                          )}
+                          <span className={strength.met.number ? 'text-gray-300 font-medium' : 'text-gray-500'}>1 Number (0-9)</span>
+                        </div>
+                        <div className="flex items-center space-x-1.5 col-span-2 border-t border-white/[0.03] pt-1.5 mt-0.5">
+                          {strength.met.special ? (
+                            <Check className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+                          ) : (
+                            <X className="w-3.5 h-3.5 text-red-500/60 flex-shrink-0" />
+                          )}
+                          <span className={strength.met.special ? 'text-gray-300 font-medium' : 'text-gray-500'}>1 Special Character (e.g. @$!%*?&)</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <button
@@ -441,11 +586,84 @@ const Login = () => {
                         type="password"
                         name="newPassword"
                         required
-                        placeholder="Min 6 characters"
+                        placeholder="At least 8 strong characters"
                         value={form.newPassword}
                         onChange={handleChange}
                         className="w-full glass-input"
                       />
+
+                      {form.newPassword && (
+                        <div className="mt-3.5 space-y-2.5 p-3.5 rounded-xl bg-white/[0.01] border border-glassBorder">
+                          <div className="flex items-center justify-between text-xs">
+                            <span className="text-gray-400 font-medium">Password Strength:</span>
+                            <span className={`font-extrabold transition-colors ${
+                              resetStrength.score <= 2 ? 'text-red-400' : resetStrength.score <= 4 ? 'text-amber-400' : 'text-emerald-400'
+                            }`}>
+                              {resetStrength.feedback}
+                            </span>
+                          </div>
+                          
+                          <div className="flex gap-1.5 h-1">
+                            {[1, 2, 3, 4, 5].map((index) => (
+                              <div
+                                key={index}
+                                className={`flex-1 rounded-full transition-all duration-300 ${
+                                  index <= resetStrength.score
+                                    ? resetStrength.score <= 2
+                                      ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]'
+                                      : resetStrength.score <= 4
+                                        ? 'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]'
+                                        : 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]'
+                                    : 'bg-white/10'
+                                }`}
+                              />
+                            ))}
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-x-3 gap-y-2 pt-1 text-[10px]">
+                            <div className="flex items-center space-x-1.5">
+                              {resetStrength.met.length ? (
+                                <Check className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+                              ) : (
+                                <X className="w-3.5 h-3.5 text-red-500/60 flex-shrink-0" />
+                              )}
+                              <span className={resetStrength.met.length ? 'text-gray-300 font-medium' : 'text-gray-500'}>8+ Characters</span>
+                            </div>
+                            <div className="flex items-center space-x-1.5">
+                              {resetStrength.met.uppercase ? (
+                                <Check className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+                              ) : (
+                                <X className="w-3.5 h-3.5 text-red-500/60 flex-shrink-0" />
+                              )}
+                              <span className={resetStrength.met.uppercase ? 'text-gray-300 font-medium' : 'text-gray-500'}>1 Uppercase (A-Z)</span>
+                            </div>
+                            <div className="flex items-center space-x-1.5">
+                              {resetStrength.met.lowercase ? (
+                                <Check className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+                              ) : (
+                                <X className="w-3.5 h-3.5 text-red-500/60 flex-shrink-0" />
+                              )}
+                              <span className={resetStrength.met.lowercase ? 'text-gray-300 font-medium' : 'text-gray-500'}>1 Lowercase (a-z)</span>
+                            </div>
+                            <div className="flex items-center space-x-1.5">
+                              {resetStrength.met.number ? (
+                                <Check className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+                              ) : (
+                                <X className="w-3.5 h-3.5 text-red-500/60 flex-shrink-0" />
+                              )}
+                              <span className={resetStrength.met.number ? 'text-gray-300 font-medium' : 'text-gray-500'}>1 Number (0-9)</span>
+                            </div>
+                            <div className="flex items-center space-x-1.5 col-span-2 border-t border-white/[0.03] pt-1.5 mt-0.5">
+                              {resetStrength.met.special ? (
+                                <Check className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+                              ) : (
+                                <X className="w-3.5 h-3.5 text-red-500/60 flex-shrink-0" />
+                              )}
+                              <span className={resetStrength.met.special ? 'text-gray-300 font-medium' : 'text-gray-500'}>1 Special Character (e.g. @$!%*?&)</span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
 
                     <div className="flex items-center justify-end space-x-2 pt-2">
