@@ -55,7 +55,7 @@ exports.uploadPYQ = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Only PDF and image files are allowed.' });
     }
 
-    const resourceType = isPDF ? 'raw' : 'image';
+    const resourceType = 'auto';
     const fileType     = isPDF ? 'pdf' : 'image';
     const collegeId    = req.user.college._id.toString();
 
@@ -173,9 +173,16 @@ exports.deletePYQ = async (req, res) => {
       return res.status(403).json({ success: false, message: 'Not authorized to delete this PYQ.' });
     }
 
-    // Remove file from Cloudinary
-    const resourceType = pyq.fileType === 'pdf' ? 'raw' : 'image';
-    await cloudinary.uploader.destroy(pyq.publicId, { resource_type: resourceType });
+    // Remove file from Cloudinary (try raw, image, and auto)
+    try {
+      await cloudinary.uploader.destroy(pyq.publicId, { resource_type: pyq.fileType === 'pdf' ? 'raw' : 'image' });
+    } catch (_) {}
+    try {
+      await cloudinary.uploader.destroy(pyq.publicId, { resource_type: 'image' });
+    } catch (_) {}
+    try {
+      await cloudinary.uploader.destroy(pyq.publicId, { resource_type: 'auto' });
+    } catch (_) {}
 
     await pyq.deleteOne();
 

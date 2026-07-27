@@ -42,7 +42,7 @@ const ExamBadge = ({ type }) => (
 );
 
 // ─── PYQ Card ─────────────────────────────────────────────────────────────────
-const PYQCard = ({ pyq, index, userId, onPreview, onBookmark, onDelete }) => {
+const PYQCard = ({ pyq, index, userId, onPreview, onBookmark, onDelete, onDownload }) => {
   const isBookmarked = pyq.bookmarkedBy?.some(id =>
     (typeof id === 'object' ? id._id || id : id).toString() === userId
   );
@@ -110,16 +110,13 @@ const PYQCard = ({ pyq, index, userId, onPreview, onBookmark, onDelete }) => {
         >
           <Eye className="w-3.5 h-3.5" /> Preview
         </button>
-        <a
-          href={pyq.fileUrl}
-          download
-          target="_blank"
-          rel="noopener noreferrer"
+        <button
+          onClick={() => onDownload(pyq.fileUrl, `${pyq.subjectName}_${pyq.courseCode}.${pyq.fileType === 'pdf' ? 'pdf' : 'jpg'}`)}
           className="flex items-center justify-center p-2 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/40 text-emerald-300 border border-emerald-500/20 transition-all duration-200"
           title="Download"
         >
           <Download className="w-3.5 h-3.5" />
-        </a>
+        </button>
         <button
           onClick={() => onBookmark(pyq._id)}
           className={`flex items-center justify-center p-2 rounded-xl border transition-all duration-200 ${
@@ -146,8 +143,41 @@ const PYQCard = ({ pyq, index, userId, onPreview, onBookmark, onDelete }) => {
 };
 
 // ─── Preview Modal ────────────────────────────────────────────────────────────
-const PreviewModal = ({ pyq, onClose }) => {
+const PreviewModal = ({ pyq, onClose, onDownload }) => {
+  const [blobUrl, setBlobUrl] = useState(null);
+  const [loadingPdf, setLoadingPdf] = useState(pyq?.fileType === 'pdf');
+  const [pdfError, setPdfError] = useState(false);
+
+  useEffect(() => {
+    if (!pyq || pyq.fileType !== 'pdf') return;
+    let isMounted = true;
+    setLoadingPdf(true);
+    setPdfError(false);
+
+    fetch(pyq.fileUrl)
+      .then(res => res.blob())
+      .then(blob => {
+        if (!isMounted) return;
+        const pdfBlob = new Blob([blob], { type: 'application/pdf' });
+        const url = URL.createObjectURL(pdfBlob);
+        setBlobUrl(url);
+        setLoadingPdf(false);
+      })
+      .catch(() => {
+        if (!isMounted) return;
+        setPdfError(true);
+        setLoadingPdf(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [pyq]);
+
   if (!pyq) return null;
+
+  const pdfSource = blobUrl || `https://docs.google.com/gview?url=${encodeURIComponent(pyq.fileUrl)}&embedded=true`;
+
   return (
     <AnimatePresence>
       <motion.div
@@ -167,29 +197,33 @@ const PreviewModal = ({ pyq, onClose }) => {
               <p className="text-xs text-indigo-400 font-mono">{pyq.courseCode} · {pyq.department} · Sem {pyq.semester}</p>
             </div>
             <div className="flex items-center gap-2">
-              <a
-                href={pyq.fileUrl}
-                download
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                onClick={() => onDownload(pyq.fileUrl, `${pyq.subjectName}_${pyq.courseCode}.${pyq.fileType === 'pdf' ? 'pdf' : 'jpg'}`)}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/40 text-emerald-300 text-xs font-semibold border border-emerald-500/20 transition-all"
               >
                 <Download className="w-3.5 h-3.5" /> Download
-              </a>
+              </button>
               <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition-all">
                 <X className="w-5 h-5" />
               </button>
             </div>
           </div>
           {/* Content */}
-          <div className="flex-1 overflow-hidden min-h-[500px]">
+          <div className="flex-1 overflow-hidden min-h-[500px] relative bg-[#080812] flex items-center justify-center">
             {pyq.fileType === 'pdf' ? (
-              <iframe
-                src={pyq.fileUrl}
-                title={pyq.subjectName}
-                className="w-full h-full min-h-[500px] border-none"
-                style={{ height: 'calc(90vh - 80px)' }}
-              />
+              loadingPdf ? (
+                <div className="flex flex-col items-center gap-2 text-gray-400">
+                  <Loader2 className="w-8 h-8 animate-spin text-indigo-400" />
+                  <p className="text-xs">Loading PDF document…</p>
+                </div>
+              ) : (
+                <iframe
+                  src={pdfSource}
+                  title={pyq.subjectName}
+                  className="w-full h-full min-h-[500px] border-none"
+                  style={{ height: 'calc(90vh - 80px)' }}
+                />
+              )
             ) : (
               <div className="flex items-center justify-center h-full p-6 overflow-auto" style={{ minHeight: 500 }}>
                 <img
@@ -557,6 +591,26 @@ export default function PYQ() {
       })
     : pyqs;
 
+  const handleDownload = async (fileUrl, fileName) => {
+    try {
+      const res = await fetch(fileUrl);
+      const blob = await res.blob();
+      const isPdf = fileName.toLowerCase().endsWith('.pdf') || blob.type.includes('pdf');
+      const finalBlob = new Blob([blob], { type: isPdf ? 'application/pdf' : blob.type });
+      const blobUrl = window.URL.createObjectURL(finalBlob);
+
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (err) {
+      window.open(fileUrl, '_blank');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#080812] text-white">
       {/* ── Background decoration ── */}
@@ -759,6 +813,7 @@ export default function PYQ() {
                   onPreview={setPreview}
                   onBookmark={handleBookmark}
                   onDelete={handleDelete}
+                  onDownload={handleDownload}
                 />
               ))}
             </AnimatePresence>
@@ -779,6 +834,7 @@ export default function PYQ() {
         <PreviewModal
           pyq={previewPYQ}
           onClose={() => setPreview(null)}
+          onDownload={handleDownload}
         />
       )}
     </div>
