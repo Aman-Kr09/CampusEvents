@@ -22,6 +22,7 @@ const announcementRoutes = require('./routes/announcementRoutes');
 const qaRoutes = require('./routes/qaRoutes');
 const searchRoutes = require('./routes/searchRoutes');
 const assistantRoutes = require('./routes/assistantRoutes');
+const pyqRoutes        = require('./routes/pyqRoutes');
 
 const app = express();
 app.set('trust proxy', 1);
@@ -96,6 +97,7 @@ app.use('/api/announcements', generalLimiter, announcementRoutes);
 app.use('/api/qa', generalLimiter, qaRoutes);
 app.use('/api/search', generalLimiter, searchRoutes);
 app.use('/api/assistant', generalLimiter, assistantRoutes);
+app.use('/api/pyq',       generalLimiter, pyqRoutes);
 
 // ─── Global Error Handler ─────────────────────────────────────────────────────
 app.use((err, req, res, next) => {

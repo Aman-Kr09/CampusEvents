@@ -4,6 +4,7 @@ const Announcement = require('../models/Announcement');
 const Placement = require('../models/Placement');
 const Question = require('../models/Question');
 const Answer = require('../models/Answer');
+const PYQ = require('../models/PYQ');
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
@@ -56,7 +57,7 @@ exports.chat = async (req, res) => {
     const keywords = extractKeywords(message);
 
     // ── Fetch ALL live data from MongoDB (no limits — always up to date) ─────
-    const [events, announcements, placements, questions] = await Promise.all([
+    const [events, announcements, placements, questions, pyqs] = await Promise.all([
       Event.find({ college: collegeId, status: 'Approved' })
         .sort({ date: 1 })
         .select('name description date time venue category tags registrations likes'),
@@ -74,7 +75,12 @@ exports.chat = async (req, res) => {
         .sort({ createdAt: -1 })
         .populate('user', 'name')
         .populate('comments.user', 'name')
-        .select('title content createdAt user comments answersCount')
+        .select('title content createdAt user comments answersCount'),
+
+      PYQ.find({ college: collegeId })
+        .sort({ createdAt: -1 })
+        .populate('uploadedBy', 'name')
+        .select('subjectName courseCode semester department academicYear examType fileType fileUrl uploadedBy createdAt')
     ]);
 
     // Fetch all answers for queried Q&A threads
@@ -112,6 +118,18 @@ exports.chat = async (req, res) => {
       .map(q => ({ ...q.toObject(), _score: relevanceScore(`${q.title} ${q.content}`, keywords) }))
       .sort((a, b) => b._score - a._score || new Date(b.createdAt) - new Date(a.createdAt))
       .slice(0, 15);
+
+    // Sort PYQs by relevance to query
+    const rankedPYQs = pyqs
+      .map(p => ({
+        ...p.toObject(),
+        _score: relevanceScore(
+          `${p.subjectName} ${p.courseCode} ${p.department} ${p.examType} ${p.academicYear} semester ${p.semester}`,
+          keywords
+        )
+      }))
+      .sort((a, b) => b._score - a._score || new Date(b.createdAt) - new Date(a.createdAt))
+      .slice(0, 30);
 
     // ── Context formatters ─────────────────────────────────────────────────────
     const formatEvent = (e) => {
@@ -151,6 +169,9 @@ exports.chat = async (req, res) => {
       return out;
     };
 
+    const formatPYQ = (p) =>
+      `- **${p.subjectName}** (${p.courseCode}) | Sem ${p.semester} | ${p.department} | ${p.examType} | Year: ${p.academicYear} | Type: ${p.fileType?.toUpperCase()} | Uploaded by: ${p.uploadedBy?.name || 'Unknown'} | Download URL: ${p.fileUrl}`;
+
     // Registered events summary for student profile
     const registeredEventNames = upcomingEvents
       .filter(e => e.registrations?.some(rId => rId.toString() === userId))
@@ -165,9 +186,10 @@ You ONLY answer questions about:
 3. College announcements
 4. Placement data and visiting companies at ${collegeName}
 5. The Q&A discussion board at ${collegeName}
-6. How to use CampusEvents
+6. Previous Year Question (PYQ) papers at ${collegeName}
+7. How to use CampusEvents
 
-**STRICT RULE**: For ANY question outside of CampusEvents (general knowledge, coding help, news, other platforms, math, science, etc.), respond ONLY with: "I'm Campus AI — I only help with CampusEvents topics like events, placements, announcements, and Q&A. For other questions, please use a general-purpose AI assistant."
+**STRICT RULE**: For ANY question outside of CampusEvents (general knowledge, coding help, news, other platforms, math, science, etc.), respond ONLY with: "I'm Campus AI — I only help with CampusEvents topics like events, placements, announcements, Q&A, and PYQs. For other questions, please use a general-purpose AI assistant."
 
 Tone: Friendly, concise, use markdown (bold, bullets). Address the student by name.
 Note: The data below is fetched live from the database — it reflects ALL current and future data at the moment of this conversation.
@@ -195,9 +217,12 @@ ${placements.length > 0 ? placements.map(formatPlacement).join('\n\n') : 'No pla
 
 ### ❓ Q&A Board (${questions.length} questions total — showing top relevant with answers)
 ${rankedQuestions.length > 0 ? rankedQuestions.map(formatQuestion).join('\n') : 'None.'}
+
+### 📚 PYQ Repository (${pyqs.length} papers total — showing top relevant)
+${rankedPYQs.length > 0 ? rankedPYQs.map(formatPYQ).join('\n') : 'No question papers uploaded yet.'}
 ---
 
-Base all answers on the LIVE DATA above. If something isn't in the data, say "I don't have that information right now — please check the platform directly."`;
+Base all answers on the LIVE DATA above. When students ask for PYQs or question papers, provide exact subject details, course codes, semester, branch/department, exam type, academic year, and direct download links. If something isn't in the data, say "I don't have that information right now — please check the platform directly."`;
 
     // ── Build Groq messages ────────────────────────────────────────────────────
     const sanitizedHistory = (Array.isArray(history) ? history : [])
@@ -231,6 +256,7 @@ Base all answers on the LIVE DATA above. If something isn't in the data, say "I 
         answersTotal: answers.length,
         placementYears: placements.length,
         announcementsTotal: announcements.length,
+        pyqTotal: pyqs.length,
         tokensUsed: completion.usage?.total_tokens
       }
     });

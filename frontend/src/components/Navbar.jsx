@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCollege } from '../context/CollegeContext';
-import { LogOut, User, Calendar, MessageSquare, Award, BarChart3, HelpCircle, ShieldAlert } from 'lucide-react';
+import { LogOut, User, Calendar, MessageSquare, Award, BarChart3, HelpCircle, ShieldAlert, BookOpen } from 'lucide-react';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -63,6 +63,20 @@ const Navbar = () => {
               >
                 <Calendar className="w-4 h-4 text-indigo-400" />
                 <span>Events Hub</span>
+              </Link>
+            )}
+
+            {(user?.role === 'Student' || user?.role === 'Admin') && (
+              <Link
+                to="/pyq"
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center space-x-1.5 ${
+                  isActive('/pyq')
+                    ? 'text-white bg-white/10'
+                    : 'text-gray-400 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                <BookOpen className="w-4 h-4 text-emerald-400" />
+                <span>PYQ Hub</span>
               </Link>
             )}
 

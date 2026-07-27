@@ -13,6 +13,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import SuperAdminDashboard from './pages/SuperAdminDashboard';
 import SuperAdminLogin from './pages/SuperAdminLogin';
 import Contact from './pages/Contact';
+import PYQ from './pages/PYQ';
 
 // Import Components
 import Navbar from './components/Navbar';
@@ -80,6 +81,16 @@ function App() {
                   element={
                     <PrivateRoute>
                       <Home />
+                    </PrivateRoute>
+                  }
+                />
+
+                {/* PYQ Repository */}
+                <Route
+                  path="/pyq"
+                  element={
+                    <PrivateRoute>
+                      <PYQ />
                     </PrivateRoute>
                   }
                 />
