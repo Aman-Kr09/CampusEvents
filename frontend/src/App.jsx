@@ -17,6 +17,7 @@ import Contact from './pages/Contact';
 // Import Components
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import CampusAssistant from './components/CampusAssistant';
 
 // 1. General Private Route Guard
 const PrivateRoute = ({ children }) => {
@@ -120,6 +121,8 @@ function App() {
             {/* Footer */}
             <Footer />
           </div>
+          {/* AI Campus Assistant — global floating widget */}
+          <CampusAssistant />
         </AuthProvider>
       </CollegeProvider>
     </Router>
