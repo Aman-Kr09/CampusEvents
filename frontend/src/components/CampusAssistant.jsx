@@ -131,6 +131,15 @@ const CampusAssistant = () => {
     }
   }, [messages, isOpen, scrollToBottom]);
 
+  // Reset chatbot state when active user changes (logout/login of another student)
+  useEffect(() => {
+    setMessages([]);
+    setHasGreeted(false);
+    setInput('');
+    setIsOpen(false);
+    setIsLoading(false);
+  }, [user?._id]);
+
   // Greet user when panel opens for the first time
   useEffect(() => {
     if (isOpen && !hasGreeted && user) {
