@@ -1,8 +1,10 @@
 # 🎓 CampusEvents - Stay Connected to Your Campus
 
-**CampusEvents** is a college-specific full-stack web application that enables students to discover campus events, participate in academic discussions, track placement statistics, and stay informed through official college announcements.
+**CampusEvents** is a modern, AI-powered, college-specific full-stack platform that enables students to discover campus events, engage in real-time academic discussions, track placement opportunities, and stay updated with official college announcements—all within a secure, personalized ecosystem.
 
-The platform enforces **strict college-based content isolation**, ensuring students only access content relevant to their institution. It also features a **Scikit-Learn powered recommendation engine** that delivers personalized event suggestions based on user interests.
+Built with the **MERN Stack**, **Redis**, **BullMQ**, **Socket.IO**, and **Scikit-Learn**, the platform delivers **AI-powered event recommendations**, **real-time Q&A discussions**, **background job processing**, and **high-performance caching** for a fast and scalable user experience.
+
+The platform enforces **strict college-based content isolation**, ensuring students can only access content relevant to their institution. Advanced backend optimizations—including **Redis caching**, **bulk write buffering**, **asynchronous email & AI tag generation**, and **real-time WebSocket communication**—provide enterprise-grade performance, scalability, and security.
 
 ## 🌐 Live Demo
 
