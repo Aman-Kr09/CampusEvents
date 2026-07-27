@@ -12,13 +12,32 @@ const UserSchema = new mongoose.Schema({
     required: true,
     unique: true,
     trim: true,
-    lowercase: true
+    lowercase: true,
+    validate: {
+      validator: function(v) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+      },
+      message: props => `${props.value} is not a valid email address!`
+    }
   },
   password: {
     type: String,
     required: function() {
       // Password is not strictly required if logging in via Google OAuth
       return !this.googleId;
+    },
+    validate: {
+      validator: function(v) {
+        // Skip validation if the password is empty (e.g. Google OAuth login)
+        if (!v) return true;
+        // Skip validation if the password is already a bcrypt hash (60 characters, starts with $2)
+        if (v.startsWith('$2') && v.length === 60) {
+          return true;
+        }
+        // Validate password strength: min 8 chars, 1 uppercase, 1 lowercase, 1 digit, 1 special char
+        return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(v);
+      },
+      message: 'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character.'
     }
   },
   googleId: {
