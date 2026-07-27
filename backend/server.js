@@ -23,6 +23,7 @@ const qaRoutes = require('./routes/qaRoutes');
 const searchRoutes = require('./routes/searchRoutes');
 
 const app = express();
+app.set('trust proxy', 1);
 
 // ─── Database connection ──────────────────────────────────────────────────────
 connectDB();
@@ -42,9 +43,9 @@ app.use(cors({
       const parsedUrl = new URL(origin);
       const hostname = parsedUrl.hostname;
       isAllowed = allowedOrigins.includes(origin) ||
-                  hostname === 'vercel.app' ||
-                  hostname.endsWith('.vercel.app') ||
-                  /^(?:[a-zA-Z0-9-]+\.)*localhost$/.test(hostname);
+        hostname === 'vercel.app' ||
+        hostname.endsWith('.vercel.app') ||
+        /^(?:[a-zA-Z0-9-]+\.)*localhost$/.test(hostname);
     } catch (e) {
       isAllowed = allowedOrigins.includes(origin);
     }
