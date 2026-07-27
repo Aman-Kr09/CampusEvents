@@ -8,7 +8,8 @@ const {
   deletePYQ,
   toggleBookmark,
   getBookmarks,
-  getDepartments
+  getDepartments,
+  getAcademicYears
 } = require('../controllers/pyqController');
 const { protect } = require('../middleware/auth');
 
@@ -34,8 +35,9 @@ const upload = multer({
 router.use(protect);
 
 // Special named routes before /:id to avoid param collision
-router.get('/bookmarks',   getBookmarks);
-router.get('/departments', getDepartments);
+router.get('/bookmarks',      getBookmarks);
+router.get('/departments',    getDepartments);
+router.get('/academic-years', getAcademicYears);
 
 // Core CRUD
 router.get('/',    getPYQs);

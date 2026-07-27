@@ -207,7 +207,7 @@ const PreviewModal = ({ pyq, onClose }) => {
 };
 
 // ─── Upload Modal ─────────────────────────────────────────────────────────────
-const UploadModal = ({ departments, onClose, onSuccess }) => {
+const UploadModal = ({ departments, academicYears, onClose, onSuccess }) => {
   const [form, setForm] = useState({
     subjectName: '', courseCode: '', semester: '1', department: '',
     academicYear: '', examType: ''
@@ -376,7 +376,7 @@ const UploadModal = ({ departments, onClose, onSuccess }) => {
                   <div className="flex gap-2">
                     <select className={`${inputCls} flex-1`} required={!showCustomYear} value={form.academicYear} onChange={e => setForm(f => ({ ...f, academicYear: e.target.value }))}>
                       <option value="">Select year</option>
-                      {ACADEMIC_YEARS.map(y => <option key={y} value={y}>{y}</option>)}
+                      {academicYears.map(y => <option key={y} value={y}>{y}</option>)}
                     </select>
                     <button type="button" onClick={() => setShowCY(true)} className="px-2 py-2 rounded-xl bg-[#0d0d1a] border border-white/10 text-gray-400 hover:text-indigo-400 transition-all" title="Add custom year">
                       <Plus className="w-4 h-4" />
@@ -443,6 +443,7 @@ export default function PYQ() {
   // Data
   const [pyqs, setPyqs]               = useState([]);
   const [departments, setDepts]       = useState(['CSE', 'ECE', 'EE', 'ME', 'CE', 'AIDS', 'VLSI']);
+  const [academicYears, setAcYears]   = useState(['2024-25', '2023-24', '2022-23', '2021-22', '2020-21', '2019-20']);
   const [loading, setLoading]         = useState(false);
   const [error, setError]             = useState('');
 
@@ -458,16 +459,21 @@ export default function PYQ() {
   const [showUpload, setShowUpload]   = useState(false);
   const [previewPYQ, setPreview]      = useState(null);
 
-  // ── Fetch departments ────────────────────────────────────────────────────
-  useEffect(() => {
-    const fetchDepts = async () => {
-      try {
-        const res = await api.get('/pyq/departments');
-        if (res.data.success) setDepts(res.data.departments);
-      } catch (_) {}
-    };
-    fetchDepts();
+  // ── Fetch metadata (departments & academic years) ──────────────────────────
+  const fetchMetadata = useCallback(async () => {
+    try {
+      const [deptRes, yearRes] = await Promise.all([
+        api.get('/pyq/departments'),
+        api.get('/pyq/academic-years')
+      ]);
+      if (deptRes.data.success) setDepts(deptRes.data.departments);
+      if (yearRes.data.success) setAcYears(yearRes.data.academicYears);
+    } catch (_) {}
   }, []);
+
+  useEffect(() => {
+    fetchMetadata();
+  }, [fetchMetadata]);
 
   // ── Fetch PYQs ───────────────────────────────────────────────────────────
   const fetchPYQs = useCallback(async () => {
@@ -535,6 +541,8 @@ export default function PYQ() {
     if (!showBookmarks && newPyq.semester === activeSem) {
       setPyqs(prev => [newPyq, ...prev]);
     }
+    // Refresh metadata list to ensure newly added custom department/year is present without duplicates
+    fetchMetadata();
   };
 
   // ── Filtered pyqs for bookmark view ──────────────────────────────────────
@@ -660,7 +668,7 @@ export default function PYQ() {
               className="appearance-none pl-3 pr-8 py-2.5 rounded-xl bg-[#0d0d1a] border border-white/10 text-sm text-white focus:outline-none focus:border-indigo-500/50 transition-all min-w-[130px]"
             >
               <option value="">All Years</option>
-              {ACADEMIC_YEARS.map(y => <option key={y} value={y}>{y}</option>)}
+              {academicYears.map(y => <option key={y} value={y}>{y}</option>)}
             </select>
             <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-500 pointer-events-none" />
           </div>
@@ -762,6 +770,7 @@ export default function PYQ() {
       {showUpload && (
         <UploadModal
           departments={departments}
+          academicYears={academicYears}
           onClose={() => setShowUpload(false)}
           onSuccess={handleUploadSuccess}
         />

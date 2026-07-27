@@ -263,3 +263,27 @@ exports.getDepartments = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
+// ─────────────────────────────────────────────────────────────────────────────
+// @desc    Get all distinct academic years for the college (dynamic year list)
+// @route   GET /api/pyq/academic-years
+// @access  Private
+// ─────────────────────────────────────────────────────────────────────────────
+exports.getAcademicYears = async (req, res) => {
+  try {
+    const DEFAULT_YEARS = ['2024-25', '2023-24', '2022-23', '2021-22', '2020-21', '2019-20'];
+
+    const fromDB = await PYQ.distinct('academicYear', { college: req.user.college._id });
+
+    // Merge defaults + any custom academic year added via uploads without duplicates
+    const merged = [...new Set([...DEFAULT_YEARS, ...fromDB].filter(Boolean))];
+
+    // Sort descending (most recent year first)
+    merged.sort((a, b) => b.localeCompare(a));
+
+    return res.status(200).json({ success: true, academicYears: merged });
+  } catch (error) {
+    console.error('getAcademicYears error:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
