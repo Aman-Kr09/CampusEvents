@@ -1,24 +1,39 @@
 const Placement = require('../models/Placement');
+const { cacheGet, cacheSet, cacheDel } = require('../config/redisClient');
+
+const CACHE_TTL = 15 * 60; // 15 minutes
+
 
 // @desc    Get placement statistics for a college
 // @route   GET /api/placements
 // @access  Private
 exports.getPlacementStats = async (req, res) => {
   try {
-    const collegeId = req.user.college._id;
+    const collegeId = req.user.college._id.toString();
+    const role = req.user.role;
+    const cacheKey = `placements:${collegeId}:${role}`;
+
+    // ── Cache check ────────────────────────────────────────────────────────
+    const cached = await cacheGet(cacheKey);
+    if (cached) {
+      return res.status(200).json({ success: true, count: cached.length, data: cached, fromCache: true });
+    }
+
     const records = await Placement.find({ college: collegeId }).sort({ createdAt: -1 });
 
     // Format records to reverse the company list order (newest first)
     const formattedRecords = records.map(record => {
       const doc = record.toObject();
       if (doc.companiesVisited) {
-        if (req.user.role === 'Student') {
+        if (role === 'Student') {
           doc.companiesVisited = doc.companiesVisited.filter(c => c.status === 'Approved');
         }
         doc.companiesVisited = doc.companiesVisited.reverse();
       }
       return doc;
     });
+
+    await cacheSet(cacheKey, formattedRecords, CACHE_TTL);
 
     res.status(200).json({ success: true, count: formattedRecords.length, data: formattedRecords });
   } catch (error) {
@@ -33,7 +48,7 @@ exports.addPlacementRecord = async (req, res) => {
   const { highestPackage, averagePackage, placementPercentage, companiesVisited, year } = req.body;
 
   try {
-    const collegeId = req.user.college._id;
+    const collegeId = req.user.college._id.toString();
 
     // Normalize companies visited input list to objects
     const normalizedCompanies = (companiesVisited || []).map(c => {
@@ -62,6 +77,9 @@ exports.addPlacementRecord = async (req, res) => {
       companiesVisited: normalizedCompanies,
       year
     });
+
+    // Invalidate placement cache for this college (both roles)
+    await cacheDel(`placements:${collegeId}:Student`, `placements:${collegeId}:Admin`);
 
     res.status(201).json({ success: true, message: 'Placement statistics recorded successfully', data: record });
   } catch (error) {
@@ -95,6 +113,10 @@ exports.editPlacementRecord = async (req, res) => {
 
     record = await Placement.findByIdAndUpdate(req.params.id, updateData, { new: true, runValidators: true });
 
+    // Invalidate placement cache
+    const collegeId = req.user.college._id.toString();
+    await cacheDel(`placements:${collegeId}:Student`, `placements:${collegeId}:Admin`);
+
     res.status(200).json({ success: true, message: 'Placement data updated', data: record });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -116,6 +138,10 @@ exports.deletePlacementRecord = async (req, res) => {
     }
 
     await Placement.findByIdAndDelete(req.params.id);
+
+    // Invalidate placement cache
+    const collegeId = req.user.college._id.toString();
+    await cacheDel(`placements:${collegeId}:Student`, `placements:${collegeId}:Admin`);
 
     res.status(200).json({ success: true, message: 'Placement record deleted successfully' });
   } catch (error) {

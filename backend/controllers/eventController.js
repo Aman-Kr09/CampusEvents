@@ -1,6 +1,9 @@
 const Event = require('../models/Event');
 const User = require('../models/User');
 const { getRecommendations, generateTags } = require('../recommendation/recommendService');
+const { cacheGet, cacheSet, cacheDel, cacheDelPattern } = require('../config/redisClient');
+const { incrementView } = require('../services/metricsBuffer');
+const { enqueueTagGeneration } = require('../queues/tagQueue');
 
 // @desc    Get all approved events (For current college, optionally sorted by recommendations)
 // @route   GET /api/events
@@ -30,7 +33,16 @@ exports.getEvents = async (req, res) => {
 exports.getRecommendedEvents = async (req, res) => {
   try {
     const collegeId = req.user.college._id;
+    const userId = req.user._id.toString();
     const interests = req.user.interests || [];
+
+    // ── Cache check (key scoped to user + interests fingerprint) ──────────
+    const interestKey = interests.slice().sort().join(',');
+    const cacheKey = `recommended:${userId}:${interestKey}`;
+    const cached = await cacheGet(cacheKey);
+    if (cached) {
+      return res.status(200).json({ success: true, data: cached, fromCache: true });
+    }
 
     // Fetch approved events for this college
     const events = await Event.find({ college: collegeId, status: 'Approved' }).sort({ createdAt: -1 });
@@ -51,10 +63,11 @@ exports.getRecommendedEvents = async (req, res) => {
     // Reorder events based on recommended order (only matched events)
     const orderedEvents = [];
     recommendedIds.forEach(id => {
-      if (eventMap[id]) {
-        orderedEvents.push(eventMap[id]);
-      }
+      if (eventMap[id]) orderedEvents.push(eventMap[id]);
     });
+
+    // ── Cache result for 10 minutes ────────────────────────────────────────
+    await cacheSet(cacheKey, orderedEvents, 600);
 
     res.status(200).json({
       success: true,
@@ -98,7 +111,14 @@ exports.getTimelineEvents = async (req, res) => {
 // @access  Private
 exports.getTrendingEvents = async (req, res) => {
   try {
-    const collegeId = req.user.college._id;
+    const collegeId = req.user.college._id.toString();
+
+    // ── Cache check (5-minute TTL) ─────────────────────────────────────────
+    const cacheKey = `trending:${collegeId}`;
+    const cached = await cacheGet(cacheKey);
+    if (cached) {
+      return res.status(200).json({ success: true, data: cached, fromCache: true });
+    }
 
     // Fetch all approved events for college
     const events = await Event.find({ college: collegeId, status: 'Approved' });
@@ -114,6 +134,9 @@ exports.getTrendingEvents = async (req, res) => {
     // Sort by score descending and take top 5
     scoredEvents.sort((a, b) => b.score - a.score);
     const trending = scoredEvents.slice(0, 5).map(item => item.event);
+
+    // ── Cache for 5 minutes ────────────────────────────────────────────────
+    await cacheSet(cacheKey, trending, 300);
 
     res.status(200).json({
       success: true,
@@ -161,9 +184,6 @@ exports.submitEvent = async (req, res) => {
   }
 };
 
-// @desc    Generate AI Event Tags from description
-// @route   POST /api/events/generate-tags
-// @access  Private
 exports.generateEventTags = async (req, res) => {
   const { description } = req.body;
 
@@ -234,6 +254,11 @@ exports.likeEvent = async (req, res) => {
 
     await event.save();
 
+    // Invalidate trending events cache for this college
+    if (event.college) {
+      await cacheDel(`trending:${event.college.toString()}`);
+    }
+
     res.status(200).json({
       success: true,
       liked: !isLiked,
@@ -249,17 +274,22 @@ exports.likeEvent = async (req, res) => {
 // @access  Private
 exports.incrementViews = async (req, res) => {
   try {
-    const event = await Event.findByIdAndUpdate(
-      req.params.id,
-      { $inc: { views: 1 } },
-      { new: true }
-    );
+    const eventId = req.params.id;
 
-    if (!event) {
+    // Validate event exists (lightweight check, no full document needed)
+    const exists = await Event.exists({ _id: eventId });
+    if (!exists) {
       return res.status(404).json({ success: false, message: 'Event not found' });
     }
 
-    res.status(200).json({ success: true, views: event.views });
+    // Buffer the view increment — flushed to MongoDB every 60 s
+    await incrementView(eventId);
+
+    // Also invalidate trending cache since scores changed
+    const collegeId = req.user?.college?._id?.toString();
+    if (collegeId) await cacheDel(`trending:${collegeId}`);
+
+    res.status(200).json({ success: true, buffered: true });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api, useAuth } from '../context/AuthContext';
+import useSocket from '../hooks/useSocket';
 import { useCollege } from '../context/CollegeContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -16,7 +17,7 @@ const isNITDelhi = (college) => {
 };
 
 const Home = () => {
-  const { user } = useAuth();
+  const { user, token: authCtxToken } = useAuth();
   const { selectedCollege } = useCollege();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('events'); // 'events' | 'qa' | 'placements' | 'announcements'
@@ -78,6 +79,107 @@ const Home = () => {
   const [recruiterInput, setRecruiterInput] = useState('');
   const [submittingRecruiter, setSubmittingRecruiter] = useState(false);
   const [recruiterSuccessMsg, setRecruiterSuccessMsg] = useState('');
+
+  // Real-time state
+  const [typingUsers, setTypingUsers] = useState([]); // users typing in the active question room
+  const [liveNotification, setLiveNotification] = useState(null); // transient toast
+  const typingTimerRef = useRef(null);
+
+  // ── Socket.io integration ─────────────────────────────────────────────────
+  const token = authCtxToken || localStorage.getItem('campusevents_token');
+  const { joinQuestion, leaveQuestion, emitTyping, emitStopTyping } = useSocket(token, {
+    // New question posted by anyone in the college → prepend to list
+    new_question: (question) => {
+      setQuestions((prev) => {
+        if (prev.find(q => q._id === question._id)) return prev;
+        return [question, ...prev];
+      });
+      showLiveNotification(`💬 New question: "${question.title}"`);
+    },
+    // Another user answered the currently open question
+    new_answer: ({ questionId, answer, answersCount }) => {
+      if (answer.user?._id === user?._id) return; // skip own answer (already handled optimistically)
+      setAnswers((prev) => {
+        if (prev.find(a => a._id === answer._id)) return prev;
+        return [...prev, answer];
+      });
+      setSelectedQuestion((prev) =>
+        prev?._id === questionId ? { ...prev, answersCount } : prev
+      );
+      setQuestions((prev) =>
+        prev.map(q => q._id === questionId ? { ...q, answersCount } : q)
+      );
+    },
+    // A comment was added to the open question
+    new_comment: ({ questionId, comment }) => {
+      if (comment.user?._id === user?._id) return; // skip own
+      setSelectedQuestion((prev) => {
+        if (!prev || prev._id !== questionId) return prev;
+        if (prev.comments?.find(c => c._id === comment._id)) return prev;
+        return { ...prev, comments: [...(prev.comments || []), comment] };
+      });
+    },
+    // Question upvote count updated
+    upvote_update: ({ questionId, upvotesCount }) => {
+      setQuestions((prev) =>
+        prev.map(q => q._id === questionId ? { ...q, upvotesCount } : q)
+      );
+      setSelectedQuestion((prev) =>
+        prev?._id === questionId ? { ...prev, upvotesCount } : prev
+      );
+    },
+    // Answer upvote updated
+    answer_upvote_update: ({ answerId, upvotesCount }) => {
+      setAnswers((prev) =>
+        prev.map(a => a._id === answerId ? { ...a, upvotes: { length: upvotesCount } } : a)
+      );
+    },
+    // College-wide question answer count update
+    question_updated: ({ questionId, answersCount }) => {
+      setQuestions((prev) =>
+        prev.map(q => q._id === questionId ? { ...q, answersCount } : q)
+      );
+    },
+    // Typing indicator
+    user_typing: ({ userName }) => {
+      setTypingUsers((prev) => prev.includes(userName) ? prev : [...prev, userName]);
+    },
+    user_stop_typing: ({ userId: tuid }) => {
+      setTypingUsers((prev) => prev.filter(u => u !== tuid));
+    },
+    // Async tag generation result
+    tags_generated: ({ tags }) => {
+      setEventForm((prev) => ({ ...prev, tags: tags || [] }));
+      setGeneratingTags(false);
+    },
+    // New announcement pushed by admin
+    new_announcement: (announcement) => {
+      setAnnouncements((prev) => {
+        if (prev.find(a => a._id === announcement._id)) return prev;
+        return [announcement, ...prev];
+      });
+      showLiveNotification(`📢 New announcement: "${announcement.title}"`);
+    }
+  });
+
+  const showLiveNotification = useCallback((message) => {
+    setLiveNotification(message);
+    setTimeout(() => setLiveNotification(null), 4000);
+  }, []);
+
+  // When a question is opened: join its socket room
+  useEffect(() => {
+    if (selectedQuestion?._id) {
+      joinQuestion(selectedQuestion._id);
+      setTypingUsers([]);
+    }
+    return () => {
+      if (selectedQuestion?._id) {
+        leaveQuestion(selectedQuestion._id);
+      }
+    };
+  }, [selectedQuestion?._id]);
+
 
   // Fetch all dashboard components
   const fetchData = async () => {
@@ -233,7 +335,7 @@ const Home = () => {
     try {
       const res = await api.post('/events/generate-tags', { description: eventForm.description });
       if (res.data.success) {
-        setEventForm({ ...eventForm, tags: res.data.tags });
+        setEventForm(prev => ({ ...prev, tags: res.data.tags || [] }));
       }
     } catch (err) {
       console.error('Failed to generate tags:', err);
@@ -432,6 +534,21 @@ const Home = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative">
+
+      {/* ── Live Notification Toast ─────────────────────────────────────────── */}
+      <AnimatePresence>
+        {liveNotification && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, x: '-50%' }}
+            animate={{ opacity: 1, y: 0, x: '-50%' }}
+            exit={{ opacity: 0, y: -20, x: '-50%' }}
+            className="fixed top-6 left-1/2 z-[9999] bg-indigo-600/90 backdrop-blur-md text-white text-sm font-medium px-5 py-3 rounded-full shadow-xl border border-indigo-400/30 flex items-center gap-2"
+          >
+            <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+            {liveNotification}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* 1. Dashboard Controls Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-glassBorder pb-6 mb-8">

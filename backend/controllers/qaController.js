@@ -79,6 +79,12 @@ exports.askQuestion = async (req, res) => {
 
     const populated = await Question.findById(question._id).populate('user', 'name email branch year');
 
+    // ── Broadcast to all users in this college room ─────────────────────────
+    const io = req.app.get('io');
+    if (io) {
+      io.to(`college:${collegeId}`).emit('new_question', populated);
+    }
+
     res.status(201).json({ success: true, message: 'Question posted successfully', data: populated });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -104,6 +110,16 @@ exports.upvoteQuestion = async (req, res) => {
     }
 
     await question.save();
+
+    // ── Broadcast upvote update to question room ─────────────────────────
+    const io = req.app.get('io');
+    if (io) {
+      io.to(`question:${question._id}`).emit('upvote_update', {
+        questionId: question._id,
+        upvotesCount: question.upvotes.length,
+        userId: req.user._id
+      });
+    }
 
     res.status(200).json({
       success: true,
@@ -145,6 +161,16 @@ exports.addComment = async (req, res) => {
     const updatedQuestion = await Question.findById(question._id)
       .populate('user', 'name email branch year role')
       .populate('comments.user', 'name email branch year role');
+
+    // ── Broadcast new comment to question room ─────────────────────────
+    const io = req.app.get('io');
+    if (io) {
+      const addedComment = updatedQuestion.comments[updatedQuestion.comments.length - 1];
+      io.to(`question:${question._id}`).emit('new_comment', {
+        questionId: question._id,
+        comment: addedComment
+      });
+    }
 
     res.status(200).json({ success: true, message: 'Comment added successfully', data: updatedQuestion });
   } catch (error) {
@@ -221,6 +247,21 @@ exports.answerQuestion = async (req, res) => {
 
     const populatedAnswer = await Answer.findById(answer._id).populate('user', 'name email branch year role status');
 
+    // ── Broadcast new answer to question room ─────────────────────────
+    const io = req.app.get('io');
+    if (io) {
+      io.to(`question:${question._id}`).emit('new_answer', {
+        questionId: question._id,
+        answer: populatedAnswer,
+        answersCount: question.answersCount
+      });
+      // Also notify the college room so question list badge count updates
+      io.to(`college:${question.college}`).emit('question_updated', {
+        questionId: question._id,
+        answersCount: question.answersCount
+      });
+    }
+
     res.status(201).json({ success: true, message: 'Answer posted successfully', data: populatedAnswer });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -246,6 +287,16 @@ exports.upvoteAnswer = async (req, res) => {
     }
 
     await answer.save();
+
+    // ── Broadcast answer upvote update to question room ──────────────────
+    const io = req.app.get('io');
+    if (io) {
+      io.to(`question:${answer.question}`).emit('answer_upvote_update', {
+        answerId: answer._id,
+        upvotesCount: answer.upvotes.length,
+        userId: req.user._id
+      });
+    }
 
     res.status(200).json({
       success: true,

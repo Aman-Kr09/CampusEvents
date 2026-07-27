@@ -2,7 +2,7 @@ const User = require('../models/User');
 const College = require('../models/College');
 const OTP = require('../models/OTP');
 const jwt = require('jsonwebtoken');
-const sendEmail = require('../config/mailer');
+const { enqueueEmail } = require('../queues/emailQueue');
 
 // Helper to generate JWT Token
 const generateToken = (id) => {
@@ -122,7 +122,7 @@ exports.forgotPassword = async (req, res) => {
     await OTP.findOneAndDelete({ email }); // Clear older OTPs
     await OTP.create({ email, otp: otpCode });
 
-    // Send OTP
+    // Build email payload
     const message = `You requested a password reset. Your OTP is: ${otpCode}. This code is valid for 10 minutes.`;
     const html = `
       <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #0d0e12; color: #ffffff; border-radius: 8px;">
@@ -135,27 +135,11 @@ exports.forgotPassword = async (req, res) => {
       </div>
     `;
 
-    try {
-      await sendEmail({
-        email,
-        subject: 'CampusEvents - Password Reset OTP',
-        message,
-        html
-      });
-      res.status(200).json({ success: true, message: 'OTP sent successfully to email' });
-    } catch (err) {
-      console.log('\n==================================================');
-      console.log(`[SMTP CONNECTION BLOCKED / FAILED] Error: ${err.message}`);
-      console.log(`[FALLBACK DEV MODE] Sending Email To: ${email}`);
-      console.log(`OTP Code: ${otpCode}`);
-      console.log('==================================================\n');
+    // ── Async delivery via BullMQ (non-blocking) ───────────────────────────
+    await enqueueEmail({ email, subject: 'CampusEvents - Password Reset OTP', message, html });
 
-      res.status(200).json({
-        success: true,
-        message: 'SMTP connection failed (port blocked on host). OTP logged to server terminal console for testing.',
-        mocked: true
-      });
-    }
+    // Respond immediately — email is processing in background
+    res.status(200).json({ success: true, message: 'OTP sent successfully to email' });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
