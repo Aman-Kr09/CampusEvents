@@ -9,7 +9,9 @@ const {
   toggleBookmark,
   getBookmarks,
   getDepartments,
-  getAcademicYears
+  getAcademicYears,
+  viewPYQFile,
+  downloadPYQFile
 } = require('../controllers/pyqController');
 const { protect } = require('../middleware/auth');
 
@@ -44,6 +46,8 @@ router.get('/',    getPYQs);
 router.post('/',   upload.single('file'), uploadPYQ);
 
 router.get('/:id',          getPYQById);
+router.get('/:id/view',     viewPYQFile);
+router.get('/:id/download', downloadPYQFile);
 router.delete('/:id',       deletePYQ);
 router.put('/:id/bookmark', toggleBookmark);
 

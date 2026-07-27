@@ -111,7 +111,7 @@ const PYQCard = ({ pyq, index, userId, onPreview, onBookmark, onDelete, onDownlo
           <Eye className="w-3.5 h-3.5" /> Preview
         </button>
         <button
-          onClick={() => onDownload(pyq.fileUrl, `${pyq.subjectName}_${pyq.courseCode}.${pyq.fileType === 'pdf' ? 'pdf' : 'jpg'}`)}
+          onClick={() => onDownload(pyq)}
           className="flex items-center justify-center p-2 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/40 text-emerald-300 border border-emerald-500/20 transition-all duration-200"
           title="Download"
         >
@@ -144,39 +144,11 @@ const PYQCard = ({ pyq, index, userId, onPreview, onBookmark, onDelete, onDownlo
 
 // ─── Preview Modal ────────────────────────────────────────────────────────────
 const PreviewModal = ({ pyq, onClose, onDownload }) => {
-  const [blobUrl, setBlobUrl] = useState(null);
-  const [loadingPdf, setLoadingPdf] = useState(pyq?.fileType === 'pdf');
-  const [pdfError, setPdfError] = useState(false);
-
-  useEffect(() => {
-    if (!pyq || pyq.fileType !== 'pdf') return;
-    let isMounted = true;
-    setLoadingPdf(true);
-    setPdfError(false);
-
-    fetch(pyq.fileUrl)
-      .then(res => res.blob())
-      .then(blob => {
-        if (!isMounted) return;
-        const pdfBlob = new Blob([blob], { type: 'application/pdf' });
-        const url = URL.createObjectURL(pdfBlob);
-        setBlobUrl(url);
-        setLoadingPdf(false);
-      })
-      .catch(() => {
-        if (!isMounted) return;
-        setPdfError(true);
-        setLoadingPdf(false);
-      });
-
-    return () => {
-      isMounted = false;
-    };
-  }, [pyq]);
-
   if (!pyq) return null;
 
-  const pdfSource = blobUrl || `https://docs.google.com/gview?url=${encodeURIComponent(pyq.fileUrl)}&embedded=true`;
+  const token = localStorage.getItem('campusevents_token') || '';
+  const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+  const viewUrl = `${apiBase}/pyq/${pyq._id}/view?token=${token}`;
 
   return (
     <AnimatePresence>
@@ -198,7 +170,7 @@ const PreviewModal = ({ pyq, onClose, onDownload }) => {
             </div>
             <div className="flex items-center gap-2">
               <button
-                onClick={() => onDownload(pyq.fileUrl, `${pyq.subjectName}_${pyq.courseCode}.${pyq.fileType === 'pdf' ? 'pdf' : 'jpg'}`)}
+                onClick={() => onDownload(pyq)}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/40 text-emerald-300 text-xs font-semibold border border-emerald-500/20 transition-all"
               >
                 <Download className="w-3.5 h-3.5" /> Download
@@ -211,23 +183,16 @@ const PreviewModal = ({ pyq, onClose, onDownload }) => {
           {/* Content */}
           <div className="flex-1 overflow-hidden min-h-[500px] relative bg-[#080812] flex items-center justify-center">
             {pyq.fileType === 'pdf' ? (
-              loadingPdf ? (
-                <div className="flex flex-col items-center gap-2 text-gray-400">
-                  <Loader2 className="w-8 h-8 animate-spin text-indigo-400" />
-                  <p className="text-xs">Loading PDF document…</p>
-                </div>
-              ) : (
-                <iframe
-                  src={pdfSource}
-                  title={pyq.subjectName}
-                  className="w-full h-full min-h-[500px] border-none"
-                  style={{ height: 'calc(90vh - 80px)' }}
-                />
-              )
+              <iframe
+                src={viewUrl}
+                title={pyq.subjectName}
+                className="w-full h-full min-h-[500px] border-none"
+                style={{ height: 'calc(90vh - 80px)' }}
+              />
             ) : (
               <div className="flex items-center justify-center h-full p-6 overflow-auto" style={{ minHeight: 500 }}>
                 <img
-                  src={pyq.fileUrl}
+                  src={viewUrl}
                   alt={pyq.subjectName}
                   className="max-w-full max-h-full object-contain rounded-lg"
                 />
@@ -591,24 +556,11 @@ export default function PYQ() {
       })
     : pyqs;
 
-  const handleDownload = async (fileUrl, fileName) => {
-    try {
-      const res = await fetch(fileUrl);
-      const blob = await res.blob();
-      const isPdf = fileName.toLowerCase().endsWith('.pdf') || blob.type.includes('pdf');
-      const finalBlob = new Blob([blob], { type: isPdf ? 'application/pdf' : blob.type });
-      const blobUrl = window.URL.createObjectURL(finalBlob);
-
-      const link = document.createElement('a');
-      link.href = blobUrl;
-      link.download = fileName;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(blobUrl);
-    } catch (err) {
-      window.open(fileUrl, '_blank');
-    }
+  const handleDownload = (pyq) => {
+    const token = localStorage.getItem('campusevents_token') || '';
+    const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+    const downloadUrl = `${apiBase}/pyq/${pyq._id}/download?token=${token}`;
+    window.open(downloadUrl, '_blank');
   };
 
   return (

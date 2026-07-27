@@ -1,6 +1,8 @@
-const cloudinary = require('cloudinary').v2;
+const cloudinary  = require('cloudinary').v2;
 const streamifier = require('stream').Readable;
-const PYQ = require('../models/PYQ');
+const https       = require('https');
+const http        = require('http');
+const PYQ         = require('../models/PYQ');
 
 // ─── Configure Cloudinary ─────────────────────────────────────────────────────
 cloudinary.config({
@@ -292,5 +294,81 @@ exports.getAcademicYears = async (req, res) => {
   } catch (error) {
     console.error('getAcademicYears error:', error);
     return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// ─── Stream Helper ─────────────────────────────────────────────────────────────
+const fetchRemoteStream = (url) => {
+  return new Promise((resolve, reject) => {
+    const client = url.startsWith('https') ? https : http;
+    client.get(url, (remoteRes) => {
+      if (remoteRes.statusCode >= 300 && remoteRes.statusCode < 400 && remoteRes.headers.location) {
+        return fetchRemoteStream(remoteRes.headers.location).then(resolve).catch(reject);
+      }
+      if (remoteRes.statusCode !== 200) {
+        return reject(new Error(`Failed to fetch file (Status ${remoteRes.statusCode})`));
+      }
+      resolve(remoteRes);
+    }).on('error', reject);
+  });
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// @desc    Stream PYQ file inline for browser preview (PDF/Image)
+// @route   GET /api/pyq/:id/view
+// @access  Private
+// ─────────────────────────────────────────────────────────────────────────────
+exports.viewPYQFile = async (req, res) => {
+  try {
+    const pyq = await PYQ.findOne({
+      _id:     req.params.id,
+      college: req.user.college._id
+    });
+
+    if (!pyq) {
+      return res.status(404).send('PYQ document not found.');
+    }
+
+    const remoteStream = await fetchRemoteStream(pyq.fileUrl);
+    const contentType  = pyq.fileType === 'pdf' ? 'application/pdf' : (remoteStream.headers['content-type'] || 'image/jpeg');
+    const safeName     = `${pyq.subjectName.replace(/[^a-zA-Z0-9_-]/g, '_')}_${pyq.courseCode}.${pyq.fileType === 'pdf' ? 'pdf' : 'jpg'}`;
+
+    res.setHeader('Content-Type', contentType);
+    res.setHeader('Content-Disposition', `inline; filename="${safeName}"`);
+
+    remoteStream.pipe(res);
+  } catch (error) {
+    console.error('viewPYQFile error:', error.message);
+    return res.status(500).send('Error streaming PYQ preview.');
+  }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// @desc    Stream PYQ file for attachment download
+// @route   GET /api/pyq/:id/download
+// @access  Private
+// ─────────────────────────────────────────────────────────────────────────────
+exports.downloadPYQFile = async (req, res) => {
+  try {
+    const pyq = await PYQ.findOne({
+      _id:     req.params.id,
+      college: req.user.college._id
+    });
+
+    if (!pyq) {
+      return res.status(404).send('PYQ document not found.');
+    }
+
+    const remoteStream = await fetchRemoteStream(pyq.fileUrl);
+    const contentType  = pyq.fileType === 'pdf' ? 'application/pdf' : 'application/octet-stream';
+    const safeName     = `${pyq.subjectName.replace(/[^a-zA-Z0-9_-]/g, '_')}_${pyq.courseCode}.${pyq.fileType === 'pdf' ? 'pdf' : 'jpg'}`;
+
+    res.setHeader('Content-Type', contentType);
+    res.setHeader('Content-Disposition', `attachment; filename="${safeName}"`);
+
+    remoteStream.pipe(res);
+  } catch (error) {
+    console.error('downloadPYQFile error:', error.message);
+    return res.status(500).send('Error downloading PYQ file.');
   }
 };
