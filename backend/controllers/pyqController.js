@@ -1,8 +1,6 @@
-const cloudinary = require('cloudinary').v2;
-const https      = require('https');
-const http       = require('http');
+const cloudinary  = require('cloudinary').v2;
 const { Readable } = require('stream');
-const PYQ        = require('../models/PYQ');
+const PYQ          = require('../models/PYQ');
 
 // ─── Configure Cloudinary ─────────────────────────────────────────────────────
 cloudinary.config({
@@ -25,46 +23,12 @@ const uploadToCloudinary = (buffer, options) => {
   });
 };
 
-// ─── Helper: insert a Cloudinary transformation flag after "/upload/" ──────────
-// Uses plain string replace — avoids URL-parsing corruption of spaces/special chars.
-// e.g.  .../raw/upload/v123/folder/file.pdf
-//    →  .../raw/upload/fl_attachment:false/v123/folder/file.pdf
+// ─── Helper: add a Cloudinary transformation flag after "/upload/" ─────────────
+// Plain string replace — safe for filenames with spaces or special characters.
+// e.g. .../image/upload/v123/folder/file.pdf
+//   →  .../image/upload/fl_attachment/v123/folder/file.pdf
 const addCloudinaryFlag = (fileUrl, flag) => {
   return fileUrl.replace('/upload/', `/upload/${flag}/`);
-};
-
-// ─── Helper: fetch a remote URL and return the response stream ─────────────────
-// Follows redirects up to 5 levels so we can pipe the final body.
-const fetchStream = (url, redirects = 0) => {
-  return new Promise((resolve, reject) => {
-    if (redirects > 5) return reject(new Error('Too many redirects'));
-    try {
-      const parsedUrl = new URL(url);
-      const client    = parsedUrl.protocol === 'https:' ? https : http;
-      const req = client.request(
-        {
-          hostname: parsedUrl.hostname,
-          path:     parsedUrl.pathname + parsedUrl.search,
-          method:   'GET',
-          headers:  { 'User-Agent': 'CampusEvents/1.0' }
-        },
-        (res) => {
-          if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
-            const next = res.headers.location.startsWith('http')
-              ? res.headers.location
-              : `${parsedUrl.protocol}//${parsedUrl.hostname}${res.headers.location}`;
-            return fetchStream(next, redirects + 1).then(resolve).catch(reject);
-          }
-          if (res.statusCode < 200 || res.statusCode >= 300) {
-            return reject(new Error(`Remote returned HTTP ${res.statusCode}`));
-          }
-          resolve(res);
-        }
-      );
-      req.on('error', reject);
-      req.end();
-    } catch (err) { reject(err); }
-  });
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -210,7 +174,7 @@ exports.deletePYQ = async (req, res) => {
       return res.status(403).json({ success: false, message: 'Not authorized to delete this PYQ.' });
     }
 
-    // Remove file from Cloudinary (try both raw and image resource types)
+    // Try both resource types since Cloudinary auto-detection may vary
     try { await cloudinary.uploader.destroy(pyq.publicId, { resource_type: 'raw' }); } catch (_) {}
     try { await cloudinary.uploader.destroy(pyq.publicId, { resource_type: 'image' }); } catch (_) {}
 
@@ -239,7 +203,7 @@ exports.toggleBookmark = async (req, res) => {
       return res.status(404).json({ success: false, message: 'PYQ not found.' });
     }
 
-    const userId          = req.user._id.toString();
+    const userId            = req.user._id.toString();
     const alreadyBookmarked = pyq.bookmarkedBy.some(id => id.toString() === userId);
 
     if (alreadyBookmarked) {
@@ -316,16 +280,13 @@ exports.getAcademicYears = async (req, res) => {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// @desc    Stream PYQ file inline through our server for browser preview
+// @desc    Serve PYQ file inline for browser preview
 // @route   GET /api/pyq/:id/view
 // @access  Private
 //
-// WHY stream through our server (not redirect to Cloudinary directly)?
-// Cloudinary sets X-Frame-Options on raw file responses, which blocks iframes.
-// By proxying through our server we set our OWN headers:
-//   Content-Type: application/pdf
-//   Content-Disposition: inline
-// …and we never forward Cloudinary's X-Frame-Options, so the iframe renders.
+// Cloudinary stores PDFs uploaded with resource_type:'auto' as "image" type.
+// Image-type Cloudinary URLs do NOT set X-Frame-Options — iframes work fine.
+// We redirect directly to the stored Cloudinary URL (no streaming on Vercel).
 // ─────────────────────────────────────────────────────────────────────────────
 exports.viewPYQFile = async (req, res) => {
   try {
@@ -336,27 +297,8 @@ exports.viewPYQFile = async (req, res) => {
 
     if (!pyq) return res.status(404).send('PYQ not found.');
 
-    const safeName = `${pyq.subjectName.replace(/[^a-zA-Z0-9_-]/g, '_')}_${pyq.courseCode}.${pyq.fileType === 'pdf' ? 'pdf' : 'jpg'}`;
-
-    if (pyq.fileType === 'pdf') {
-      // fl_attachment:false tells Cloudinary to serve inline (not force-download)
-      const cloudUrl = addCloudinaryFlag(pyq.fileUrl, 'fl_attachment:false');
-      try {
-        const stream = await fetchStream(cloudUrl);
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `inline; filename="${safeName}"`);
-        res.setHeader('Cache-Control', 'private, max-age=3600');
-        // Intentionally NOT forwarding X-Frame-Options from Cloudinary
-        return stream.pipe(res);
-      } catch (streamErr) {
-        console.error('viewPYQFile stream error:', streamErr.message);
-        // Fallback: open directly (won't work in iframe but prevents blank page)
-        return res.redirect(302, cloudUrl);
-      }
-    } else {
-      // Images: Cloudinary serves them inline by default
-      return res.redirect(302, pyq.fileUrl);
-    }
+    // Redirect directly — Cloudinary image-type URLs are served inline by default
+    return res.redirect(302, pyq.fileUrl);
   } catch (error) {
     console.error('viewPYQFile error:', error.message);
     return res.status(500).send('Error loading PYQ preview.');
@@ -364,7 +306,7 @@ exports.viewPYQFile = async (req, res) => {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// @desc    Redirect to Cloudinary for attachment download
+// @desc    Download PYQ file as attachment
 // @route   GET /api/pyq/:id/download
 // @access  Private
 // ─────────────────────────────────────────────────────────────────────────────
@@ -377,13 +319,9 @@ exports.downloadPYQFile = async (req, res) => {
 
     if (!pyq) return res.status(404).send('PYQ not found.');
 
-    if (pyq.fileType === 'pdf') {
-      // fl_attachment tells Cloudinary to force a file download
-      const downloadUrl = addCloudinaryFlag(pyq.fileUrl, 'fl_attachment');
-      return res.redirect(302, downloadUrl);
-    } else {
-      return res.redirect(302, pyq.fileUrl);
-    }
+    // fl_attachment tells Cloudinary to serve the file as a downloadable attachment
+    const downloadUrl = addCloudinaryFlag(pyq.fileUrl, 'fl_attachment');
+    return res.redirect(302, downloadUrl);
   } catch (error) {
     console.error('downloadPYQFile error:', error.message);
     return res.status(500).send('Error downloading PYQ file.');
