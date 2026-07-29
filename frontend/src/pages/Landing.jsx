@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useCollege } from '../context/CollegeContext';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Search, Plus, MapPin, Globe, CheckCircle2, ChevronRight,
-  X, School, ShieldCheck, Lock, Mail, ArrowRight, ShieldAlert
+  X, School, ShieldCheck, Lock, Mail, ArrowRight, ShieldAlert, Heart
 } from 'lucide-react';
 
 const Landing = () => {
@@ -34,42 +34,26 @@ const Landing = () => {
   const [message, setMessage] = useState(null);
 
   useEffect(() => {
-    const fetchColleges = async () => {
-      try {
-        const res = await api.get('/colleges');
-        if (res.data.success) setColleges(res.data.data);
-      } catch (err) {
-        console.error('Failed to load colleges:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchColleges();
   }, []);
 
-  const handleSelect = (college) => {
-    selectCollege(college);
-    navigate('/login');
-  };
-
-  // Admin/SuperAdmin login from modal
-  const handleAdminLogin = async (e) => {
-    e.preventDefault();
-    setAdminLoading(true);
-    setAdminError('');
+  const fetchColleges = async () => {
     try {
-      const res = await login(adminForm.email, adminForm.password);
-      if (res.success) {
-        const role = res.user.role;
-        if (role === 'SuperAdmin') navigate('/superadmin');
-        else if (role === 'Admin') navigate('/admin');
-        else setAdminError('This portal is for Admins only. Students, select your college below.');
+      setLoading(true);
+      const res = await api.get('/colleges');
+      if (res.data.success) {
+        setColleges(res.data.data);
       }
     } catch (err) {
-      setAdminError(err.response?.data?.message || 'Invalid credentials. Please check your email and password.');
+      console.error(err);
     } finally {
-      setAdminLoading(false);
+      setLoading(false);
     }
+  };
+
+  const handleSelectCollege = (college) => {
+    selectCollege(college);
+    navigate('/login');
   };
 
   const handleRequestSubmit = async (e) => {
@@ -81,12 +65,38 @@ const Landing = () => {
       if (res.data.success) {
         setMessage({ type: 'success', text: res.data.message });
         setForm({ name: '', state: '', website: '', description: '', logo: '', requestedByName: '', requestedByEmail: '' });
-        setTimeout(() => setIsCollegeModalOpen(false), 2500);
+        setTimeout(() => {
+          setIsCollegeModalOpen(false);
+          setMessage(null);
+        }, 3000);
       }
     } catch (err) {
       setMessage({ type: 'error', text: err.response?.data?.message || 'Failed to submit request' });
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleAdminLoginSubmit = async (e) => {
+    e.preventDefault();
+    setAdminLoading(true);
+    setAdminError('');
+    try {
+      const res = await login(adminForm.email, adminForm.password);
+      if (res.success) {
+        setIsAdminModalOpen(false);
+        if (res.user?.role === 'SuperAdmin') {
+          navigate('/superadmin');
+        } else if (res.user?.role === 'Admin') {
+          navigate('/admin');
+        } else {
+          navigate('/home');
+        }
+      }
+    } catch (err) {
+      setAdminError(err.response?.data?.message || 'Invalid admin credentials');
+    } finally {
+      setAdminLoading(false);
     }
   };
 
@@ -101,11 +111,27 @@ const Landing = () => {
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl -z-10 animate-pulse-slow" />
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl -z-10 animate-pulse-slow" />
 
-      {/* ── Admin Login button — top right ── */}
-      <div className="absolute top-4 right-4 sm:top-6 sm:right-6 z-10">
+      {/* ── Top Bar Action Buttons — top right ── */}
+      <div className="absolute top-4 right-4 sm:top-6 sm:right-6 z-10 flex items-center space-x-2 sm:space-x-3">
+        <Link
+          to="/contact"
+          className="flex items-center space-x-1.5 text-xs text-gray-400 hover:text-white bg-white/[0.04] hover:bg-white/10 border border-glassBorder hover:border-white/20 px-3 py-2 rounded-xl transition-all duration-200 font-semibold"
+        >
+          <Mail className="w-3.5 h-3.5 text-cyan-400" />
+          <span>Contact Us</span>
+        </Link>
+
+        <Link
+          to="/donate"
+          className="flex items-center space-x-1.5 text-xs text-white bg-gradient-to-r from-purple-600/80 to-pink-600/80 hover:from-purple-500 hover:to-pink-500 border border-purple-500/30 px-3 py-2 rounded-xl transition-all duration-200 font-semibold shadow-glow/10"
+        >
+          <Heart className="w-3.5 h-3.5 text-rose-300 fill-rose-300" />
+          <span>Donate</span>
+        </Link>
+
         <button
           onClick={() => { setIsAdminModalOpen(true); setAdminError(''); setAdminForm({ email: '', password: '' }); }}
-          className="flex items-center space-x-1.5 text-xs text-gray-400 hover:text-white bg-white/[0.04] hover:bg-indigo-950/60 border border-glassBorder hover:border-indigo-500/40 px-3.5 py-2 rounded-xl transition-all duration-200 group font-semibold"
+          className="flex items-center space-x-1.5 text-xs text-gray-400 hover:text-white bg-white/[0.04] hover:bg-indigo-950/60 border border-glassBorder hover:border-indigo-500/40 px-3 py-2 rounded-xl transition-all duration-200 group font-semibold"
         >
           <ShieldCheck className="w-3.5 h-3.5 text-indigo-400" />
           <span>Admin Login</span>

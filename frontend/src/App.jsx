@@ -13,6 +13,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import SuperAdminDashboard from './pages/SuperAdminDashboard';
 import SuperAdminLogin from './pages/SuperAdminLogin';
 import Contact from './pages/Contact';
+import Donate from './pages/Donate';
 import PYQ from './pages/PYQ';
 
 // Import Components
@@ -64,6 +65,7 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/superadmin-login" element={<SuperAdminLogin />} />
                 <Route path="/contact" element={<Contact />} />
+                <Route path="/donate" element={<Donate />} />
 
                 {/* Onboarding interest selector */}
                 <Route

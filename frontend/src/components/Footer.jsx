@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { School, Activity, Globe, Terminal, Briefcase, Mail, ExternalLink, ShieldAlert } from 'lucide-react';
+import { School, Activity, Globe, Terminal, Briefcase, Mail, ExternalLink, ShieldAlert, Heart } from 'lucide-react';
 import { useCollege } from '../context/CollegeContext';
 
 const Footer = () => {
@@ -84,6 +84,12 @@ const Footer = () => {
                 <Link to="/contact" className="text-xs text-gray-400 hover:text-indigo-400 transition-colors duration-200 flex items-center space-x-1">
                   <Mail className="w-3 h-3" />
                   <span>Contact Us</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/donate" className="text-xs text-gray-400 hover:text-rose-400 transition-colors duration-200 flex items-center space-x-1">
+                  <Heart className="w-3 h-3 text-rose-400" />
+                  <span className="font-semibold text-rose-300">Donate Support</span>
                 </Link>
               </li>
             </ul>
