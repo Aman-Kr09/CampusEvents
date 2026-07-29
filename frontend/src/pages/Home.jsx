@@ -1364,7 +1364,12 @@ const Home = () => {
                             {job.source ? (
                               <div className="flex items-center gap-1.5">
                                 {job.sourceLogo ? (
-                                  <img src={job.sourceLogo} alt={job.source} className="w-4 h-4 rounded object-contain" />
+                                  <img 
+                                    src={job.sourceLogo} 
+                                    alt={job.source} 
+                                    className="w-4 h-4 rounded object-contain" 
+                                    onError={(e) => { e.target.style.display = 'none'; }}
+                                  />
                                 ) : (
                                   <Globe className="w-3.5 h-3.5 text-gray-600" />
                                 )}
