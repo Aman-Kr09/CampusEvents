@@ -5,6 +5,8 @@ const Placement = require('../models/Placement');
 const Question = require('../models/Question');
 const Answer = require('../models/Answer');
 const PYQ = require('../models/PYQ');
+const OffCampusJob = require('../models/OffCampusJob');
+const { getExternalJobs } = require('../services/jobFeedService');
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
@@ -80,8 +82,22 @@ exports.chat = async (req, res) => {
       PYQ.find({ college: collegeId })
         .sort({ createdAt: -1 })
         .populate('uploadedBy', 'name')
-        .select('subjectName courseCode semester department academicYear examType fileType fileUrl uploadedBy createdAt')
+        .select('subjectName courseCode semester department academicYear examType fileType fileUrl uploadedBy createdAt'),
+
+      OffCampusJob.find({ college: collegeId })
+        .sort({ postedAt: -1 })
+        .select('title company location employmentType experience salary source applyUrl deadline skills description')
     ]);
+
+    // Fetch live external jobs for AI context (fallback to empty if error)
+    let liveExternalJobs = [];
+    try {
+      liveExternalJobs = await getExternalJobs();
+    } catch (err) {
+      console.warn('[Assistant] Failed to fetch external jobs for AI context:', err.message);
+    }
+
+    const allOffCampusJobs = [...offCampusJobs, ...liveExternalJobs].slice(0, 20);
 
     // Fetch all answers for queried Q&A threads
     const questionIds = questions.map(q => q._id);
@@ -172,6 +188,9 @@ exports.chat = async (req, res) => {
     const formatPYQ = (p) =>
       `- **${p.subjectName}** (${p.courseCode}) | Sem ${p.semester} | ${p.department} | ${p.examType} | Year: ${p.academicYear} | Type: ${p.fileType?.toUpperCase()} | Uploaded by: ${p.uploadedBy?.name || 'Unknown'} | Download URL: ${p.fileUrl}`;
 
+    const formatOffCampusJob = (j) =>
+      `- **${j.title}** @ **${j.company}** [${j.employmentType}] | Location: ${j.location || 'Remote'} | Salary: ${j.salary || 'N/A'} | Source: ${j.source || 'T&P Cell'} | Skills: ${j.skills?.join(', ') || 'N/A'} | Apply: ${j.applyUrl}`;
+
     // Registered events summary for student profile
     const registeredEventNames = upcomingEvents
       .filter(e => e.registrations?.some(rId => rId.toString() === userId))
@@ -184,7 +203,7 @@ You ONLY answer questions about:
 1. This student's personal profile and activities
 2. Events at ${collegeName}
 3. College announcements
-4. Placement data and visiting companies at ${collegeName}
+4. Placement data (on-campus companies & off-campus job opportunities) at ${collegeName}
 5. The Q&A discussion board at ${collegeName}
 6. Previous Year Question (PYQ) papers at ${collegeName}
 7. How to use CampusEvents
@@ -212,8 +231,11 @@ ${pastEvents.length > 0 ? pastEvents.map(formatEvent).join('\n') : 'None.'}
 ### 📢 Announcements (${announcements.length} total — showing top relevant)
 ${rankedAnnouncements.length > 0 ? rankedAnnouncements.map(formatAnnouncement).join('\n') : 'None.'}
 
-### 💼 Placement Records (${placements.length} years of data — ALL shown)
-${placements.length > 0 ? placements.map(formatPlacement).join('\n\n') : 'No placement data yet.'}
+### 💼 On-Campus Placement Records (${placements.length} years of data — ALL shown)
+${placements.length > 0 ? placements.map(formatPlacement).join('\n\n') : 'No on-campus placement data yet.'}
+
+### 🌐 Off-Campus Job Opportunities (${allOffCampusJobs.length} total — showing top relevant)
+${allOffCampusJobs.length > 0 ? allOffCampusJobs.map(formatOffCampusJob).join('\n') : 'No off-campus job listings right now.'}
 
 ### ❓ Q&A Board (${questions.length} questions total — showing top relevant with answers)
 ${rankedQuestions.length > 0 ? rankedQuestions.map(formatQuestion).join('\n') : 'None.'}
@@ -222,7 +244,7 @@ ${rankedQuestions.length > 0 ? rankedQuestions.map(formatQuestion).join('\n') : 
 ${rankedPYQs.length > 0 ? rankedPYQs.map(formatPYQ).join('\n') : 'No question papers uploaded yet.'}
 ---
 
-Base all answers on the LIVE DATA above. When students ask for PYQs or question papers, provide exact subject details, course codes, semester, branch/department, exam type, academic year, and direct download links. If something isn't in the data, say "I don't have that information right now — please check the platform directly."`;
+Base all answers on the LIVE DATA above. When students ask for PYQs or question papers, provide exact subject details, course codes, semester, branch/department, exam type, academic year, and direct download links. If someone asks about off-campus jobs or companies, summarize the available off-campus job titles, companies, locations, packages, and direct apply links. If something isn't in the data, say "I don't have that information right now — please check the platform directly."`;
 
     // ── Build Groq messages ────────────────────────────────────────────────────
     const sanitizedHistory = (Array.isArray(history) ? history : [])
