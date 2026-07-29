@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { api, useAuth } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Users, Calendar, AlertCircle, HelpCircle, BarChart3, Megaphone, ShieldAlert, Check, X, Trash2, Edit2, Plus, AlertTriangle, Eye, Link2
+  Users, Calendar, AlertCircle, HelpCircle, BarChart3, Megaphone, ShieldAlert, Check, X, Trash2, Edit2, Plus, AlertTriangle, Eye, Link2, Globe, ExternalLink
 } from 'lucide-react';
 
 const isNITDelhi = (college) => {
@@ -30,6 +30,7 @@ const AdminDashboard = () => {
   const [pendingEvents, setPendingEvents] = useState([]);
   const [allEvents, setAllEvents] = useState([]);
   const [placementRecords, setPlacementRecords] = useState([]);
+  const [offCampusJobs, setOffCampusJobs] = useState([]);
   const [announcements, setAnnouncements] = useState([]);
   const [students, setStudents] = useState([]);
   const [questions, setQuestions] = useState([]);
@@ -50,6 +51,25 @@ const AdminDashboard = () => {
 
   const [showAnnounceModal, setShowAnnounceModal] = useState(false);
   const [announceForm, setAnnounceForm] = useState({ title: '', content: '' });
+
+  // Off-campus job form / modal
+  const [showOffCampusModal, setShowOffCampusModal] = useState(false);
+  const [offCampusForm, setOffCampusForm] = useState({
+    title: '',
+    company: '',
+    location: '',
+    employmentType: 'Full-Time',
+    experience: '',
+    salary: '',
+    source: '',
+    sourceLogo: '',
+    applyUrl: '',
+    deadline: '',
+    skills: '',      // comma-separated string, split before sending
+    logo: '',
+    description: ''
+  });
+  const [offCampusEditId, setOffCampusEditId] = useState(null); // null = add mode, id = edit mode
 
   useEffect(() => {
     fetchAdminData();
@@ -80,6 +100,14 @@ const AdminDashboard = () => {
         fetchOrFallback('/qa/users', setStudents),
         fetchOrFallback('/qa/questions', setQuestions)
       ]);
+
+      // Fetch off-campus jobs (non-critical — don't break overview count if it fails)
+      try {
+        const resOff = await api.get('/off-campus');
+        if (resOff.data.success) setOffCampusJobs(resOff.data.data);
+      } catch (e) {
+        console.error('Failed to load off-campus jobs:', e.message);
+      }
 
       // Map metrics overview
       setOverview({
@@ -179,6 +207,87 @@ const AdminDashboard = () => {
       }
     } catch (err) {
       alert(err.response?.data?.message || err.message || 'Failed to delete placement record');
+    }
+  };
+
+  // ── OFF-CAMPUS JOB HANDLERS ───────────────────────────────────────────────
+  const openAddOffCampus = () => {
+    setOffCampusEditId(null);
+    setOffCampusForm({
+      title: '', company: '', location: '', employmentType: 'Full-Time',
+      experience: '', salary: '', source: '', sourceLogo: '', applyUrl: '',
+      deadline: '', skills: '', logo: '', description: ''
+    });
+    setShowOffCampusModal(true);
+  };
+
+  const openEditOffCampus = (job) => {
+    setOffCampusEditId(job._id);
+    setOffCampusForm({
+      title: job.title || '',
+      company: job.company || '',
+      location: job.location || '',
+      employmentType: job.employmentType || 'Full-Time',
+      experience: job.experience || '',
+      salary: job.salary || '',
+      source: job.source || '',
+      sourceLogo: job.sourceLogo || '',
+      applyUrl: job.applyUrl || '',
+      deadline: job.deadline ? new Date(job.deadline).toISOString().split('T')[0] : '',
+      skills: Array.isArray(job.skills) ? job.skills.join(', ') : '',
+      logo: job.logo || '',
+      description: job.description || ''
+    });
+    setShowOffCampusModal(true);
+  };
+
+  const handleSaveOffCampus = async (e) => {
+    e.preventDefault();
+    try {
+      const payload = {
+        ...offCampusForm,
+        skills: offCampusForm.skills
+          ? offCampusForm.skills.split(',').map(s => s.trim()).filter(Boolean)
+          : [],
+        deadline: offCampusForm.deadline ? offCampusForm.deadline : null,
+        sourceLogo: offCampusForm.sourceLogo || null,
+        logo: offCampusForm.logo || null
+      };
+
+      let res;
+      if (offCampusEditId) {
+        res = await api.put(`/off-campus/${offCampusEditId}`, payload);
+        if (res.data.success) {
+          setOffCampusJobs(offCampusJobs.map(j => j._id === offCampusEditId ? res.data.data : j));
+        }
+      } else {
+        res = await api.post('/off-campus', payload);
+        if (res.data.success) {
+          setOffCampusJobs([res.data.data, ...offCampusJobs]);
+        }
+      }
+
+      if (res.data.success) {
+        setShowOffCampusModal(false);
+      } else {
+        alert(res.data.message || 'Operation failed');
+      }
+    } catch (err) {
+      alert(err.response?.data?.message || err.message || 'Failed to save off-campus job');
+    }
+  };
+
+  const handleDeleteOffCampus = async (id) => {
+    if (!window.confirm('Delete this off-campus job listing?')) return;
+    try {
+      const res = await api.delete(`/off-campus/${id}`);
+      if (res.data.success) {
+        setOffCampusJobs(offCampusJobs.filter(j => j._id !== id));
+      } else {
+        alert(res.data.message || 'Failed to delete');
+      }
+    } catch (err) {
+      alert(err.response?.data?.message || err.message || 'Failed to delete off-campus job');
     }
   };
 
@@ -447,182 +556,277 @@ const AdminDashboard = () => {
 
               {/* TAB 2: COMPANY LISTINGS EDITOR */}
               {activeTab === 'placements' && (
-                <div className="space-y-6">
-                  <div className="flex justify-between items-center pb-2">
-                    <h3 className="font-bold text-white text-base">Company Listings</h3>
-                    <button
-                      onClick={() => setShowPlacementModal(true)}
-                      className="glass-button-primary text-xs py-1.5 px-3 flex items-center space-x-1"
-                    >
-                      <Plus className="w-4 h-4" />
-                      <span>Add Company</span>
-                    </button>
-                  </div>
+                <div className="space-y-8">
 
-                  {/* Training & Placement Head details */}
-                  <div className="bg-white/[0.01] border border-glassBorder p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-glow/5">
-                    <div className="flex items-center space-x-3">
-                      <div className="p-2.5 bg-indigo-500/10 rounded-lg text-indigo-400">
-                        <Users className="w-4.5 h-4.5" />
-                      </div>
+                  {/* ─── ON-CAMPUS SECTION ──────────────────────────────────── */}
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
                       <div>
-                        <span className="block text-[10px] text-gray-500 font-bold uppercase tracking-wider">Training & Placement Head</span>
-                        <span className="font-extrabold text-white text-sm">
-                          {isNITDelhi(user?.college) ? 'Harsh Sudhakar' : 'To Be Appointed'}
-                        </span>
+                        <h3 className="font-bold text-white text-base">On-Campus Company Listings</h3>
+                        <p className="text-xs text-gray-500 mt-0.5">Manage companies visiting campus for direct recruitment drives.</p>
+                      </div>
+                      <button
+                        onClick={() => setShowPlacementModal(true)}
+                        className="glass-button-primary text-xs py-1.5 px-3 flex items-center space-x-1"
+                      >
+                        <Plus className="w-4 h-4" />
+                        <span>Add Company</span>
+                      </button>
+                    </div>
+
+                    {/* Training & Placement Head details */}
+                    <div className="bg-white/[0.01] border border-glassBorder p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-glow/5">
+                      <div className="flex items-center space-x-3">
+                        <div className="p-2.5 bg-indigo-500/10 rounded-lg text-indigo-400">
+                          <Users className="w-4.5 h-4.5" />
+                        </div>
+                        <div>
+                          <span className="block text-[10px] text-gray-500 font-bold uppercase tracking-wider">Training & Placement Head</span>
+                          <span className="font-extrabold text-white text-sm">
+                            {isNITDelhi(user?.college) ? 'Harsh Sudhakar' : 'To Be Appointed'}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="text-[10px] text-gray-400 bg-white/[0.02] border border-glassBorder px-2.5 py-1 rounded-md self-start sm:self-center font-semibold">
+                        T&P Cell Contact Point
                       </div>
                     </div>
-                    <div className="text-[10px] text-gray-400 bg-white/[0.02] border border-glassBorder px-2.5 py-1 rounded-md self-start sm:self-center font-semibold">
-                      T&P Cell Contact Point
-                    </div>
-                  </div>
 
-                  {placementRecords.length === 0 ? (
-                    <p className="text-xs text-gray-500 text-center py-12">No company listings recorded yet.</p>
-                  ) : (
-                    <div className="grid gap-3">
-                      {placementRecords.map(pr => {
-                        const approved = pr.companiesVisited?.filter(c => c.status === 'Approved') || [];
-                        const pending = pr.companiesVisited?.filter(c => c.status === 'Pending') || [];
-                        return (
-                          <div
-                            key={pr._id}
-                            className="bg-white/[0.01] border border-glassBorder p-4 rounded-xl flex flex-col gap-4"
-                          >
-                            {/* Year header + delete */}
-                            <div className="flex items-center justify-between">
-                              <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-wider">Year {pr.year}</span>
-                              <button onClick={() => handleDeletePlacement(pr._id)} className="p-1.5 text-gray-500 hover:text-red-400 rounded-lg hover:bg-white/5">
-                                <Trash2 className="w-4 h-4" />
-                              </button>
-                            </div>
-
-                            {/* Approved company cards */}
-                            {approved.length > 0 && (
-                              <div className="space-y-2">
-                                <span className="block text-[10px] text-gray-500 font-bold uppercase tracking-wider">Listed Companies</span>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                  {approved.map(c => (
-                                    <div key={c._id || c.name} className="bg-white/[0.02] border border-glassBorder rounded-lg p-3 flex flex-col gap-1.5 justify-between">
-                                      <div>
-                                        <div className="flex justify-between items-start">
-                                          <span className="font-bold text-white text-sm">{c.name}</span>
-                                          <span className="bg-purple-950/60 text-purple-300 border border-purple-500/20 px-2 py-0.5 rounded text-[10px] font-bold">
-                                            {c.jobType || 'FTE'}
-                                          </span>
-                                        </div>
-                                        <div className="flex flex-wrap gap-2 text-[10px] mt-1.5">
-                                          <span className="bg-indigo-950/60 text-indigo-300 border border-indigo-500/20 px-2 py-0.5 rounded font-semibold">
-                                            CPA: {c.cpaRequired != null ? c.cpaRequired : '—'}
-                                          </span>
-                                          <span className="bg-emerald-950/60 text-emerald-300 border border-emerald-500/20 px-2 py-0.5 rounded font-semibold">
-                                            PKG: {c.package != null ? (c.package.toLowerCase() === 'nil' ? 'nil' : `${c.package} LPA`) : '—'}
-                                          </span>
-                                          <span className={`px-2 py-0.5 rounded font-bold border ${c.type === 'Blocking'
-                                            ? 'bg-red-950/50 text-red-300 border-red-500/20'
-                                            : 'bg-cyan-950/50 text-cyan-300 border-cyan-500/20'
-                                            }`}>
-                                            {c.type || 'Non-Blocking'}
-                                          </span>
-                                        </div>
-                                        {c.branchesEligible && c.branchesEligible.trim().toLowerCase() !== 'nil' && (
-                                          <div className="text-[10px] text-gray-400 mt-1.5">
-                                            <span className="font-semibold text-gray-500">Branches:</span> {c.branchesEligible}
-                                          </div>
-                                        )}
-                                        {c.deadline && c.deadline.trim().toLowerCase() !== 'nil' && (
-                                          <div className="text-[10px] text-amber-400 mt-1">
-                                            <span className="font-semibold text-amber-500/80">Deadline:</span> {c.deadline}
-                                          </div>
-                                        )}
-                                      </div>
-                                      {c.googleFormLink && c.googleFormLink.trim().toLowerCase() !== 'nil' && (
-                                        <div className="mt-1 pt-1.5 border-t border-white/[0.03]">
-                                          <a
-                                            href={c.googleFormLink.startsWith('http') ? c.googleFormLink : `https://${c.googleFormLink}`}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="inline-flex items-center space-x-1 text-[10px] text-indigo-400 hover:text-indigo-300 font-semibold transition-colors"
-                                          >
-                                            <Link2 className="w-3 h-3" />
-                                            <span>Google Form</span>
-                                          </a>
-                                        </div>
-                                      )}
-                                    </div>
-                                  ))}
-                                </div>
+                    {placementRecords.length === 0 ? (
+                      <p className="text-xs text-gray-500 text-center py-8">No company listings recorded yet.</p>
+                    ) : (
+                      <div className="grid gap-3">
+                        {placementRecords.map(pr => {
+                          const approved = pr.companiesVisited?.filter(c => c.status === 'Approved') || [];
+                          const pending = pr.companiesVisited?.filter(c => c.status === 'Pending') || [];
+                          return (
+                            <div
+                              key={pr._id}
+                              className="bg-white/[0.01] border border-glassBorder p-4 rounded-xl flex flex-col gap-4"
+                            >
+                              {/* Year header + delete */}
+                              <div className="flex items-center justify-between">
+                                <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-wider">Year {pr.year}</span>
+                                <button onClick={() => handleDeletePlacement(pr._id)} className="p-1.5 text-gray-500 hover:text-red-400 rounded-lg hover:bg-white/5">
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
                               </div>
-                            )}
-                            {approved.length === 0 && (
-                              <span className="text-[10px] text-gray-600 italic">No approved companies yet.</span>
-                            )}
 
-                            {/* Pending suggestions */}
-                            {pending.length > 0 && (
-                              <div className="space-y-2 bg-amber-950/10 border border-amber-500/10 p-3.5 rounded-xl">
-                                <span className="block text-[10px] text-amber-400 font-bold uppercase tracking-wider mb-1">Pending Suggestions</span>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                  {pending.map(c => (
-                                    <div key={c._id} className="flex items-center justify-between bg-white/[0.02] border border-glassBorder p-2.5 rounded-lg">
-                                      <div className="flex flex-col gap-0.5">
-                                        <span className="font-semibold text-white text-xs">{c.name}</span>
-                                        <div className="flex flex-wrap gap-1.5 text-[10px]">
-                                          <span className="text-indigo-300">CPA: {c.cpaRequired ?? '—'}</span>
-                                          <span className="text-emerald-300">PKG: {c.package != null ? (c.package.toLowerCase() === 'nil' ? 'nil' : `${c.package} LPA`) : '—'}</span>
-                                          <span className={c.type === 'Blocking' ? 'text-red-300' : 'text-cyan-300'}>{c.type || 'Non-Blocking'}</span>
-                                          <span className="text-purple-300 font-semibold">{c.jobType || 'FTE'}</span>
+                              {/* Approved company cards */}
+                              {approved.length > 0 && (
+                                <div className="space-y-2">
+                                  <span className="block text-[10px] text-gray-500 font-bold uppercase tracking-wider">Listed Companies</span>
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                    {approved.map(c => (
+                                      <div key={c._id || c.name} className="bg-white/[0.02] border border-glassBorder rounded-lg p-3 flex flex-col gap-1.5 justify-between">
+                                        <div>
+                                          <div className="flex justify-between items-start">
+                                            <span className="font-bold text-white text-sm">{c.name}</span>
+                                            <span className="bg-purple-950/60 text-purple-300 border border-purple-500/20 px-2 py-0.5 rounded text-[10px] font-bold">
+                                              {c.jobType || 'FTE'}
+                                            </span>
+                                          </div>
+                                          <div className="flex flex-wrap gap-2 text-[10px] mt-1.5">
+                                            <span className="bg-indigo-950/60 text-indigo-300 border border-indigo-500/20 px-2 py-0.5 rounded font-semibold">
+                                              CPA: {c.cpaRequired != null ? c.cpaRequired : '—'}
+                                            </span>
+                                            <span className="bg-emerald-950/60 text-emerald-300 border border-emerald-500/20 px-2 py-0.5 rounded font-semibold">
+                                              PKG: {c.package != null ? (c.package.toLowerCase() === 'nil' ? 'nil' : `${c.package} LPA`) : '—'}
+                                            </span>
+                                            <span className={`px-2 py-0.5 rounded font-bold border ${c.type === 'Blocking'
+                                              ? 'bg-red-950/50 text-red-300 border-red-500/20'
+                                              : 'bg-cyan-950/50 text-cyan-300 border-cyan-500/20'
+                                              }`}>
+                                              {c.type || 'Non-Blocking'}
+                                            </span>
+                                          </div>
+                                          {c.branchesEligible && c.branchesEligible.trim().toLowerCase() !== 'nil' && (
+                                            <div className="text-[10px] text-gray-400 mt-1.5">
+                                              <span className="font-semibold text-gray-500">Branches:</span> {c.branchesEligible}
+                                            </div>
+                                          )}
+                                          {c.deadline && c.deadline.trim().toLowerCase() !== 'nil' && (
+                                            <div className="text-[10px] text-amber-400 mt-1">
+                                              <span className="font-semibold text-amber-500/80">Deadline:</span> {c.deadline}
+                                            </div>
+                                          )}
                                         </div>
-                                        {c.branchesEligible && c.branchesEligible.trim().toLowerCase() !== 'nil' && (
-                                          <div className="text-[10px] text-gray-400 mt-0.5">
-                                            <span className="text-gray-500">Branches:</span> {c.branchesEligible}
-                                          </div>
-                                        )}
-                                        {c.deadline && c.deadline.trim().toLowerCase() !== 'nil' && (
-                                          <div className="text-[10px] text-amber-400 mt-0.5">
-                                            <span className="text-amber-500/80">Deadline:</span> {c.deadline}
-                                          </div>
-                                        )}
                                         {c.googleFormLink && c.googleFormLink.trim().toLowerCase() !== 'nil' && (
-                                          <div className="mt-0.5">
+                                          <div className="mt-1 pt-1.5 border-t border-white/[0.03]">
                                             <a
                                               href={c.googleFormLink.startsWith('http') ? c.googleFormLink : `https://${c.googleFormLink}`}
                                               target="_blank"
                                               rel="noopener noreferrer"
-                                              className="inline-flex items-center space-x-0.5 text-[9px] text-indigo-400 hover:text-indigo-300 font-semibold"
+                                              className="inline-flex items-center space-x-1 text-[10px] text-indigo-400 hover:text-indigo-300 font-semibold transition-colors"
                                             >
-                                              <Link2 className="w-2.5 h-2.5" />
-                                              <span>Google Form Link</span>
+                                              <Link2 className="w-3 h-3" />
+                                              <span>Google Form</span>
                                             </a>
                                           </div>
                                         )}
                                       </div>
-                                      <div className="flex items-center gap-1.5">
-                                        <button
-                                          onClick={() => handleReviewRecruiter(pr._id, c._id, 'Approved')}
-                                          className="p-1 text-emerald-400 hover:text-emerald-300 bg-emerald-950/40 border border-emerald-500/20 rounded-md transition-all hover:bg-emerald-900/40"
-                                          title="Approve"
-                                        >
-                                          <Check className="w-3.5 h-3.5" />
-                                        </button>
-                                        <button
-                                          onClick={() => handleReviewRecruiter(pr._id, c._id, 'Rejected')}
-                                          className="p-1 text-red-400 hover:text-red-300 bg-red-950/40 border border-red-500/20 rounded-md transition-all hover:bg-red-900/40"
-                                          title="Reject"
-                                        >
-                                          <X className="w-3.5 h-3.5" />
-                                        </button>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                              {approved.length === 0 && (
+                                <span className="text-[10px] text-gray-600 italic">No approved companies yet.</span>
+                              )}
+
+                              {/* Pending suggestions */}
+                              {pending.length > 0 && (
+                                <div className="space-y-2 bg-amber-950/10 border border-amber-500/10 p-3.5 rounded-xl">
+                                  <span className="block text-[10px] text-amber-400 font-bold uppercase tracking-wider mb-1">Pending Suggestions</span>
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                    {pending.map(c => (
+                                      <div key={c._id} className="flex items-center justify-between bg-white/[0.02] border border-glassBorder p-2.5 rounded-lg">
+                                        <div className="flex flex-col gap-0.5">
+                                          <span className="font-semibold text-white text-xs">{c.name}</span>
+                                          <div className="flex flex-wrap gap-1.5 text-[10px]">
+                                            <span className="text-indigo-300">CPA: {c.cpaRequired ?? '—'}</span>
+                                            <span className="text-emerald-300">PKG: {c.package != null ? (c.package.toLowerCase() === 'nil' ? 'nil' : `${c.package} LPA`) : '—'}</span>
+                                            <span className={c.type === 'Blocking' ? 'text-red-300' : 'text-cyan-300'}>{c.type || 'Non-Blocking'}</span>
+                                            <span className="text-purple-300 font-semibold">{c.jobType || 'FTE'}</span>
+                                          </div>
+                                          {c.branchesEligible && c.branchesEligible.trim().toLowerCase() !== 'nil' && (
+                                            <div className="text-[10px] text-gray-400 mt-0.5">
+                                              <span className="text-gray-500">Branches:</span> {c.branchesEligible}
+                                            </div>
+                                          )}
+                                          {c.deadline && c.deadline.trim().toLowerCase() !== 'nil' && (
+                                            <div className="text-[10px] text-amber-400 mt-0.5">
+                                              <span className="text-amber-500/80">Deadline:</span> {c.deadline}
+                                            </div>
+                                          )}
+                                          {c.googleFormLink && c.googleFormLink.trim().toLowerCase() !== 'nil' && (
+                                            <div className="mt-0.5">
+                                              <a
+                                                href={c.googleFormLink.startsWith('http') ? c.googleFormLink : `https://${c.googleFormLink}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="inline-flex items-center space-x-0.5 text-[9px] text-indigo-400 hover:text-indigo-300 font-semibold"
+                                              >
+                                                <Link2 className="w-2.5 h-2.5" />
+                                                <span>Google Form Link</span>
+                                              </a>
+                                            </div>
+                                          )}
+                                        </div>
+                                        <div className="flex items-center gap-1.5">
+                                          <button
+                                            onClick={() => handleReviewRecruiter(pr._id, c._id, 'Approved')}
+                                            className="p-1 text-emerald-400 hover:text-emerald-300 bg-emerald-950/40 border border-emerald-500/20 rounded-md transition-all hover:bg-emerald-900/40"
+                                            title="Approve"
+                                          >
+                                            <Check className="w-3.5 h-3.5" />
+                                          </button>
+                                          <button
+                                            onClick={() => handleReviewRecruiter(pr._id, c._id, 'Rejected')}
+                                            className="p-1 text-red-400 hover:text-red-300 bg-red-950/40 border border-red-500/20 rounded-md transition-all hover:bg-red-900/40"
+                                            title="Reject"
+                                          >
+                                            <X className="w-3.5 h-3.5" />
+                                          </button>
+                                        </div>
                                       </div>
-                                    </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* ─── OFF-CAMPUS SECTION ─────────────────────────────────── */}
+                  <div className="space-y-4 border-t border-glassBorder pt-6">
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <h3 className="font-bold text-white text-base">Off-Campus Job Listings</h3>
+                        <p className="text-xs text-gray-500 mt-0.5">Manage externally sourced job opportunities from multiple portals.</p>
+                      </div>
+                      <button
+                        onClick={openAddOffCampus}
+                        className="glass-button-primary text-xs py-1.5 px-3 flex items-center space-x-1 bg-emerald-500/10 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20"
+                      >
+                        <Plus className="w-4 h-4" />
+                        <span>Add Job</span>
+                      </button>
+                    </div>
+
+                    {offCampusJobs.length === 0 ? (
+                      <div className="py-10 text-center">
+                        <Globe className="w-10 h-10 text-gray-700 mx-auto mb-2 opacity-50" />
+                        <p className="text-xs text-gray-500">No off-campus listings posted yet.</p>
+                      </div>
+                    ) : (
+                      <div className="grid gap-3">
+                        {offCampusJobs.map(job => (
+                          <div
+                            key={job._id}
+                            className="bg-white/[0.01] border border-glassBorder p-4 rounded-xl flex flex-col sm:flex-row sm:items-start gap-4"
+                          >
+                            <div className="flex-1 space-y-1.5">
+                              <div className="flex flex-wrap items-center gap-2">
+                                <span className="font-bold text-white text-sm">{job.title}</span>
+                                <span className="text-gray-400 text-xs">@</span>
+                                <span className="font-semibold text-emerald-400 text-xs">{job.company}</span>
+                                <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
+                                  job.employmentType === 'Full-Time' ? 'bg-blue-950/50 text-blue-300 border-blue-500/20'
+                                  : job.employmentType === 'Internship' ? 'bg-purple-950/50 text-purple-300 border-purple-500/20'
+                                  : 'bg-teal-950/50 text-teal-300 border-teal-500/20'
+                                }`}>
+                                  {job.employmentType}
+                                </span>
+                              </div>
+                              <div className="flex flex-wrap gap-3 text-[10px] text-gray-500">
+                                {job.location && <span>📍 {job.location}</span>}
+                                {job.experience && <span>⏱ {job.experience}</span>}
+                                {job.salary && <span className="text-emerald-400 font-semibold">💰 {job.salary}</span>}
+                                {job.source && <span>🌐 {job.source}</span>}
+                                {job.deadline && <span className="text-amber-400">⏳ {new Date(job.deadline).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>}
+                              </div>
+                              {job.skills && job.skills.length > 0 && (
+                                <div className="flex flex-wrap gap-1">
+                                  {job.skills.map((s, i) => (
+                                    <span key={i} className="text-[10px] bg-white/[0.03] border border-glassBorder text-gray-400 px-1.5 py-0.5 rounded">{s}</span>
                                   ))}
                                 </div>
-                              </div>
-                            )}
+                              )}
+                            </div>
+                            <div className="flex items-center gap-2 self-end sm:self-start">
+                              <a
+                                href={job.applyUrl.startsWith('http') ? job.applyUrl : `https://${job.applyUrl}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="p-1.5 text-emerald-400 hover:text-emerald-300 bg-emerald-950/30 border border-emerald-500/20 rounded-lg transition-all"
+                                title="Open Apply URL"
+                              >
+                                <ExternalLink className="w-3.5 h-3.5" />
+                              </a>
+                              <button
+                                onClick={() => openEditOffCampus(job)}
+                                className="p-1.5 text-indigo-400 hover:text-indigo-300 bg-indigo-950/30 border border-indigo-500/20 rounded-lg transition-all"
+                                title="Edit"
+                              >
+                                <Edit2 className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteOffCampus(job._id)}
+                                className="p-1.5 text-gray-500 hover:text-red-400 rounded-lg hover:bg-white/5 transition-all"
+                                title="Delete"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
                           </div>
-                        );
-                      })}
-                    </div>
-                  )}
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
                 </div>
               )}
 
@@ -941,6 +1145,205 @@ const AdminDashboard = () => {
                   </button>
                   <button type="submit" className="glass-button-primary py-2 px-6 text-xs">
                     Publish Bulletin
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* OFF-CAMPUS JOB ADD / EDIT MODAL */}
+      <AnimatePresence>
+        {showOffCampusModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="glass-panel w-full max-w-lg rounded-2xl overflow-hidden max-h-[90vh] overflow-y-auto"
+            >
+              <div className="flex items-center justify-between px-6 py-4 border-b border-glassBorder bg-white/[0.01]">
+                <div className="flex items-center gap-2">
+                  <Globe className="w-5 h-5 text-emerald-400" />
+                  <h3 className="font-bold text-white text-lg">
+                    {offCampusEditId ? 'Edit Off-Campus Job' : 'Add Off-Campus Job'}
+                  </h3>
+                </div>
+                <button onClick={() => setShowOffCampusModal(false)} className="p-1 text-gray-400 hover:text-white">
+                  <X className="w-5.5 h-5.5" />
+                </button>
+              </div>
+
+              <form onSubmit={handleSaveOffCampus} className="p-6 space-y-4">
+                {/* Row 1: Title + Company */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Job Title *</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. SDE-1"
+                      value={offCampusForm.title}
+                      onChange={e => setOffCampusForm({ ...offCampusForm, title: e.target.value })}
+                      className="w-full glass-input"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Company *</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Google"
+                      value={offCampusForm.company}
+                      onChange={e => setOffCampusForm({ ...offCampusForm, company: e.target.value })}
+                      className="w-full glass-input"
+                    />
+                  </div>
+                </div>
+
+                {/* Row 2: Location + Employment Type */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Location</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Bangalore / Remote"
+                      value={offCampusForm.location}
+                      onChange={e => setOffCampusForm({ ...offCampusForm, location: e.target.value })}
+                      className="w-full glass-input"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Employment Type</label>
+                    <select
+                      value={offCampusForm.employmentType}
+                      onChange={e => setOffCampusForm({ ...offCampusForm, employmentType: e.target.value })}
+                      className="w-full glass-input"
+                    >
+                      <option value="Full-Time">Full-Time</option>
+                      <option value="Internship">Internship</option>
+                      <option value="Contract">Contract</option>
+                      <option value="Part-Time">Part-Time</option>
+                      <option value="FTE+PPO">FTE+PPO</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Row 3: Experience + Salary */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Experience</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Fresher, 0-2 years"
+                      value={offCampusForm.experience}
+                      onChange={e => setOffCampusForm({ ...offCampusForm, experience: e.target.value })}
+                      className="w-full glass-input"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Salary / Package</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. 12-18 LPA"
+                      value={offCampusForm.salary}
+                      onChange={e => setOffCampusForm({ ...offCampusForm, salary: e.target.value })}
+                      className="w-full glass-input"
+                    />
+                  </div>
+                </div>
+
+                {/* Apply URL */}
+                <div>
+                  <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Apply URL *</label>
+                  <input
+                    type="url"
+                    required
+                    placeholder="https://..."
+                    value={offCampusForm.applyUrl}
+                    onChange={e => setOffCampusForm({ ...offCampusForm, applyUrl: e.target.value })}
+                    className="w-full glass-input"
+                  />
+                </div>
+
+                {/* Row 4: Source + Deadline */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Source Portal</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. LinkedIn, Naukri"
+                      value={offCampusForm.source}
+                      onChange={e => setOffCampusForm({ ...offCampusForm, source: e.target.value })}
+                      className="w-full glass-input"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Application Deadline</label>
+                    <input
+                      type="date"
+                      value={offCampusForm.deadline}
+                      onChange={e => setOffCampusForm({ ...offCampusForm, deadline: e.target.value })}
+                      className="w-full glass-input"
+                    />
+                  </div>
+                </div>
+
+                {/* Skills (comma-separated) */}
+                <div>
+                  <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Skills (comma-separated)</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. React, Node.js, Python"
+                    value={offCampusForm.skills}
+                    onChange={e => setOffCampusForm({ ...offCampusForm, skills: e.target.value })}
+                    className="w-full glass-input"
+                  />
+                </div>
+
+                {/* Row 5: Company Logo + Source Logo */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Company Logo URL</label>
+                    <input
+                      type="url"
+                      placeholder="https://...logo.png"
+                      value={offCampusForm.logo}
+                      onChange={e => setOffCampusForm({ ...offCampusForm, logo: e.target.value })}
+                      className="w-full glass-input"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Source Logo URL</label>
+                    <input
+                      type="url"
+                      placeholder="https://...favicon.png"
+                      value={offCampusForm.sourceLogo}
+                      onChange={e => setOffCampusForm({ ...offCampusForm, sourceLogo: e.target.value })}
+                      className="w-full glass-input"
+                    />
+                  </div>
+                </div>
+
+                {/* Description */}
+                <div>
+                  <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Job Description</label>
+                  <textarea
+                    rows={3}
+                    placeholder="Brief description of the role, responsibilities..."
+                    value={offCampusForm.description}
+                    onChange={e => setOffCampusForm({ ...offCampusForm, description: e.target.value })}
+                    className="w-full glass-input resize-none"
+                  />
+                </div>
+
+                <div className="flex items-center justify-end space-x-3 pt-2">
+                  <button type="button" onClick={() => setShowOffCampusModal(false)} className="glass-button-secondary py-2 px-4 text-xs">
+                    Cancel
+                  </button>
+                  <button type="submit" className="glass-button-primary py-2 px-6 text-xs">
+                    {offCampusEditId ? 'Save Changes' : 'Add Job Listing'}
                   </button>
                 </div>
               </form>

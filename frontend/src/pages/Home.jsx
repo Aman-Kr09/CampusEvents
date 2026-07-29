@@ -6,7 +6,7 @@ import { useCollege } from '../context/CollegeContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Calendar, MapPin, Clock, Search, Send, Plus, ArrowRight, Heart, Users,
-  Megaphone, TrendingUp, BarChart3, HelpCircle, Tags, ChevronRight, X, AlertCircle, Sparkles, MessageSquare, ThumbsUp, Check, Briefcase, Link2
+  Megaphone, TrendingUp, BarChart3, HelpCircle, Tags, ChevronRight, X, AlertCircle, Sparkles, MessageSquare, ThumbsUp, Check, Briefcase, Link2, Globe, ExternalLink, Tag, Award
 } from 'lucide-react';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, BarChart, Bar, CartesianGrid } from 'recharts';
 
@@ -21,6 +21,7 @@ const Home = () => {
   const { selectedCollege } = useCollege();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('events'); // 'events' | 'qa' | 'placements' | 'announcements'
+  const [placementSubTab, setPlacementSubTab] = useState('oncampus'); // 'oncampus' | 'offcampus'
 
   useEffect(() => {
     if (user?.role === 'SuperAdmin') {
@@ -34,6 +35,7 @@ const Home = () => {
   const [timeline, setTimeline] = useState([]);
   const [trending, setTrending] = useState([]);
   const [placements, setPlacements] = useState([]);
+  const [offCampusJobs, setOffCampusJobs] = useState([]);
   const [announcements, setAnnouncements] = useState([]);
   const [questions, setQuestions] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -185,14 +187,15 @@ const Home = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [resRec, resEv, resTime, resTrend, resPl, resAnn, resQ] = await Promise.all([
+      const [resRec, resEv, resTime, resTrend, resPl, resAnn, resQ, resOff] = await Promise.all([
         api.get('/events/recommended'),
         api.get('/events'),
         api.get('/events/timeline'),
         api.get('/events/trending'),
         api.get('/placements'),
         api.get('/announcements'),
-        api.get('/qa/questions')
+        api.get('/qa/questions'),
+        api.get('/off-campus')
       ]);
 
       if (resRec.data.success) setRecommended(resRec.data.data);
@@ -202,6 +205,7 @@ const Home = () => {
       if (resPl.data.success) setPlacements(resPl.data.data);
       if (resAnn.data.success) setAnnouncements(resAnn.data.data);
       if (resQ.data.success) setQuestions(resQ.data.data);
+      if (resOff.data.success) setOffCampusJobs(resOff.data.data);
     } catch (err) {
       console.error('Failed to load dashboard data:', err);
     } finally {
@@ -1071,125 +1075,322 @@ const Home = () => {
             </div>
           )}
 
-          {/* TAB 3: PLACEMENT STATISTICS */}
+          {/* TAB 3: PLACEMENT CELL */}
           {activeTab === 'placements' && (
-            <div className="glass-panel p-6 sm:p-8 rounded-2xl space-y-6">
-              <div className="border-b border-glassBorder pb-4">
-                <h3 className="font-bold text-white text-lg flex items-center space-x-2">
-                  <Briefcase className="w-5 h-5 text-indigo-400" />
-                  <span>Placement Cell</span>
-                </h3>
-                <p className="text-gray-400 text-xs sm:text-sm mt-0.5">Explore active recruiters and approved company listings visiting the campus.</p>
+            <div className="space-y-6">
+
+              {/* Sub-tab switcher */}
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => setPlacementSubTab('oncampus')}
+                  className={`flex items-center space-x-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 border ${
+                    placementSubTab === 'oncampus'
+                      ? 'bg-indigo-500/10 border-indigo-500/30 text-indigo-400'
+                      : 'bg-transparent border-glassBorder text-gray-400 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  <Award className="w-4 h-4" />
+                  <span>On-Campus</span>
+                </button>
+
+                <button
+                  onClick={() => setPlacementSubTab('offcampus')}
+                  className={`flex items-center space-x-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 border ${
+                    placementSubTab === 'offcampus'
+                      ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+                      : 'bg-transparent border-glassBorder text-gray-400 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  <Globe className="w-4 h-4" />
+                  <span>Off-Campus</span>
+                </button>
               </div>
 
-              {/* Training & Placement Head details */}
-              <div className="bg-white/[0.01] border border-glassBorder p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-glow/5">
-                <div className="flex items-center space-x-3">
-                  <div className="p-2.5 bg-indigo-500/10 rounded-lg text-indigo-400">
-                    <Users className="w-4.5 h-4.5" />
+              {/* ─── ON-CAMPUS PANEL ─────────────────────────────────────────── */}
+              {placementSubTab === 'oncampus' && (
+                <div className="glass-panel p-6 sm:p-8 rounded-2xl space-y-6">
+                  {/* Section heading */}
+                  <div className="flex items-center space-x-3 border-b border-glassBorder pb-4">
+                    <div className="p-2 bg-indigo-500/10 rounded-lg">
+                      <Award className="w-5 h-5 text-indigo-400" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-white text-lg">On-Campus Opportunities</h3>
+                      <p className="text-gray-400 text-xs mt-0.5">Approved company listings visiting the campus for direct recruitment.</p>
+                    </div>
                   </div>
-                  <div>
-                    <span className="block text-[10px] text-gray-500 font-bold uppercase tracking-wider">Training & Placement Head</span>
-                    <span className="font-extrabold text-white text-sm">
-                      {isNITDelhi(selectedCollege) || isNITDelhi(user?.college) ? 'Harsh Sudhakar' : 'To Be Appointed'}
-                    </span>
+
+                  {/* Training & Placement Head details */}
+                  <div className="bg-white/[0.01] border border-glassBorder p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-glow/5">
+                    <div className="flex items-center space-x-3">
+                      <div className="p-2.5 bg-indigo-500/10 rounded-lg text-indigo-400">
+                        <Users className="w-4.5 h-4.5" />
+                      </div>
+                      <div>
+                        <span className="block text-[10px] text-gray-500 font-bold uppercase tracking-wider">Training & Placement Head</span>
+                        <span className="font-extrabold text-white text-sm">
+                          {isNITDelhi(selectedCollege) || isNITDelhi(user?.college) ? 'Harsh Sudhakar' : 'To Be Appointed'}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="text-[10px] text-gray-400 bg-white/[0.02] border border-glassBorder px-2.5 py-1 rounded-md self-start sm:self-center font-semibold">
+                      T&P Cell Contact Point
+                    </div>
                   </div>
-                </div>
-                <div className="text-[10px] text-gray-400 bg-white/[0.02] border border-glassBorder px-2.5 py-1 rounded-md self-start sm:self-center font-semibold">
-                  T&P Cell Contact Point
-                </div>
-              </div>
 
-              {placements.length === 0 || !placements.some(pr => pr.companiesVisited?.some(c => c.status === 'Approved')) ? (
-                <div className="py-12 text-center space-y-3">
-                  <Briefcase className="w-12 h-12 text-gray-600 mx-auto opacity-30" />
-                  <p className="text-xs text-gray-500 font-semibold">No recruiters listed for this year.</p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {[...placements]
-                    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-                    .flatMap(pr =>
-                      (pr.companiesVisited?.filter(c => c.status === 'Approved') || [])
-                        .map(c => ({ ...c, _year: pr.year, _prId: pr._id }))
-                    )
-                    .map(c => (
-                      <div
-                        key={`${c._prId}-${c._id || c.name}`}
-                        className="bg-white/[0.01] border border-glassBorder rounded-2xl p-5 flex flex-col justify-between hover:border-indigo-500/20 hover:bg-white/[0.03] transition-all duration-200"
-                      >
-                        {/* Year badge at top of each card */}
-                        <div className="mb-3">
-                          <span className="text-[9px] font-bold tracking-widest text-indigo-400 uppercase bg-indigo-950/60 border border-indigo-500/20 px-2 py-0.5 rounded-full">
-                            AY {c._year}
-                          </span>
-                        </div>
-
-                        <div className="space-y-2">
-                          <div className="flex items-start justify-between">
-                            <h4 className="font-bold text-white text-sm sm:text-base leading-snug">
-                              {c.name}
-                            </h4>
-                            <div className="flex flex-col items-end gap-1.5 shrink-0">
-                              <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${c.type === 'Blocking'
-                                ? 'bg-red-950/50 text-red-300 border-red-500/20'
-                                : 'bg-cyan-950/50 text-cyan-300 border-cyan-500/20'
-                                }`}>
-                                {c.type || 'Non-Blocking'}
-                              </span>
-                              <span className="bg-purple-950/60 text-purple-300 border border-purple-500/20 px-2 py-0.5 rounded text-[10px] font-bold">
-                                {c.jobType || 'FTE'}
+                  {placements.length === 0 || !placements.some(pr => pr.companiesVisited?.some(c => c.status === 'Approved')) ? (
+                    <div className="py-12 text-center space-y-3">
+                      <Briefcase className="w-12 h-12 text-gray-600 mx-auto opacity-30" />
+                      <p className="text-xs text-gray-500 font-semibold">No recruiters listed for this year.</p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                      {[...placements]
+                        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                        .flatMap(pr =>
+                          (pr.companiesVisited?.filter(c => c.status === 'Approved') || [])
+                            .map(c => ({ ...c, _year: pr.year, _prId: pr._id }))
+                        )
+                        .map(c => (
+                          <div
+                            key={`${c._prId}-${c._id || c.name}`}
+                            className="bg-white/[0.01] border border-glassBorder rounded-2xl p-5 flex flex-col justify-between hover:border-indigo-500/20 hover:bg-white/[0.03] transition-all duration-200"
+                          >
+                            <div className="mb-3">
+                              <span className="text-[9px] font-bold tracking-widest text-indigo-400 uppercase bg-indigo-950/60 border border-indigo-500/20 px-2 py-0.5 rounded-full">
+                                AY {c._year}
                               </span>
                             </div>
-                          </div>
-                        </div>
 
-                        <div className="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-white/[0.03] text-xs">
-                          <div className="flex flex-col">
-                            <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">CPA Cutoff</span>
-                            <span className="font-bold text-indigo-300 mt-0.5">
-                              {c.cpaRequired != null ? `${c.cpaRequired}` : '—'}
-                            </span>
-                          </div>
-                          <div className="flex flex-col">
-                            <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Package</span>
-                            <span className="font-bold text-emerald-400 mt-0.5">
-                              {c.package != null ? (c.package.toLowerCase() === 'nil' ? 'nil' : `${c.package}`) : '—'}
-                            </span>
-                          </div>
-                        </div>
+                            <div className="space-y-2">
+                              <div className="flex items-start justify-between">
+                                <h4 className="font-bold text-white text-sm sm:text-base leading-snug">
+                                  {c.name}
+                                </h4>
+                                <div className="flex flex-col items-end gap-1.5 shrink-0">
+                                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${c.type === 'Blocking'
+                                    ? 'bg-red-950/50 text-red-300 border-red-500/20'
+                                    : 'bg-cyan-950/50 text-cyan-300 border-cyan-500/20'
+                                    }`}>
+                                    {c.type || 'Non-Blocking'}
+                                  </span>
+                                  <span className="bg-purple-950/60 text-purple-300 border border-purple-500/20 px-2 py-0.5 rounded text-[10px] font-bold">
+                                    {c.jobType || 'FTE'}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
 
-                        {c.branchesEligible && c.branchesEligible.trim().toLowerCase() !== 'nil' && (
-                          <div className="text-xs text-gray-400 mt-3 pt-2.5 border-t border-white/[0.03]">
-                            <span className="font-bold text-gray-500 uppercase text-[9px] tracking-wider block">Branches Eligible</span>
-                            <span className="text-white mt-0.5 block">{c.branchesEligible}</span>
-                          </div>
-                        )}
+                            <div className="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-white/[0.03] text-xs">
+                              <div className="flex flex-col">
+                                <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">CPA Cutoff</span>
+                                <span className="font-bold text-indigo-300 mt-0.5">
+                                  {c.cpaRequired != null ? `${c.cpaRequired}` : '—'}
+                                </span>
+                              </div>
+                              <div className="flex flex-col">
+                                <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Package</span>
+                                <span className="font-bold text-emerald-400 mt-0.5">
+                                  {c.package != null ? (c.package.toLowerCase() === 'nil' ? 'nil' : `${c.package}`) : '—'}
+                                </span>
+                              </div>
+                            </div>
 
-                        {c.deadline && c.deadline.trim().toLowerCase() !== 'nil' && (
-                          <div className="text-xs text-gray-400 mt-2">
-                            <span className="font-bold text-amber-500/80 uppercase text-[9px] tracking-wider block">Form Deadline</span>
-                            <span className="text-amber-400 font-semibold mt-0.5 block">{c.deadline}</span>
-                          </div>
-                        )}
+                            {c.branchesEligible && c.branchesEligible.trim().toLowerCase() !== 'nil' && (
+                              <div className="text-xs text-gray-400 mt-3 pt-2.5 border-t border-white/[0.03]">
+                                <span className="font-bold text-gray-500 uppercase text-[9px] tracking-wider block">Branches Eligible</span>
+                                <span className="text-white mt-0.5 block">{c.branchesEligible}</span>
+                              </div>
+                            )}
 
-                        {c.googleFormLink && c.googleFormLink.trim().toLowerCase() !== 'nil' && (
-                          <div className="mt-4 pt-3 border-t border-white/[0.03]">
-                            <a
-                              href={c.googleFormLink.startsWith('http') ? c.googleFormLink : `https://${c.googleFormLink}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center space-x-1.5 text-xs font-bold text-indigo-400 hover:text-indigo-300 transition-colors"
-                            >
-                              <Link2 className="w-3.5 h-3.5" />
-                              <span>Apply via Google Form</span>
-                            </a>
+                            {c.deadline && c.deadline.trim().toLowerCase() !== 'nil' && (
+                              <div className="text-xs text-gray-400 mt-2">
+                                <span className="font-bold text-amber-500/80 uppercase text-[9px] tracking-wider block">Form Deadline</span>
+                                <span className="text-amber-400 font-semibold mt-0.5 block">{c.deadline}</span>
+                              </div>
+                            )}
+
+                            {c.googleFormLink && c.googleFormLink.trim().toLowerCase() !== 'nil' && (
+                              <div className="mt-4 pt-3 border-t border-white/[0.03]">
+                                <a
+                                  href={c.googleFormLink.startsWith('http') ? c.googleFormLink : `https://${c.googleFormLink}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center space-x-1.5 text-xs font-bold text-indigo-400 hover:text-indigo-300 transition-colors"
+                                >
+                                  <Link2 className="w-3.5 h-3.5" />
+                                  <span>Apply via Google Form</span>
+                                </a>
+                              </div>
+                            )}
                           </div>
-                        )}
-                      </div>
-                    ))}
+                        ))}
+                    </div>
+                  )}
                 </div>
               )}
+
+              {/* ─── OFF-CAMPUS PANEL ────────────────────────────────────────── */}
+              {placementSubTab === 'offcampus' && (
+                <div className="glass-panel p-6 sm:p-8 rounded-2xl space-y-6">
+                  {/* Section heading */}
+                  <div className="flex items-center space-x-3 border-b border-glassBorder pb-4">
+                    <div className="p-2 bg-emerald-500/10 rounded-lg">
+                      <Globe className="w-5 h-5 text-emerald-400" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3 className="font-bold text-white text-lg">Off-Campus Opportunities</h3>
+                        <span className="flex items-center gap-1.5 text-[10px] font-bold bg-emerald-950/50 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full">
+                          <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
+                          Live Feed
+                        </span>
+                      </div>
+                      <p className="text-gray-400 text-xs mt-0.5">Jobs aggregated live from Remotive &amp; Himalayas — updated every 30 minutes.</p>
+                    </div>
+                  </div>
+
+
+                  {offCampusJobs.length === 0 ? (
+                    <div className="py-14 text-center space-y-4">
+                      <div className="w-16 h-16 mx-auto rounded-2xl bg-emerald-500/5 border border-emerald-500/10 flex items-center justify-center">
+                        <Globe className="w-8 h-8 text-gray-600 opacity-40" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-gray-500">No off-campus listings yet.</p>
+                        <p className="text-xs text-gray-600 mt-1">Check back soon — your T&P cell will post opportunities here.</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                      {offCampusJobs.map(job => (
+                        <div
+                          key={job._id}
+                          className="bg-white/[0.01] border border-glassBorder rounded-2xl p-5 flex flex-col justify-between hover:border-emerald-500/20 hover:bg-white/[0.03] transition-all duration-200 group"
+                        >
+                          {/* Card Top: Logo + company + badges */}
+                          <div className="flex items-start justify-between gap-2 mb-3">
+                            <div className="flex items-center gap-3">
+                              {job.logo ? (
+                                <img src={job.logo} alt={job.company} className="w-10 h-10 rounded-xl object-contain bg-white/5 border border-glassBorder p-1 shrink-0" onError={e => { e.target.style.display='none'; }} />
+                              ) : (
+                                <div className="w-10 h-10 rounded-xl bg-emerald-950/30 border border-emerald-500/10 flex items-center justify-center shrink-0">
+                                  <Briefcase className="w-5 h-5 text-emerald-500/50" />
+                                </div>
+                              )}
+                              <div className="min-w-0">
+                                <h4 className="font-bold text-white text-sm leading-snug truncate group-hover:text-emerald-400 transition-colors">{job.title}</h4>
+                                <p className="text-xs text-gray-400 truncate">{job.company}</p>
+                              </div>
+                            </div>
+
+                            {/* Right badges column */}
+                            <div className="flex flex-col items-end gap-1.5 shrink-0">
+                              <span className={`px-2 py-0.5 rounded text-[10px] font-bold border whitespace-nowrap ${
+                                job.employmentType === 'Full-Time' ? 'bg-blue-950/50 text-blue-300 border-blue-500/20'
+                                : job.employmentType === 'Internship' ? 'bg-purple-950/50 text-purple-300 border-purple-500/20'
+                                : job.employmentType === 'Contract' ? 'bg-orange-950/50 text-orange-300 border-orange-500/20'
+                                : 'bg-teal-950/50 text-teal-300 border-teal-500/20'
+                              }`}>
+                                {job.employmentType}
+                              </span>
+                              {job._external && (
+                                <span className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-emerald-950/40 text-emerald-400 border border-emerald-500/20 whitespace-nowrap">
+                                  <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse inline-block" />
+                                  Live
+                                </span>
+                              )}
+                            </div>
+                          </div>
+
+
+                          {/* Description snippet */}
+                          {job.description && (
+                            <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed mb-3">{job.description}</p>
+                          )}
+
+                          {/* Meta grid */}
+                          <div className="grid grid-cols-2 gap-x-3 gap-y-2 text-xs mb-3">
+                            {job.location && (
+                              <div className="flex items-center gap-1.5 text-gray-400">
+                                <MapPin className="w-3.5 h-3.5 text-gray-600 shrink-0" />
+                                <span className="truncate">{job.location}</span>
+                              </div>
+                            )}
+                            {job.experience && (
+                              <div className="flex items-center gap-1.5 text-gray-400">
+                                <Clock className="w-3.5 h-3.5 text-gray-600 shrink-0" />
+                                <span className="truncate">{job.experience}</span>
+                              </div>
+                            )}
+                            {job.salary && (
+                              <div className="flex items-center gap-1.5 col-span-2">
+                                <TrendingUp className="w-3.5 h-3.5 text-emerald-500/70 shrink-0" />
+                                <span className="font-bold text-emerald-400">{job.salary}</span>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Skills */}
+                          {job.skills && job.skills.length > 0 && (
+                            <div className="flex flex-wrap gap-1.5 mb-3">
+                              {job.skills.slice(0, 4).map((skill, idx) => (
+                                <span
+                                  key={idx}
+                                  className="inline-flex items-center gap-1 text-[10px] font-semibold bg-white/[0.03] border border-glassBorder text-gray-300 px-2 py-0.5 rounded-full"
+                                >
+                                  <Tag className="w-2.5 h-2.5 text-gray-500" />
+                                  {skill}
+                                </span>
+                              ))}
+                              {job.skills.length > 4 && (
+                                <span className="text-[10px] text-gray-600 font-semibold px-1">+{job.skills.length - 4} more</span>
+                              )}
+                            </div>
+                          )}
+
+                          {/* Deadline */}
+                          {job.deadline && (
+                            <div className="text-xs mb-3">
+                              <span className="font-bold text-amber-500/80 uppercase text-[9px] tracking-wider block">Apply By</span>
+                              <span className="text-amber-400 font-semibold">
+                                {new Date(job.deadline).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                              </span>
+                            </div>
+                          )}
+
+                          {/* Footer: source + apply button */}
+                          <div className="mt-auto pt-3 border-t border-white/[0.03] flex items-center justify-between gap-2">
+                            {job.source ? (
+                              <div className="flex items-center gap-1.5">
+                                {job.sourceLogo ? (
+                                  <img src={job.sourceLogo} alt={job.source} className="w-4 h-4 rounded object-contain" />
+                                ) : (
+                                  <Globe className="w-3.5 h-3.5 text-gray-600" />
+                                )}
+                                <span className="text-[10px] text-gray-500 font-semibold">{job.source}</span>
+                              </div>
+                            ) : (
+                              <span className="text-[10px] text-gray-600">via T&P Cell</span>
+                            )}
+
+                            <a
+                              href={job.applyUrl.startsWith('http') ? job.applyUrl : `https://${job.applyUrl}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 hover:text-emerald-300 transition-all"
+                            >
+                              <ExternalLink className="w-3.5 h-3.5" />
+                              Apply Now
+                            </a>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
             </div>
           )}
 
