@@ -1,7 +1,4 @@
 const cloudinary  = require('cloudinary').v2;
-const streamifier = require('stream').Readable;
-const https       = require('https');
-const http        = require('http');
 const PYQ         = require('../models/PYQ');
 
 // ─── Configure Cloudinary ─────────────────────────────────────────────────────
@@ -297,47 +294,35 @@ exports.getAcademicYears = async (req, res) => {
   }
 };
 
-// ─── Stream Helper ─────────────────────────────────────────────────────────────
-const fetchRemoteStream = (url) => {
-  return new Promise((resolve, reject) => {
-    try {
-      const parsedUrl = new URL(url);
-      const client = parsedUrl.protocol === 'https:' ? https : http;
-      const options = {
-        hostname: parsedUrl.hostname,
-        port: parsedUrl.port || (parsedUrl.protocol === 'https:' ? 443 : 80),
-        path: parsedUrl.pathname + parsedUrl.search,
-        method: 'GET',
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-          'Accept': '*/*'
-        }
-      };
+// ─── Cloudinary URL Helper ─────────────────────────────────────────────────────
+/**
+ * Build a Cloudinary delivery URL for a stored asset.
+ * - For PDFs (resource_type: raw): inject fl_attachment:false (inline) or fl_attachment (download)
+ * - For images: return the URL as-is (Cloudinary serves images inline by default)
+ *
+ * Cloudinary raw URLs look like:
+ *   https://res.cloudinary.com/<cloud>/raw/upload/<public_id>
+ * We insert the flag like:
+ *   https://res.cloudinary.com/<cloud>/raw/upload/fl_attachment:false/<public_id>
+ */
+const buildCloudinaryUrl = (fileUrl, fileType, forDownload = false) => {
+  try {
+    if (fileType !== 'pdf') return fileUrl; // images are fine as-is
 
-      const req = client.request(options, (remoteRes) => {
-        if (remoteRes.statusCode >= 300 && remoteRes.statusCode < 400 && remoteRes.headers.location) {
-          let redirectUrl = remoteRes.headers.location;
-          if (!redirectUrl.startsWith('http')) {
-            redirectUrl = `${parsedUrl.protocol}//${parsedUrl.hostname}${redirectUrl}`;
-          }
-          return fetchRemoteStream(redirectUrl).then(resolve).catch(reject);
-        }
-        if (remoteRes.statusCode !== 200 && remoteRes.statusCode !== 206) {
-          return reject(new Error(`Failed to fetch file from remote storage (Status ${remoteRes.statusCode})`));
-        }
-        resolve(remoteRes);
-      });
-
-      req.on('error', reject);
-      req.end();
-    } catch (err) {
-      reject(err);
-    }
-  });
+    const url = new URL(fileUrl);
+    // pathname looks like: /<cloud_name>/raw/upload/<version>/<folder>/<public_id>
+    // or /<cloud_name>/raw/upload/<folder>/<public_id>
+    // We insert the transformation flag right after "/upload/"
+    const flag = forDownload ? 'fl_attachment' : 'fl_attachment:false';
+    url.pathname = url.pathname.replace('/upload/', `/upload/${flag}/`);
+    return url.toString();
+  } catch (_) {
+    return fileUrl; // fallback: return original URL unchanged
+  }
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// @desc    Stream PYQ file inline for browser preview (PDF/Image)
+// @desc    Redirect to Cloudinary inline URL for browser preview (PDF/Image)
 // @route   GET /api/pyq/:id/view
 // @access  Private
 // ─────────────────────────────────────────────────────────────────────────────
@@ -352,27 +337,17 @@ exports.viewPYQFile = async (req, res) => {
       return res.status(404).send('PYQ document not found.');
     }
 
-    try {
-      const remoteStream = await fetchRemoteStream(pyq.fileUrl);
-      const contentType  = pyq.fileType === 'pdf' ? 'application/pdf' : (remoteStream.headers['content-type'] || 'image/jpeg');
-      const safeName     = `${pyq.subjectName.replace(/[^a-zA-Z0-9_-]/g, '_')}_${pyq.courseCode}.${pyq.fileType === 'pdf' ? 'pdf' : 'jpg'}`;
-
-      res.setHeader('Content-Type', contentType);
-      res.setHeader('Content-Disposition', `inline; filename="${safeName}"`);
-
-      return remoteStream.pipe(res);
-    } catch (streamErr) {
-      console.error('viewPYQFile stream failed, falling back to direct redirect:', streamErr.message);
-      return res.redirect(pyq.fileUrl);
-    }
+    // Build a Cloudinary URL that forces inline (non-attachment) delivery
+    const inlineUrl = buildCloudinaryUrl(pyq.fileUrl, pyq.fileType, false);
+    return res.redirect(302, inlineUrl);
   } catch (error) {
     console.error('viewPYQFile error:', error.message);
-    return res.status(500).send('Error streaming PYQ preview.');
+    return res.status(500).send('Error loading PYQ preview.');
   }
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// @desc    Stream PYQ file for attachment download
+// @desc    Redirect to Cloudinary attachment URL for download
 // @route   GET /api/pyq/:id/download
 // @access  Private
 // ─────────────────────────────────────────────────────────────────────────────
@@ -387,19 +362,9 @@ exports.downloadPYQFile = async (req, res) => {
       return res.status(404).send('PYQ document not found.');
     }
 
-    try {
-      const remoteStream = await fetchRemoteStream(pyq.fileUrl);
-      const contentType  = pyq.fileType === 'pdf' ? 'application/pdf' : 'application/octet-stream';
-      const safeName     = `${pyq.subjectName.replace(/[^a-zA-Z0-9_-]/g, '_')}_${pyq.courseCode}.${pyq.fileType === 'pdf' ? 'pdf' : 'jpg'}`;
-
-      res.setHeader('Content-Type', contentType);
-      res.setHeader('Content-Disposition', `attachment; filename="${safeName}"`);
-
-      return remoteStream.pipe(res);
-    } catch (streamErr) {
-      console.error('downloadPYQFile stream failed, falling back to direct redirect:', streamErr.message);
-      return res.redirect(pyq.fileUrl);
-    }
+    // Build a Cloudinary URL that forces attachment (download) delivery
+    const downloadUrl = buildCloudinaryUrl(pyq.fileUrl, pyq.fileType, true);
+    return res.redirect(302, downloadUrl);
   } catch (error) {
     console.error('downloadPYQFile error:', error.message);
     return res.status(500).send('Error downloading PYQ file.');
