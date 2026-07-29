@@ -51,7 +51,7 @@ const Landing = () => {
     }
   };
 
-  const handleSelectCollege = (college) => {
+  const handleSelect = (college) => {
     selectCollege(college);
     navigate('/login');
   };
@@ -77,7 +77,7 @@ const Landing = () => {
     }
   };
 
-  const handleAdminLoginSubmit = async (e) => {
+  const handleAdminLogin = async (e) => {
     e.preventDefault();
     setAdminLoading(true);
     setAdminError('');
