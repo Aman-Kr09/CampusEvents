@@ -1,5 +1,8 @@
-const cloudinary  = require('cloudinary').v2;
-const PYQ         = require('../models/PYQ');
+const cloudinary = require('cloudinary').v2;
+const https      = require('https');
+const http       = require('http');
+const { Readable } = require('stream');
+const PYQ        = require('../models/PYQ');
 
 // ─── Configure Cloudinary ─────────────────────────────────────────────────────
 cloudinary.config({
@@ -8,19 +11,59 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-/**
- * Helper: upload a buffer to Cloudinary via stream
- */
+// ─── Helper: upload buffer → Cloudinary ───────────────────────────────────────
 const uploadToCloudinary = (buffer, options) => {
   return new Promise((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(options, (err, result) => {
       if (err) return reject(err);
       resolve(result);
     });
-    const readable = new streamifier();
+    const readable = new Readable();
     readable.push(buffer);
     readable.push(null);
     readable.pipe(uploadStream);
+  });
+};
+
+// ─── Helper: insert a Cloudinary transformation flag after "/upload/" ──────────
+// Uses plain string replace — avoids URL-parsing corruption of spaces/special chars.
+// e.g.  .../raw/upload/v123/folder/file.pdf
+//    →  .../raw/upload/fl_attachment:false/v123/folder/file.pdf
+const addCloudinaryFlag = (fileUrl, flag) => {
+  return fileUrl.replace('/upload/', `/upload/${flag}/`);
+};
+
+// ─── Helper: fetch a remote URL and return the response stream ─────────────────
+// Follows redirects up to 5 levels so we can pipe the final body.
+const fetchStream = (url, redirects = 0) => {
+  return new Promise((resolve, reject) => {
+    if (redirects > 5) return reject(new Error('Too many redirects'));
+    try {
+      const parsedUrl = new URL(url);
+      const client    = parsedUrl.protocol === 'https:' ? https : http;
+      const req = client.request(
+        {
+          hostname: parsedUrl.hostname,
+          path:     parsedUrl.pathname + parsedUrl.search,
+          method:   'GET',
+          headers:  { 'User-Agent': 'CampusEvents/1.0' }
+        },
+        (res) => {
+          if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+            const next = res.headers.location.startsWith('http')
+              ? res.headers.location
+              : `${parsedUrl.protocol}//${parsedUrl.hostname}${res.headers.location}`;
+            return fetchStream(next, redirects + 1).then(resolve).catch(reject);
+          }
+          if (res.statusCode < 200 || res.statusCode >= 300) {
+            return reject(new Error(`Remote returned HTTP ${res.statusCode}`));
+          }
+          resolve(res);
+        }
+      );
+      req.on('error', reject);
+      req.end();
+    } catch (err) { reject(err); }
   });
 };
 
@@ -46,22 +89,19 @@ exports.uploadPYQ = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Semester must be between 1 and 7.' });
     }
 
-    // Determine resource type & file type
-    const mime = req.file.mimetype;
+    const mime    = req.file.mimetype;
     const isPDF   = mime === 'application/pdf';
     const isImage = mime.startsWith('image/');
     if (!isPDF && !isImage) {
       return res.status(400).json({ success: false, message: 'Only PDF and image files are allowed.' });
     }
 
-    const resourceType = 'auto';
-    const fileType     = isPDF ? 'pdf' : 'image';
-    const collegeId    = req.user.college._id.toString();
+    const fileType  = isPDF ? 'pdf' : 'image';
+    const collegeId = req.user.college._id.toString();
 
-    // Upload buffer → Cloudinary (no disk storage)
     const uploadResult = await uploadToCloudinary(req.file.buffer, {
       folder:        `campusevents/pyq/${collegeId}`,
-      resource_type: resourceType,
+      resource_type: 'auto',
       public_id:     `${Date.now()}_${req.file.originalname.replace(/\s+/g, '_')}`
     });
 
@@ -99,7 +139,6 @@ exports.getPYQs = async (req, res) => {
     const collegeId = req.user.college._id;
     const { semester, department, search, academicYear, examType } = req.query;
 
-    // Always scope to the user's college
     const query = { college: collegeId };
 
     if (semester)     query.semester     = Number(semester);
@@ -135,7 +174,7 @@ exports.getPYQById = async (req, res) => {
   try {
     const pyq = await PYQ.findOne({
       _id:     req.params.id,
-      college: req.user.college._id   // enforce college isolation
+      college: req.user.college._id
     }).populate('uploadedBy', 'name email');
 
     if (!pyq) {
@@ -165,23 +204,15 @@ exports.deletePYQ = async (req, res) => {
       return res.status(404).json({ success: false, message: 'PYQ not found.' });
     }
 
-    // Only Admin or the original uploader may delete
     const isAdmin    = req.user.role === 'Admin';
     const isUploader = pyq.uploadedBy.toString() === req.user._id.toString();
     if (!isAdmin && !isUploader) {
       return res.status(403).json({ success: false, message: 'Not authorized to delete this PYQ.' });
     }
 
-    // Remove file from Cloudinary (try raw, image, and auto)
-    try {
-      await cloudinary.uploader.destroy(pyq.publicId, { resource_type: pyq.fileType === 'pdf' ? 'raw' : 'image' });
-    } catch (_) {}
-    try {
-      await cloudinary.uploader.destroy(pyq.publicId, { resource_type: 'image' });
-    } catch (_) {}
-    try {
-      await cloudinary.uploader.destroy(pyq.publicId, { resource_type: 'auto' });
-    } catch (_) {}
+    // Remove file from Cloudinary (try both raw and image resource types)
+    try { await cloudinary.uploader.destroy(pyq.publicId, { resource_type: 'raw' }); } catch (_) {}
+    try { await cloudinary.uploader.destroy(pyq.publicId, { resource_type: 'image' }); } catch (_) {}
 
     await pyq.deleteOne();
 
@@ -208,7 +239,7 @@ exports.toggleBookmark = async (req, res) => {
       return res.status(404).json({ success: false, message: 'PYQ not found.' });
     }
 
-    const userId    = req.user._id.toString();
+    const userId          = req.user._id.toString();
     const alreadyBookmarked = pyq.bookmarkedBy.some(id => id.toString() === userId);
 
     if (alreadyBookmarked) {
@@ -257,12 +288,8 @@ exports.getBookmarks = async (req, res) => {
 exports.getDepartments = async (req, res) => {
   try {
     const DEFAULT_DEPARTMENTS = ['CSE', 'ECE', 'EE', 'ME', 'CE', 'AIDS', 'VLSI'];
-
     const fromDB = await PYQ.distinct('department', { college: req.user.college._id });
-
-    // Merge defaults + any custom department added via uploads
     const merged = [...new Set([...DEFAULT_DEPARTMENTS, ...fromDB])].sort();
-
     return res.status(200).json({ success: true, departments: merged });
   } catch (error) {
     console.error('getDepartments error:', error);
@@ -278,15 +305,9 @@ exports.getDepartments = async (req, res) => {
 exports.getAcademicYears = async (req, res) => {
   try {
     const DEFAULT_YEARS = ['2024-25', '2023-24', '2022-23', '2021-22', '2020-21', '2019-20'];
-
     const fromDB = await PYQ.distinct('academicYear', { college: req.user.college._id });
-
-    // Merge defaults + any custom academic year added via uploads without duplicates
     const merged = [...new Set([...DEFAULT_YEARS, ...fromDB].filter(Boolean))];
-
-    // Sort descending (most recent year first)
     merged.sort((a, b) => b.localeCompare(a));
-
     return res.status(200).json({ success: true, academicYears: merged });
   } catch (error) {
     console.error('getAcademicYears error:', error);
@@ -294,37 +315,17 @@ exports.getAcademicYears = async (req, res) => {
   }
 };
 
-// ─── Cloudinary URL Helper ─────────────────────────────────────────────────────
-/**
- * Build a Cloudinary delivery URL for a stored asset.
- * - For PDFs (resource_type: raw): inject fl_attachment:false (inline) or fl_attachment (download)
- * - For images: return the URL as-is (Cloudinary serves images inline by default)
- *
- * Cloudinary raw URLs look like:
- *   https://res.cloudinary.com/<cloud>/raw/upload/<public_id>
- * We insert the flag like:
- *   https://res.cloudinary.com/<cloud>/raw/upload/fl_attachment:false/<public_id>
- */
-const buildCloudinaryUrl = (fileUrl, fileType, forDownload = false) => {
-  try {
-    if (fileType !== 'pdf') return fileUrl; // images are fine as-is
-
-    const url = new URL(fileUrl);
-    // pathname looks like: /<cloud_name>/raw/upload/<version>/<folder>/<public_id>
-    // or /<cloud_name>/raw/upload/<folder>/<public_id>
-    // We insert the transformation flag right after "/upload/"
-    const flag = forDownload ? 'fl_attachment' : 'fl_attachment:false';
-    url.pathname = url.pathname.replace('/upload/', `/upload/${flag}/`);
-    return url.toString();
-  } catch (_) {
-    return fileUrl; // fallback: return original URL unchanged
-  }
-};
-
 // ─────────────────────────────────────────────────────────────────────────────
-// @desc    Redirect to Cloudinary inline URL for browser preview (PDF/Image)
+// @desc    Stream PYQ file inline through our server for browser preview
 // @route   GET /api/pyq/:id/view
 // @access  Private
+//
+// WHY stream through our server (not redirect to Cloudinary directly)?
+// Cloudinary sets X-Frame-Options on raw file responses, which blocks iframes.
+// By proxying through our server we set our OWN headers:
+//   Content-Type: application/pdf
+//   Content-Disposition: inline
+// …and we never forward Cloudinary's X-Frame-Options, so the iframe renders.
 // ─────────────────────────────────────────────────────────────────────────────
 exports.viewPYQFile = async (req, res) => {
   try {
@@ -333,13 +334,29 @@ exports.viewPYQFile = async (req, res) => {
       college: req.user.college._id
     });
 
-    if (!pyq) {
-      return res.status(404).send('PYQ document not found.');
-    }
+    if (!pyq) return res.status(404).send('PYQ not found.');
 
-    // Build a Cloudinary URL that forces inline (non-attachment) delivery
-    const inlineUrl = buildCloudinaryUrl(pyq.fileUrl, pyq.fileType, false);
-    return res.redirect(302, inlineUrl);
+    const safeName = `${pyq.subjectName.replace(/[^a-zA-Z0-9_-]/g, '_')}_${pyq.courseCode}.${pyq.fileType === 'pdf' ? 'pdf' : 'jpg'}`;
+
+    if (pyq.fileType === 'pdf') {
+      // fl_attachment:false tells Cloudinary to serve inline (not force-download)
+      const cloudUrl = addCloudinaryFlag(pyq.fileUrl, 'fl_attachment:false');
+      try {
+        const stream = await fetchStream(cloudUrl);
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `inline; filename="${safeName}"`);
+        res.setHeader('Cache-Control', 'private, max-age=3600');
+        // Intentionally NOT forwarding X-Frame-Options from Cloudinary
+        return stream.pipe(res);
+      } catch (streamErr) {
+        console.error('viewPYQFile stream error:', streamErr.message);
+        // Fallback: open directly (won't work in iframe but prevents blank page)
+        return res.redirect(302, cloudUrl);
+      }
+    } else {
+      // Images: Cloudinary serves them inline by default
+      return res.redirect(302, pyq.fileUrl);
+    }
   } catch (error) {
     console.error('viewPYQFile error:', error.message);
     return res.status(500).send('Error loading PYQ preview.');
@@ -347,7 +364,7 @@ exports.viewPYQFile = async (req, res) => {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// @desc    Redirect to Cloudinary attachment URL for download
+// @desc    Redirect to Cloudinary for attachment download
 // @route   GET /api/pyq/:id/download
 // @access  Private
 // ─────────────────────────────────────────────────────────────────────────────
@@ -358,13 +375,15 @@ exports.downloadPYQFile = async (req, res) => {
       college: req.user.college._id
     });
 
-    if (!pyq) {
-      return res.status(404).send('PYQ document not found.');
-    }
+    if (!pyq) return res.status(404).send('PYQ not found.');
 
-    // Build a Cloudinary URL that forces attachment (download) delivery
-    const downloadUrl = buildCloudinaryUrl(pyq.fileUrl, pyq.fileType, true);
-    return res.redirect(302, downloadUrl);
+    if (pyq.fileType === 'pdf') {
+      // fl_attachment tells Cloudinary to force a file download
+      const downloadUrl = addCloudinaryFlag(pyq.fileUrl, 'fl_attachment');
+      return res.redirect(302, downloadUrl);
+    } else {
+      return res.redirect(302, pyq.fileUrl);
+    }
   } catch (error) {
     console.error('downloadPYQFile error:', error.message);
     return res.status(500).send('Error downloading PYQ file.');

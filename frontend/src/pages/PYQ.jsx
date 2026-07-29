@@ -144,28 +144,15 @@ const PYQCard = ({ pyq, index, userId, onPreview, onBookmark, onDelete, onDownlo
 
 // ─── Preview Modal ────────────────────────────────────────────────────────────
 const PreviewModal = ({ pyq, onClose, onDownload }) => {
-  const token = localStorage.getItem('campusevents_token') || '';
+  const [iframeError, setIframeError] = useState(false);
+
+  const token   = localStorage.getItem('campusevents_token') || '';
   const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
   const viewUrl = pyq ? `${apiBase}/pyq/${pyq._id}/view?token=${token}` : '';
 
-  const [pdfSrc, setPdfSrc] = useState(null);
-  const [loadError, setLoadError] = useState(false);
-
-  // For PDFs: follow the backend redirect to get the final Cloudinary URL,
-  // then pass it to Google Docs Viewer which can render any public PDF in an iframe.
-  // This bypasses Cloudinary's X-Frame-Options restrictions.
+  // Reset error state when a different PYQ is opened
   React.useEffect(() => {
-    if (!pyq || pyq.fileType !== 'pdf') return;
-    setLoadError(false);
-    setPdfSrc(null);
-
-    fetch(viewUrl, { method: 'GET', redirect: 'follow' })
-      .then(res => {
-        const finalUrl = res.url; // the final redirected Cloudinary URL
-        const docsViewer = `https://docs.google.com/viewer?url=${encodeURIComponent(finalUrl)}&embedded=true`;
-        setPdfSrc(docsViewer);
-      })
-      .catch(() => setLoadError(true));
+    setIframeError(false);
   }, [pyq?._id]);
 
   if (!pyq) return null;
@@ -192,7 +179,7 @@ const PreviewModal = ({ pyq, onClose, onDownload }) => {
               <button
                 onClick={() => window.open(viewUrl, '_blank')}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 text-xs font-semibold border border-indigo-500/20 transition-all"
-                title="Open PDF in new tab"
+                title="Open in new tab"
               >
                 <Eye className="w-3.5 h-3.5" /> Open
               </button>
@@ -207,14 +194,15 @@ const PreviewModal = ({ pyq, onClose, onDownload }) => {
               </button>
             </div>
           </div>
+
           {/* Content */}
           <div className="flex-1 overflow-hidden min-h-[500px] relative bg-[#080812] flex items-center justify-center">
             {pyq.fileType === 'pdf' ? (
-              loadError ? (
-                /* Fallback: direct open button */
+              iframeError ? (
+                /* Fallback when iframe fails */
                 <div className="flex flex-col items-center gap-4 text-center px-6">
                   <AlertCircle className="w-12 h-12 text-amber-400" />
-                  <p className="text-sm text-gray-400">Preview could not be loaded. Open the PDF directly in a new tab.</p>
+                  <p className="text-sm text-gray-400">Preview unavailable. Open the PDF directly.</p>
                   <button
                     onClick={() => window.open(viewUrl, '_blank')}
                     className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 text-sm font-semibold border border-indigo-500/30 transition-all"
@@ -222,20 +210,14 @@ const PreviewModal = ({ pyq, onClose, onDownload }) => {
                     <Eye className="w-4 h-4" /> Open PDF
                   </button>
                 </div>
-              ) : !pdfSrc ? (
-                /* Loading state */
-                <div className="flex flex-col items-center gap-3">
-                  <Loader2 className="w-8 h-8 text-indigo-400 animate-spin" />
-                  <p className="text-sm text-gray-500">Loading preview…</p>
-                </div>
               ) : (
                 <iframe
-                  key={pdfSrc}
-                  src={pdfSrc}
+                  key={viewUrl}
+                  src={viewUrl}
                   title={pyq.subjectName}
                   className="w-full border-none"
                   style={{ height: 'calc(90vh - 80px)' }}
-                  onError={() => setLoadError(true)}
+                  onError={() => setIframeError(true)}
                 />
               )
             ) : (
@@ -244,7 +226,7 @@ const PreviewModal = ({ pyq, onClose, onDownload }) => {
                   src={viewUrl}
                   alt={pyq.subjectName}
                   className="max-w-full max-h-full object-contain rounded-lg"
-                  onError={() => setLoadError(true)}
+                  onError={() => setIframeError(true)}
                 />
               </div>
             )}
