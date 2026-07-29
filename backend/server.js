@@ -24,6 +24,7 @@ const searchRoutes = require('./routes/searchRoutes');
 const assistantRoutes = require('./routes/assistantRoutes');
 const pyqRoutes        = require('./routes/pyqRoutes');
 const offCampusRoutes  = require('./routes/offCampusRoutes');
+const paymentRoutes    = require('./routes/paymentRoutes');
 
 const app = express();
 app.set('trust proxy', 1);
@@ -100,6 +101,7 @@ app.use('/api/search', generalLimiter, searchRoutes);
 app.use('/api/assistant', generalLimiter, assistantRoutes);
 app.use('/api/pyq',       generalLimiter, pyqRoutes);
 app.use('/api/off-campus', generalLimiter, offCampusRoutes);
+app.use('/api/payment',    generalLimiter, paymentRoutes);
 
 // ─── Global Error Handler ─────────────────────────────────────────────────────
 app.use((err, req, res, next) => {
