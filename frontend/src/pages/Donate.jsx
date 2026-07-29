@@ -1,24 +1,16 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Heart, ShieldCheck, Sparkles, CheckCircle2, QrCode, CreditCard,
-  Building2, ArrowRight, ArrowLeft, Lock, Award, Coffee, Zap,
-  Check, X, Copy, Download, RefreshCw, Smartphone
+  Heart, CheckCircle2, QrCode, CreditCard,
+  Building2, ArrowRight, Lock, Copy, Check, RefreshCw
 } from 'lucide-react';
 
 const PRESET_AMOUNTS = [
-  { amount: 100, label: 'Chai & Code ☕', desc: 'Sponsors 1 day of server database queries.' },
-  { amount: 250, label: 'Server Booster 🚀', desc: 'Keeps high-frequency AI assistant fast for 1 week.' },
-  { amount: 500, label: 'AI Champion 🤖', desc: 'Covers Groq Llama-3 API bandwidth for 500+ students.' },
-  { amount: 1000, label: 'Campus Patron 🏛️', desc: 'Helps onboard and host new tier-3 engineering colleges.' }
-];
-
-const RECENT_DONORS = [
-  { name: 'Sandeep Sharma', amount: 500, college: 'NIT Delhi', time: '2 hours ago', msg: 'Awesome platform for PYQs and placement stats!' },
-  { name: 'Priya Verma', amount: 250, college: 'IIIT Delhi', time: '5 hours ago', msg: 'Great initiative by student devs.' },
-  { name: 'Aman Kumar', amount: 1000, college: 'NIT Delhi', time: '1 day ago', msg: 'Keep building amazing tools for the community.' },
-  { name: 'Rohan Gupta', amount: 100, college: 'DTU Delhi', time: '2 days ago', msg: 'Loved the off-campus job aggregator feature!' }
+  { amount: 100, label: 'Chai & Code ☕', desc: 'Sponsors database queries.' },
+  { amount: 250, label: 'Server Booster 🚀', desc: 'Keeps high-frequency AI assistant fast.' },
+  { amount: 500, label: 'AI Champion 🤖', desc: 'Covers Groq Llama-3 API bandwidth.' },
+  { amount: 1000, label: 'Campus Patron 🏛️', desc: 'Helps onboard new engineering colleges.' }
 ];
 
 const Donate = () => {
@@ -56,7 +48,7 @@ const Donate = () => {
     setIsPaying(true);
     setPaymentStep('processing');
 
-    // Simulate payment gateway processing (2 seconds)
+    // Simulate payment gateway processing (2.5 seconds)
     setTimeout(() => {
       setPaymentStep('success');
     }, 2500);
@@ -69,350 +61,291 @@ const Donate = () => {
   };
 
   return (
-    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden flex flex-col justify-between">
-      {/* Background Neon Glowing Orbs */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl -z-10 animate-pulse-slow" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl -z-10 animate-pulse-slow" />
+    <div className="min-h-screen py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden flex flex-col justify-between">
+      {/* Background Orbs */}
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-indigo-500/8 rounded-full blur-3xl -z-10 animate-pulse-slow pointer-events-none" />
+      <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-purple-500/8 rounded-full blur-3xl -z-10 animate-pulse-slow pointer-events-none" />
+      <div className="absolute top-1/2 right-0 w-64 h-64 bg-cyan-500/5 rounded-full blur-3xl -z-10 pointer-events-none" />
 
-      {/* Top Bar Header */}
-      <div className="max-w-5xl mx-auto w-full flex items-center justify-between mb-8">
-        <Link to="/" className="flex items-center space-x-2 text-xs text-gray-400 hover:text-white bg-white/[0.04] border border-glassBorder px-3.5 py-2 rounded-xl transition-all">
-          <ArrowLeft className="w-4 h-4 text-indigo-400" />
-          <span>Back to Home</span>
-        </Link>
-        <div className="flex items-center space-x-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-3 py-1.5 rounded-full text-xs font-bold">
-          <ShieldCheck className="w-4 h-4" />
-          <span>256-Bit SSL Encrypted Payment Gateway</span>
+      <div className="max-w-3xl mx-auto w-full space-y-12 my-auto">
+
+        {/* ── Simple Header (Matching Contact Us Page) ── */}
+        <div className="text-center space-y-4">
+          <motion.div
+            initial={{ opacity: 0, y: -16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="inline-flex items-center space-x-2 bg-indigo-950/40 text-purple-400 border border-purple-500/20 px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase"
+          >
+            <Heart className="w-3.5 h-3.5 text-rose-400 fill-rose-400" />
+            <span>Support Us</span>
+          </motion.div>
+
+          <motion.h1
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="text-4xl sm:text-5xl font-extrabold tracking-tight text-white"
+          >
+            Support <span className="gradient-text-indigo-cyan">CampusEvents</span>
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="text-gray-400 max-w-xl mx-auto text-base leading-relaxed"
+          >
+            Help us keep servers running, expand AI capabilities, and empower the student developer community.
+          </motion.p>
         </div>
-      </div>
 
-      {/* Hero Title */}
-      <div className="max-w-3xl mx-auto text-center space-y-4 mb-12">
-        <div className="inline-flex items-center space-x-2 text-purple-400 bg-purple-950/40 px-3 py-1.5 rounded-full border border-purple-500/20 text-xs font-semibold tracking-wider uppercase">
-          <Heart className="w-4 h-4 text-rose-400 fill-rose-400" />
-          <span>Support CampusEvents Open Project</span>
-        </div>
-        <h1 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
-          Empower the Next Generation of <br />
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-400 to-indigo-400">
-            Student Community Infrastructure
-          </span>
-        </h1>
-        <p className="text-sm sm:text-base text-gray-400 max-w-xl mx-auto leading-relaxed">
-          CampusEvents is 100% student-driven and free for everyone. Your contribution directly funds high-speed Redis servers, AI bandwidth, and PYQ cloud storage for 100+ colleges.
-        </p>
-      </div>
+        {/* ── Main Contribution Form Card ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.25 }}
+          className="glass-panel p-6 sm:p-10 rounded-3xl border-glassBorder space-y-8 shadow-glow/10"
+        >
 
-      {/* Main Grid: Form + Impact */}
-      <div className="max-w-5xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-8 my-auto">
+          {/* Step 1: Select Amount */}
+          <div className="space-y-3">
+            <label className="block text-xs font-extrabold uppercase tracking-wider text-purple-400">
+              1. Select Contribution Amount (₹)
+            </label>
 
-        {/* ── LEFT COLUMN: Payment & Amount Form (7 cols) ── */}
-        <div className="lg:col-span-7 space-y-6">
-          <div className="glass-panel p-6 sm:p-8 rounded-3xl border-glassBorder space-y-6 shadow-glow/10">
-
-            {/* Step 1: Select Amount */}
-            <div className="space-y-3">
-              <label className="block text-xs font-extrabold uppercase tracking-wider text-purple-400">
-                1. Select Contribution Amount (₹)
-              </label>
-
-              <div className="grid grid-cols-2 gap-3">
-                {PRESET_AMOUNTS.map((item) => {
-                  const isSelected = !customAmount && amount === item.amount;
-                  return (
-                    <button
-                      key={item.amount}
-                      type="button"
-                      onClick={() => { setAmount(item.amount); setCustomAmount(''); }}
-                      className={`p-4 rounded-2xl border text-left transition-all duration-200 flex flex-col justify-between ${
-                        isSelected
-                          ? 'bg-purple-950/60 border-purple-500/50 text-white shadow-glow'
-                          : 'bg-white/[0.02] border-glassBorder text-gray-400 hover:border-purple-500/30 hover:text-white'
-                      }`}
-                    >
-                      <div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-lg font-black text-white">₹{item.amount}</span>
-                          {isSelected && <CheckCircle2 className="w-4 h-4 text-purple-400" />}
-                        </div>
-                        <span className="text-xs font-bold text-purple-300 block mt-1">{item.label}</span>
+            <div className="grid grid-cols-2 gap-3">
+              {PRESET_AMOUNTS.map((item) => {
+                const isSelected = !customAmount && amount === item.amount;
+                return (
+                  <button
+                    key={item.amount}
+                    type="button"
+                    onClick={() => { setAmount(item.amount); setCustomAmount(''); }}
+                    className={`p-4 rounded-2xl border text-left transition-all duration-200 flex flex-col justify-between ${
+                      isSelected
+                        ? 'bg-purple-950/60 border-purple-500/50 text-white shadow-glow'
+                        : 'bg-white/[0.02] border-glassBorder text-gray-400 hover:border-purple-500/30 hover:text-white'
+                    }`}
+                  >
+                    <div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-lg font-black text-white">₹{item.amount}</span>
+                        {isSelected && <CheckCircle2 className="w-4 h-4 text-purple-400" />}
                       </div>
-                      <span className="text-[10px] text-gray-500 block mt-2 leading-tight">{item.desc}</span>
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Custom Amount */}
-              <div className="pt-2">
-                <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Or Enter Custom Amount</label>
-                <div className="relative">
-                  <span className="absolute left-3.5 top-2.5 text-gray-400 font-bold text-sm">₹</span>
-                  <input
-                    type="number"
-                    min="10"
-                    placeholder="Enter custom amount (e.g. 750)"
-                    value={customAmount}
-                    onChange={(e) => setCustomAmount(e.target.value)}
-                    className="w-full glass-input pl-8 text-sm font-bold text-white"
-                  />
-                </div>
-              </div>
+                      <span className="text-xs font-bold text-purple-300 block mt-1">{item.label}</span>
+                    </div>
+                    <span className="text-[10px] text-gray-500 block mt-2 leading-tight">{item.desc}</span>
+                  </button>
+                );
+              })}
             </div>
 
-            {/* Step 2: Donor Info */}
-            <div className="space-y-3 border-t border-glassBorder pt-5">
-              <label className="block text-xs font-extrabold uppercase tracking-wider text-purple-400">
-                2. Supporter Details
-              </label>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[10px] font-semibold text-gray-400 mb-1 uppercase">Full Name *</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. Sandeep Sharma"
-                    value={donorInfo.name}
-                    onChange={(e) => setDonorInfo({ ...donorInfo, name: e.target.value })}
-                    className="w-full glass-input text-xs"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[10px] font-semibold text-gray-400 mb-1 uppercase">Email Address *</label>
-                  <input
-                    type="email"
-                    required
-                    placeholder="e.g. sandeep@nitd.ac.in"
-                    value={donorInfo.email}
-                    onChange={(e) => setDonorInfo({ ...donorInfo, email: e.target.value })}
-                    className="w-full glass-input text-xs"
-                  />
-                </div>
+            {/* Custom Amount */}
+            <div className="pt-2">
+              <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Or Enter Custom Amount</label>
+              <div className="relative">
+                <span className="absolute left-3.5 top-2.5 text-gray-400 font-bold text-sm">₹</span>
+                <input
+                  type="number"
+                  min="10"
+                  placeholder="Enter custom amount (e.g. 750)"
+                  value={customAmount}
+                  onChange={(e) => setCustomAmount(e.target.value)}
+                  className="w-full glass-input pl-8 text-sm font-bold text-white"
+                />
               </div>
+            </div>
+          </div>
 
+          {/* Step 2: Donor Info */}
+          <div className="space-y-3 border-t border-glassBorder pt-6">
+            <label className="block text-xs font-extrabold uppercase tracking-wider text-purple-400">
+              2. Supporter Details
+            </label>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-[10px] font-semibold text-gray-400 mb-1 uppercase">College / Institution (Optional)</label>
+                <label className="block text-[10px] font-semibold text-gray-400 mb-1 uppercase">Full Name *</label>
                 <input
                   type="text"
-                  placeholder="e.g. National Institute of Technology Delhi"
-                  value={donorInfo.college}
-                  onChange={(e) => setDonorInfo({ ...donorInfo, college: e.target.value })}
+                  required
+                  placeholder="e.g. Sandeep Sharma"
+                  value={donorInfo.name}
+                  onChange={(e) => setDonorInfo({ ...donorInfo, name: e.target.value })}
                   className="w-full glass-input text-xs"
                 />
               </div>
-
               <div>
-                <label className="block text-[10px] font-semibold text-gray-400 mb-1 uppercase">Message / Note of Encouragement</label>
-                <textarea
-                  rows={2}
-                  placeholder="Leave a message for the student developer team..."
-                  value={donorInfo.message}
-                  onChange={(e) => setDonorInfo({ ...donorInfo, message: e.target.value })}
-                  className="w-full glass-input text-xs resize-none"
+                <label className="block text-[10px] font-semibold text-gray-400 mb-1 uppercase">Email Address *</label>
+                <input
+                  type="email"
+                  required
+                  placeholder="e.g. sandeep@nitd.ac.in"
+                  value={donorInfo.email}
+                  onChange={(e) => setDonorInfo({ ...donorInfo, email: e.target.value })}
+                  className="w-full glass-input text-xs"
                 />
               </div>
             </div>
 
-            {/* Step 3: Payment Method */}
-            <div className="space-y-3 border-t border-glassBorder pt-5">
-              <label className="block text-xs font-extrabold uppercase tracking-wider text-purple-400">
-                3. Choose Payment Gateway
-              </label>
+            <div>
+              <label className="block text-[10px] font-semibold text-gray-400 mb-1 uppercase">College / Institution (Optional)</label>
+              <input
+                type="text"
+                placeholder="e.g. National Institute of Technology Delhi"
+                value={donorInfo.college}
+                onChange={(e) => setDonorInfo({ ...donorInfo, college: e.target.value })}
+                className="w-full glass-input text-xs"
+              />
+            </div>
 
-              <div className="grid grid-cols-3 gap-2">
-                {[
-                  { id: 'upi', label: 'UPI / QR', icon: QrCode },
-                  { id: 'card', label: 'Debit / Credit', icon: CreditCard },
-                  { id: 'netbanking', label: 'Net Banking', icon: Building2 }
-                ].map((m) => {
-                  const Icon = m.icon;
-                  const active = paymentMethod === m.id;
-                  return (
-                    <button
-                      key={m.id}
-                      type="button"
-                      onClick={() => setPaymentMethod(m.id)}
-                      className={`flex flex-col items-center justify-center p-3 rounded-xl border text-xs font-bold transition-all ${
-                        active
-                          ? 'bg-purple-950/80 border-purple-500/60 text-purple-300'
-                          : 'bg-white/[0.02] border-glassBorder text-gray-400 hover:text-white'
-                      }`}
-                    >
-                      <Icon className="w-4 h-4 mb-1" />
-                      <span>{m.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
+            <div>
+              <label className="block text-[10px] font-semibold text-gray-400 mb-1 uppercase">Message / Note of Encouragement</label>
+              <textarea
+                rows={2}
+                placeholder="Leave a message for the team..."
+                value={donorInfo.message}
+                onChange={(e) => setDonorInfo({ ...donorInfo, message: e.target.value })}
+                className="w-full glass-input text-xs resize-none"
+              />
+            </div>
+          </div>
 
-              {/* UPI Tab */}
-              {paymentMethod === 'upi' && (
-                <div className="p-4 bg-white/[0.01] border border-glassBorder rounded-2xl space-y-3">
-                  <div className="flex items-center justify-between text-xs text-gray-400">
-                    <span className="font-semibold text-white">Instant UPI Transfer</span>
-                    <span className="text-[10px] text-emerald-400 font-bold">Zero Gateway Fee</span>
-                  </div>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      placeholder="e.g. username@upi or mobile@paytm"
-                      value={upiId}
-                      onChange={(e) => setUpiId(e.target.value)}
-                      className="w-full glass-input text-xs"
-                    />
-                  </div>
-                  <div className="flex items-center space-x-3 text-[10px] text-gray-500 pt-1">
-                    <span className="px-2 py-0.5 bg-white/5 border border-glassBorder rounded font-semibold text-gray-300">GPay</span>
-                    <span className="px-2 py-0.5 bg-white/5 border border-glassBorder rounded font-semibold text-gray-300">PhonePe</span>
-                    <span className="px-2 py-0.5 bg-white/5 border border-glassBorder rounded font-semibold text-gray-300">Paytm</span>
-                    <span className="px-2 py-0.5 bg-white/5 border border-glassBorder rounded font-semibold text-gray-300">BHIM</span>
-                  </div>
+          {/* Step 3: Payment Method */}
+          <div className="space-y-3 border-t border-glassBorder pt-6">
+            <label className="block text-xs font-extrabold uppercase tracking-wider text-purple-400">
+              3. Choose Payment Gateway
+            </label>
+
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { id: 'upi', label: 'UPI / QR', icon: QrCode },
+                { id: 'card', label: 'Debit / Credit', icon: CreditCard },
+                { id: 'netbanking', label: 'Net Banking', icon: Building2 }
+              ].map((m) => {
+                const Icon = m.icon;
+                const active = paymentMethod === m.id;
+                return (
+                  <button
+                    key={m.id}
+                    type="button"
+                    onClick={() => setPaymentMethod(m.id)}
+                    className={`flex flex-col items-center justify-center p-3 rounded-xl border text-xs font-bold transition-all ${
+                      active
+                        ? 'bg-purple-950/80 border-purple-500/60 text-purple-300'
+                        : 'bg-white/[0.02] border-glassBorder text-gray-400 hover:text-white'
+                    }`}
+                  >
+                    <Icon className="w-4 h-4 mb-1" />
+                    <span>{m.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* UPI Tab */}
+            {paymentMethod === 'upi' && (
+              <div className="p-4 bg-white/[0.01] border border-glassBorder rounded-2xl space-y-3">
+                <div className="flex items-center justify-between text-xs text-gray-400">
+                  <span className="font-semibold text-white">Instant UPI Transfer</span>
+                  <span className="text-[10px] text-emerald-400 font-bold">Zero Gateway Fee</span>
                 </div>
-              )}
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="e.g. username@upi or mobile@paytm"
+                    value={upiId}
+                    onChange={(e) => setUpiId(e.target.value)}
+                    className="w-full glass-input text-xs"
+                  />
+                </div>
+                <div className="flex items-center space-x-3 text-[10px] text-gray-500 pt-1">
+                  <span className="px-2 py-0.5 bg-white/5 border border-glassBorder rounded font-semibold text-gray-300">GPay</span>
+                  <span className="px-2 py-0.5 bg-white/5 border border-glassBorder rounded font-semibold text-gray-300">PhonePe</span>
+                  <span className="px-2 py-0.5 bg-white/5 border border-glassBorder rounded font-semibold text-gray-300">Paytm</span>
+                  <span className="px-2 py-0.5 bg-white/5 border border-glassBorder rounded font-semibold text-gray-300">BHIM</span>
+                </div>
+              </div>
+            )}
 
-              {/* Card Tab */}
-              {paymentMethod === 'card' && (
-                <div className="p-4 bg-white/[0.01] border border-glassBorder rounded-2xl space-y-3">
+            {/* Card Tab */}
+            {paymentMethod === 'card' && (
+              <div className="p-4 bg-white/[0.01] border border-glassBorder rounded-2xl space-y-3">
+                <div>
+                  <label className="block text-[10px] font-semibold text-gray-400 mb-1">Card Number</label>
+                  <input
+                    type="text"
+                    maxLength={19}
+                    placeholder="4532 •••• •••• 8921"
+                    value={cardDetails.number}
+                    onChange={(e) => setCardDetails({ ...cardDetails, number: e.target.value })}
+                    className="w-full glass-input text-xs font-mono"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-[10px] font-semibold text-gray-400 mb-1">Card Number</label>
+                    <label className="block text-[10px] font-semibold text-gray-400 mb-1">Expiry (MM/YY)</label>
                     <input
                       type="text"
-                      maxLength={19}
-                      placeholder="4532 •••• •••• 8921"
-                      value={cardDetails.number}
-                      onChange={(e) => setCardDetails({ ...cardDetails, number: e.target.value })}
+                      maxLength={5}
+                      placeholder="08/28"
+                      value={cardDetails.expiry}
+                      onChange={(e) => setCardDetails({ ...cardDetails, expiry: e.target.value })}
                       className="w-full glass-input text-xs font-mono"
                     />
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-[10px] font-semibold text-gray-400 mb-1">Expiry (MM/YY)</label>
-                      <input
-                        type="text"
-                        maxLength={5}
-                        placeholder="08/28"
-                        value={cardDetails.expiry}
-                        onChange={(e) => setCardDetails({ ...cardDetails, expiry: e.target.value })}
-                        className="w-full glass-input text-xs font-mono"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] font-semibold text-gray-400 mb-1">CVV Code</label>
-                      <input
-                        type="password"
-                        maxLength={4}
-                        placeholder="•••"
-                        value={cardDetails.cvv}
-                        onChange={(e) => setCardDetails({ ...cardDetails, cvv: e.target.value })}
-                        className="w-full glass-input text-xs font-mono"
-                      />
-                    </div>
+                  <div>
+                    <label className="block text-[10px] font-semibold text-gray-400 mb-1">CVV Code</label>
+                    <input
+                      type="password"
+                      maxLength={4}
+                      placeholder="•••"
+                      value={cardDetails.cvv}
+                      onChange={(e) => setCardDetails({ ...cardDetails, cvv: e.target.value })}
+                      className="w-full glass-input text-xs font-mono"
+                    />
                   </div>
                 </div>
-              )}
-
-              {/* NetBanking Tab */}
-              {paymentMethod === 'netbanking' && (
-                <div className="p-4 bg-white/[0.01] border border-glassBorder rounded-2xl space-y-3">
-                  <label className="block text-[10px] font-semibold text-gray-400 mb-1">Select Bank</label>
-                  <select
-                    value={selectedBank}
-                    onChange={(e) => setSelectedBank(e.target.value)}
-                    className="w-full glass-input text-xs"
-                  >
-                    <option value="HDFC">HDFC Bank</option>
-                    <option value="ICICI">ICICI Bank</option>
-                    <option value="SBI">State Bank of India (SBI)</option>
-                    <option value="AXIS">Axis Bank</option>
-                    <option value="KOTAK">Kotak Mahindra Bank</option>
-                    <option value="OTHER">Other Popular Indian Banks</option>
-                  </select>
-                </div>
-              )}
-            </div>
-
-            {/* Submit Proceed Button */}
-            <button
-              onClick={handleProceedPay}
-              className="w-full py-4 rounded-2xl font-black text-sm text-white bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 shadow-glow flex items-center justify-center space-x-2 transition-all transform active:scale-[0.99]"
-            >
-              <Heart className="w-4 h-4 fill-white" />
-              <span>Proceed to Donate ₹{finalAmount || 0}</span>
-              <ArrowRight className="w-4.5 h-4.5" />
-            </button>
-
-          </div>
-        </div>
-
-        {/* ── RIGHT COLUMN: Impact & Wall of Donors (5 cols) ── */}
-        <div className="lg:col-span-5 space-y-6">
-
-          {/* Impact Stats Card */}
-          <div className="glass-panel p-6 rounded-3xl border-glassBorder space-y-4">
-            <h3 className="font-bold text-white text-base flex items-center space-x-2">
-              <Zap className="w-5 h-5 text-amber-400" />
-              <span>Platform Impact Metrics</span>
-            </h3>
-
-            <div className="grid grid-cols-2 gap-3 pt-2">
-              <div className="p-3.5 bg-white/[0.02] border border-glassBorder rounded-2xl">
-                <span className="block text-[10px] font-bold text-gray-500 uppercase">Total Contributed</span>
-                <span className="text-xl font-extrabold text-emerald-400">₹48,500+</span>
               </div>
-              <div className="p-3.5 bg-white/[0.02] border border-glassBorder rounded-2xl">
-                <span className="block text-[10px] font-bold text-gray-500 uppercase">Student Backers</span>
-                <span className="text-xl font-extrabold text-purple-400">142</span>
+            )}
+
+            {/* NetBanking Tab */}
+            {paymentMethod === 'netbanking' && (
+              <div className="p-4 bg-white/[0.01] border border-glassBorder rounded-2xl space-y-3">
+                <label className="block text-[10px] font-semibold text-gray-400 mb-1">Select Bank</label>
+                <select
+                  value={selectedBank}
+                  onChange={(e) => setSelectedBank(e.target.value)}
+                  className="w-full glass-input text-xs"
+                >
+                  <option value="HDFC">HDFC Bank</option>
+                  <option value="ICICI">ICICI Bank</option>
+                  <option value="SBI">State Bank of India (SBI)</option>
+                  <option value="AXIS">Axis Bank</option>
+                  <option value="KOTAK">Kotak Mahindra Bank</option>
+                  <option value="OTHER">Other Popular Indian Banks</option>
+                </select>
               </div>
-              <div className="p-3.5 bg-white/[0.02] border border-glassBorder rounded-2xl">
-                <span className="block text-[10px] font-bold text-gray-500 uppercase">Colleges Served</span>
-                <span className="text-xl font-extrabold text-cyan-400">100+</span>
-              </div>
-              <div className="p-3.5 bg-white/[0.02] border border-glassBorder rounded-2xl">
-                <span className="block text-[10px] font-bold text-gray-500 uppercase">Server Uptime</span>
-                <span className="text-xl font-extrabold text-indigo-400">99.9%</span>
-              </div>
-            </div>
+            )}
           </div>
 
-          {/* Recent Supporters Feed */}
-          <div className="glass-panel p-6 rounded-3xl border-glassBorder space-y-4">
-            <div className="flex justify-between items-center border-b border-glassBorder pb-3">
-              <h3 className="font-bold text-white text-sm flex items-center space-x-2">
-                <Award className="w-4 h-4 text-purple-400" />
-                <span>Recent Community Supporters</span>
-              </h3>
-              <span className="text-[10px] text-emerald-400 font-bold bg-emerald-950/50 px-2 py-0.5 rounded-full border border-emerald-500/20">
-                Live Feed
-              </span>
-            </div>
+          {/* Submit Proceed Button */}
+          <button
+            onClick={handleProceedPay}
+            className="w-full py-4 rounded-2xl font-black text-sm text-white bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 shadow-glow flex items-center justify-center space-x-2 transition-all transform active:scale-[0.99]"
+          >
+            <Heart className="w-4 h-4 fill-white" />
+            <span>Proceed to Donate ₹{finalAmount || 0}</span>
+            <ArrowRight className="w-4.5 h-4.5" />
+          </button>
 
-            <div className="space-y-3">
-              {RECENT_DONORS.map((donor, idx) => (
-                <div key={idx} className="p-3 bg-white/[0.01] border border-glassBorder rounded-2xl flex items-start justify-between gap-3">
-                  <div className="space-y-0.5">
-                    <div className="flex items-center space-x-2">
-                      <span className="font-bold text-white text-xs">{donor.name}</span>
-                      <span className="text-[10px] text-gray-500">&bull; {donor.college}</span>
-                    </div>
-                    <p className="text-xs text-gray-400 italic">"{donor.msg}"</p>
-                    <span className="text-[9px] text-gray-600 block">{donor.time}</span>
-                  </div>
-                  <span className="px-2.5 py-1 rounded-lg text-xs font-black bg-purple-950/60 text-purple-300 border border-purple-500/20 shrink-0">
-                    +₹{donor.amount}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-        </div>
-
+        </motion.div>
       </div>
 
-      {/* Footer copyright note */}
-      <div className="max-w-5xl mx-auto w-full text-center text-xs text-gray-500 pt-12">
-        CampusEvents Community Fund &bull; Built with ❤️ for Engineering &amp; Academic Institutions.
+      {/* Footer Note */}
+      <div className="max-w-3xl mx-auto w-full text-center text-xs text-gray-500 pt-12">
+        CampusEvents Community Fund &bull; Built with ❤️ for Academic Institutions.
       </div>
 
       {/* ══════════════════════════════════════════════════════════════════════
