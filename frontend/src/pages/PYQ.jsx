@@ -18,15 +18,15 @@ const ACADEMIC_YEARS = ['2024-25', '2023-24', '2022-23', '2021-22', '2020-21', '
 const CARD_VARIANTS = {
   hidden: { opacity: 0, y: 24, scale: 0.97 },
   visible: (i) => ({ opacity: 1, y: 0, scale: 1, transition: { delay: i * 0.06, duration: 0.35, ease: 'easeOut' } }),
-  exit:   { opacity: 0, y: -10, scale: 0.97, transition: { duration: 0.2 } }
+  exit: { opacity: 0, y: -10, scale: 0.97, transition: { duration: 0.2 } }
 };
 
 // ─── Badge helpers ─────────────────────────────────────────────────────────
 const EXAM_TYPE_COLORS = {
   'Mid Semester': 'bg-amber-500/20 text-amber-300 border-amber-500/30',
   'End Semester': 'bg-red-500/20 text-red-300 border-red-500/30',
-  'Quiz':         'bg-teal-500/20 text-teal-300 border-teal-500/30',
-  'Assignment':   'bg-blue-500/20 text-blue-300 border-blue-500/30'
+  'Quiz': 'bg-teal-500/20 text-teal-300 border-teal-500/30',
+  'Assignment': 'bg-blue-500/20 text-blue-300 border-blue-500/30'
 };
 
 const SemBadge = ({ sem }) => (
@@ -119,11 +119,10 @@ const PYQCard = ({ pyq, index, userId, onPreview, onBookmark, onDelete, onDownlo
         </button>
         <button
           onClick={() => onBookmark(pyq._id)}
-          className={`flex items-center justify-center p-2 rounded-xl border transition-all duration-200 ${
-            isBookmarked
-              ? 'bg-amber-500/20 text-amber-400 border-amber-500/30'
-              : 'bg-white/5 text-gray-400 border-white/10 hover:bg-amber-500/10 hover:text-amber-400'
-          }`}
+          className={`flex items-center justify-center p-2 rounded-xl border transition-all duration-200 ${isBookmarked
+            ? 'bg-amber-500/20 text-amber-400 border-amber-500/30'
+            : 'bg-white/5 text-gray-400 border-white/10 hover:bg-amber-500/10 hover:text-amber-400'
+            }`}
           title={isBookmarked ? 'Remove bookmark' : 'Bookmark'}
         >
           {isBookmarked ? <BookmarkCheck className="w-3.5 h-3.5" /> : <Bookmark className="w-3.5 h-3.5" />}
@@ -146,7 +145,7 @@ const PYQCard = ({ pyq, index, userId, onPreview, onBookmark, onDelete, onDownlo
 const PreviewModal = ({ pyq, onClose, onDownload }) => {
   const [iframeError, setIframeError] = useState(false);
 
-  const token   = localStorage.getItem('campusevents_token') || '';
+  const token = localStorage.getItem('campusevents_token') || '';
   const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
   const viewUrl = pyq ? `${apiBase}/pyq/${pyq._id}/view?token=${token}` : '';
 
@@ -243,14 +242,14 @@ const UploadModal = ({ departments, academicYears, onClose, onSuccess }) => {
     subjectName: '', courseCode: '', semester: '1', department: '',
     academicYear: '', examType: ''
   });
-  const [file, setFile]     = useState(null);
+  const [file, setFile] = useState(null);
   const [dragging, setDrag] = useState(false);
-  const [loading, setLoad]  = useState(false);
-  const [error, setError]   = useState('');
+  const [loading, setLoad] = useState(false);
+  const [error, setError] = useState('');
   const [customDept, setCustomDept] = useState('');
   const [showCustom, setShowCustom] = useState(false);
-  const [customYear, setCustomYear]     = useState('');
-  const [showCustomYear, setShowCY]     = useState(false);
+  const [customYear, setCustomYear] = useState('');
+  const [showCustomYear, setShowCY] = useState(false);
   const fileRef = useRef();
 
   const handleDrop = (e) => {
@@ -338,13 +337,12 @@ const UploadModal = ({ departments, academicYears, onClose, onSuccess }) => {
               onDragOver={e => { e.preventDefault(); setDrag(true); }}
               onDragLeave={() => setDrag(false)}
               onClick={() => fileRef.current?.click()}
-              className={`cursor-pointer flex flex-col items-center justify-center gap-2 py-8 rounded-xl border-2 border-dashed transition-all duration-200 ${
-                dragging
-                  ? 'border-indigo-500/70 bg-indigo-500/10'
-                  : file
-                    ? 'border-emerald-500/50 bg-emerald-500/5'
-                    : 'border-white/10 hover:border-indigo-500/40 hover:bg-white/[0.03]'
-              }`}
+              className={`cursor-pointer flex flex-col items-center justify-center gap-2 py-8 rounded-xl border-2 border-dashed transition-all duration-200 ${dragging
+                ? 'border-indigo-500/70 bg-indigo-500/10'
+                : file
+                  ? 'border-emerald-500/50 bg-emerald-500/5'
+                  : 'border-white/10 hover:border-indigo-500/40 hover:bg-white/[0.03]'
+                }`}
             >
               <input ref={fileRef} type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden" onChange={e => validateAndSetFile(e.target.files[0])} />
               {file ? (
@@ -358,8 +356,8 @@ const UploadModal = ({ departments, academicYears, onClose, onSuccess }) => {
                   <div className="p-3 rounded-xl bg-white/5">
                     <Upload className="w-6 h-6 text-gray-400" />
                   </div>
-                  <p className="text-sm font-medium text-gray-300">Drop file here or <span className="text-indigo-400">click to browse</span></p>
-                  <p className="text-xs text-gray-500">PDF, JPG, JPEG, PNG — max 20 MB</p>
+                  <p className="text-sm font-medium text-gray-300">Drop image or file here or <span className="text-indigo-400">click to browse</span></p>
+                  <p className="text-xs text-gray-500">JPG, JPEG, PNG, PDF — max 10 MB</p>
                 </>
               )}
             </div>
@@ -434,11 +432,10 @@ const UploadModal = ({ departments, academicYears, onClose, onSuccess }) => {
                     <button
                       key={type} type="button"
                       onClick={() => setForm(f => ({ ...f, examType: type }))}
-                      className={`px-3 py-2 rounded-xl text-xs font-semibold border transition-all ${
-                        form.examType === type
-                          ? 'bg-indigo-600/30 text-indigo-200 border-indigo-500/50'
-                          : 'bg-white/5 text-gray-400 border-white/10 hover:border-indigo-500/30 hover:text-white'
-                      }`}
+                      className={`px-3 py-2 rounded-xl text-xs font-semibold border transition-all ${form.examType === type
+                        ? 'bg-indigo-600/30 text-indigo-200 border-indigo-500/50'
+                        : 'bg-white/5 text-gray-400 border-white/10 hover:border-indigo-500/30 hover:text-white'
+                        }`}
                     >
                       {type}
                     </button>
@@ -472,23 +469,23 @@ export default function PYQ() {
   const { user } = useAuth();
 
   // Data
-  const [pyqs, setPyqs]               = useState([]);
-  const [departments, setDepts]       = useState(['CSE', 'ECE', 'EE', 'ME', 'CE', 'AIDS', 'VLSI']);
-  const [academicYears, setAcYears]   = useState(['2024-25', '2023-24', '2022-23', '2021-22', '2020-21', '2019-20']);
-  const [loading, setLoading]         = useState(false);
-  const [error, setError]             = useState('');
+  const [pyqs, setPyqs] = useState([]);
+  const [departments, setDepts] = useState(['CSE', 'ECE', 'EE', 'ME', 'CE', 'AIDS', 'VLSI']);
+  const [academicYears, setAcYears] = useState(['2024-25', '2023-24', '2022-23', '2021-22', '2020-21', '2019-20']);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   // Filters
-  const [activeSem, setActiveSem]     = useState(1);
-  const [activeDept, setActiveDept]   = useState('All');
-  const [search, setSearch]           = useState('');
-  const [yearFilter, setYearFilter]   = useState('');
-  const [examFilter, setExamFilter]   = useState('');
-  const [showBookmarks, setShowBM]    = useState(false);
+  const [activeSem, setActiveSem] = useState(1);
+  const [activeDept, setActiveDept] = useState('All');
+  const [search, setSearch] = useState('');
+  const [yearFilter, setYearFilter] = useState('');
+  const [examFilter, setExamFilter] = useState('');
+  const [showBookmarks, setShowBM] = useState(false);
 
   // Modals
-  const [showUpload, setShowUpload]   = useState(false);
-  const [previewPYQ, setPreview]      = useState(null);
+  const [showUpload, setShowUpload] = useState(false);
+  const [previewPYQ, setPreview] = useState(null);
 
   // ── Fetch metadata (departments & academic years) ──────────────────────────
   const fetchMetadata = useCallback(async () => {
@@ -499,7 +496,7 @@ export default function PYQ() {
       ]);
       if (deptRes.data.success) setDepts(deptRes.data.departments);
       if (yearRes.data.success) setAcYears(yearRes.data.academicYears);
-    } catch (_) {}
+    } catch (_) { }
   }, []);
 
   useEffect(() => {
@@ -511,15 +508,15 @@ export default function PYQ() {
     setLoading(true); setError('');
     try {
       const endpoint = showBookmarks ? '/pyq/bookmarks' : '/pyq';
-      const params   = showBookmarks
+      const params = showBookmarks
         ? {}
         : {
-            semester:     activeSem,
-            ...(activeDept !== 'All' && { department: activeDept }),
-            ...(search      && { search }),
-            ...(yearFilter  && { academicYear: yearFilter }),
-            ...(examFilter  && { examType: examFilter })
-          };
+          semester: activeSem,
+          ...(activeDept !== 'All' && { department: activeDept }),
+          ...(search && { search }),
+          ...(yearFilter && { academicYear: yearFilter }),
+          ...(examFilter && { examType: examFilter })
+        };
 
       const res = await api.get(endpoint, { params });
       if (res.data.success) setPyqs(res.data.pyqs || []);
@@ -579,13 +576,13 @@ export default function PYQ() {
   // ── Filtered pyqs for bookmark view ──────────────────────────────────────
   const displayedPyqs = showBookmarks
     ? pyqs.filter(p => {
-        const matchSem  = !false; // bookmarks show all semesters
-        const matchDept = activeDept === 'All' || p.department === activeDept;
-        const matchY    = !yearFilter || p.academicYear === yearFilter;
-        const matchE    = !examFilter || p.examType === examFilter;
-        const matchS    = !search || p.subjectName.toLowerCase().includes(search.toLowerCase()) || p.courseCode.toLowerCase().includes(search.toLowerCase());
-        return matchSem && matchDept && matchY && matchE && matchS;
-      })
+      const matchSem = !false; // bookmarks show all semesters
+      const matchDept = activeDept === 'All' || p.department === activeDept;
+      const matchY = !yearFilter || p.academicYear === yearFilter;
+      const matchE = !examFilter || p.examType === examFilter;
+      const matchS = !search || p.subjectName.toLowerCase().includes(search.toLowerCase()) || p.courseCode.toLowerCase().includes(search.toLowerCase());
+      return matchSem && matchDept && matchY && matchE && matchS;
+    })
     : pyqs;
 
   const handleDownload = (pyq) => {
@@ -619,11 +616,10 @@ export default function PYQ() {
           <div className="flex items-center gap-2.5">
             <button
               onClick={() => { setShowBM(b => !b); }}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border transition-all duration-200 ${
-                showBookmarks
-                  ? 'bg-amber-500/20 text-amber-300 border-amber-500/30'
-                  : 'bg-white/5 text-gray-400 border-white/10 hover:text-amber-300 hover:border-amber-500/30'
-              }`}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border transition-all duration-200 ${showBookmarks
+                ? 'bg-amber-500/20 text-amber-300 border-amber-500/30'
+                : 'bg-white/5 text-gray-400 border-white/10 hover:text-amber-300 hover:border-amber-500/30'
+                }`}
             >
               <BookMarked className="w-4 h-4" />
               <span className="hidden sm:inline">{showBookmarks ? 'All PYQs' : 'Bookmarks'}</span>
@@ -645,11 +641,10 @@ export default function PYQ() {
               <button
                 key={s}
                 onClick={() => { setActiveSem(s); setActiveDept('All'); }}
-                className={`relative flex-shrink-0 flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
-                  activeSem === s
-                    ? 'text-white'
-                    : 'text-gray-500 hover:text-gray-300'
-                }`}
+                className={`relative flex-shrink-0 flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${activeSem === s
+                  ? 'text-white'
+                  : 'text-gray-500 hover:text-gray-300'
+                  }`}
               >
                 {activeSem === s && (
                   <motion.div
@@ -673,11 +668,10 @@ export default function PYQ() {
             <button
               key={d}
               onClick={() => setActiveDept(d)}
-              className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-200 ${
-                activeDept === d
-                  ? 'bg-indigo-600/30 text-indigo-200 border-indigo-500/50'
-                  : 'bg-white/5 text-gray-400 border-white/10 hover:border-indigo-500/30 hover:text-white'
-              }`}
+              className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-200 ${activeDept === d
+                ? 'bg-indigo-600/30 text-indigo-200 border-indigo-500/50'
+                : 'bg-white/5 text-gray-400 border-white/10 hover:border-indigo-500/30 hover:text-white'
+                }`}
             >
               {d}
             </button>
