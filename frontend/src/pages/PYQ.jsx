@@ -539,7 +539,7 @@ export default function PYQ() {
       if (res.data.success) {
         setPyqs(prev => prev.map(p => {
           if (p._id !== id) return p;
-          const uid = user._id;
+          const uid = user._id?.toString();
           const already = p.bookmarkedBy?.some(bid => (typeof bid === 'object' ? bid._id || bid : bid).toString() === uid);
           return {
             ...p,
@@ -793,7 +793,7 @@ export default function PYQ() {
                   key={pyq._id}
                   pyq={pyq}
                   index={i}
-                  userId={user?._id}
+                  userId={user?._id?.toString()}
                   onPreview={setPreview}
                   onBookmark={handleBookmark}
                   onDelete={handleDelete}

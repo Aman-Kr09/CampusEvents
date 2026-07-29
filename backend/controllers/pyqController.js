@@ -23,24 +23,17 @@ const uploadToCloudinary = (buffer, options) => {
   });
 };
 
-// ─── Helper: build a Cloudinary signed URL for a stored asset ─────────────────
-// Generates a short-lived signed URL so the browser can access the file
-// regardless of account-level access control settings.
-// For PDFs: uses the 'raw' resource_type to serve actual PDF bytes.
-// For images: uses the 'image' resource_type.
-const buildSignedUrl = (publicId, fileType, forDownload = false) => {
-  const resourceType = fileType === 'pdf' ? 'raw' : 'image';
-  const options = {
-    resource_type: resourceType,
-    type:          'upload',
-    sign_url:      true,
-    expires_at:    Math.floor(Date.now() / 1000) + 3600, // 1 hour
-  };
-  if (forDownload) {
-    options.flags = 'attachment';
-  }
-  return cloudinary.url(publicId, options);
-};
+// ─── Helper: inject a Cloudinary transformation flag into a stored URL ─────────
+// Works by simple string replace — safe for filenames with spaces or special
+// characters (no URL parsing that could corrupt the path).
+//
+// Example:
+//   .../raw/upload/v123/folder/file.pdf
+//   → .../raw/upload/fl_attachment/v123/folder/file.pdf
+//
+// For raw-type PDFs:   fl_attachment:false = serve inline (not forced download)
+// For image-type files: fl_attachment      = force download
+const injectFlag = (fileUrl, flag) => fileUrl.replace('/upload/', `/upload/${flag}/`);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // @desc    Upload a new PYQ (file + metadata)
@@ -74,9 +67,8 @@ exports.uploadPYQ = async (req, res) => {
     const fileType  = isPDF ? 'pdf' : 'image';
     const collegeId = req.user.college._id.toString();
 
-    // ── Upload to Cloudinary ─────────────────────────────────────────────────
-    // PDFs are uploaded as 'raw' so the URL serves the actual PDF bytes (not a
-    // page-1 image thumbnail). Images keep 'image' resource type.
+    // PDFs → resource_type:'raw'   so the URL serves actual PDF bytes (not a thumbnail)
+    // Images → resource_type:'image'
     const uploadResult = await uploadToCloudinary(req.file.buffer, {
       folder:        `campusevents/pyq/${collegeId}`,
       resource_type: isPDF ? 'raw' : 'image',
@@ -98,7 +90,6 @@ exports.uploadPYQ = async (req, res) => {
     });
 
     const populated = await PYQ.findById(pyq._id).populate('uploadedBy', 'name email');
-
     return res.status(201).json({ success: true, message: 'PYQ uploaded successfully.', pyq: populated });
   } catch (error) {
     console.error('uploadPYQ error:', error);
@@ -110,7 +101,6 @@ exports.uploadPYQ = async (req, res) => {
 // @desc    Get all PYQs for the authenticated user's college (with filters)
 // @route   GET /api/pyq
 // @access  Private
-// Query params: semester, department, search, academicYear, examType
 // ─────────────────────────────────────────────────────────────────────────────
 exports.getPYQs = async (req, res) => {
   try {
@@ -118,7 +108,6 @@ exports.getPYQs = async (req, res) => {
     const { semester, department, search, academicYear, examType } = req.query;
 
     const query = { college: collegeId };
-
     if (semester)     query.semester     = Number(semester);
     if (department)   query.department   = department;
     if (academicYear) query.academicYear = academicYear;
@@ -126,10 +115,7 @@ exports.getPYQs = async (req, res) => {
 
     if (search) {
       const regex = new RegExp(search, 'i');
-      query.$or = [
-        { subjectName: regex },
-        { courseCode:  regex }
-      ];
+      query.$or = [{ subjectName: regex }, { courseCode: regex }];
     }
 
     const pyqs = await PYQ.find(query)
@@ -155,10 +141,7 @@ exports.getPYQById = async (req, res) => {
       college: req.user.college._id
     }).populate('uploadedBy', 'name email');
 
-    if (!pyq) {
-      return res.status(404).json({ success: false, message: 'PYQ not found.' });
-    }
-
+    if (!pyq) return res.status(404).json({ success: false, message: 'PYQ not found.' });
     return res.status(200).json({ success: true, pyq });
   } catch (error) {
     console.error('getPYQById error:', error);
@@ -173,14 +156,8 @@ exports.getPYQById = async (req, res) => {
 // ─────────────────────────────────────────────────────────────────────────────
 exports.deletePYQ = async (req, res) => {
   try {
-    const pyq = await PYQ.findOne({
-      _id:     req.params.id,
-      college: req.user.college._id
-    });
-
-    if (!pyq) {
-      return res.status(404).json({ success: false, message: 'PYQ not found.' });
-    }
+    const pyq = await PYQ.findOne({ _id: req.params.id, college: req.user.college._id });
+    if (!pyq) return res.status(404).json({ success: false, message: 'PYQ not found.' });
 
     const isAdmin    = req.user.role === 'Admin';
     const isUploader = pyq.uploadedBy.toString() === req.user._id.toString();
@@ -188,12 +165,11 @@ exports.deletePYQ = async (req, res) => {
       return res.status(403).json({ success: false, message: 'Not authorized to delete this PYQ.' });
     }
 
-    // Try both resource types since existing files may have been uploaded under either
+    // Try both resource types — existing files may be stored under either
     try { await cloudinary.uploader.destroy(pyq.publicId, { resource_type: 'raw' }); } catch (_) {}
     try { await cloudinary.uploader.destroy(pyq.publicId, { resource_type: 'image' }); } catch (_) {}
 
     await pyq.deleteOne();
-
     return res.status(200).json({ success: true, message: 'PYQ deleted successfully.' });
   } catch (error) {
     console.error('deletePYQ error:', error);
@@ -202,20 +178,14 @@ exports.deletePYQ = async (req, res) => {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// @desc    Toggle bookmark for a PYQ
+// @desc    Toggle bookmark for a PYQ  (each user has their own separate list)
 // @route   PUT /api/pyq/:id/bookmark
 // @access  Private
 // ─────────────────────────────────────────────────────────────────────────────
 exports.toggleBookmark = async (req, res) => {
   try {
-    const pyq = await PYQ.findOne({
-      _id:     req.params.id,
-      college: req.user.college._id
-    });
-
-    if (!pyq) {
-      return res.status(404).json({ success: false, message: 'PYQ not found.' });
-    }
+    const pyq = await PYQ.findOne({ _id: req.params.id, college: req.user.college._id });
+    if (!pyq) return res.status(404).json({ success: false, message: 'PYQ not found.' });
 
     const userId            = req.user._id.toString();
     const alreadyBookmarked = pyq.bookmarkedBy.some(id => id.toString() === userId);
@@ -227,7 +197,6 @@ exports.toggleBookmark = async (req, res) => {
     }
 
     await pyq.save();
-
     return res.status(200).json({
       success:    true,
       bookmarked: !alreadyBookmarked,
@@ -240,15 +209,16 @@ exports.toggleBookmark = async (req, res) => {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// @desc    Get all PYQs bookmarked by the authenticated user
+// @desc    Get all PYQs bookmarked by the currently logged-in user
 // @route   GET /api/pyq/bookmarks
 // @access  Private
+// Each user's bookmarks are completely independent — scoped by req.user._id
 // ─────────────────────────────────────────────────────────────────────────────
 exports.getBookmarks = async (req, res) => {
   try {
     const pyqs = await PYQ.find({
       college:      req.user.college._id,
-      bookmarkedBy: req.user._id
+      bookmarkedBy: req.user._id          // ← only this user's bookmarks
     }).populate('uploadedBy', 'name email').sort({ createdAt: -1 });
 
     return res.status(200).json({ success: true, count: pyqs.length, pyqs });
@@ -259,7 +229,7 @@ exports.getBookmarks = async (req, res) => {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// @desc    Get all distinct departments for the college (dynamic branch list)
+// @desc    Get distinct departments for this college
 // @route   GET /api/pyq/departments
 // @access  Private
 // ─────────────────────────────────────────────────────────────────────────────
@@ -276,7 +246,7 @@ exports.getDepartments = async (req, res) => {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// @desc    Get all distinct academic years for the college (dynamic year list)
+// @desc    Get distinct academic years for this college
 // @route   GET /api/pyq/academic-years
 // @access  Private
 // ─────────────────────────────────────────────────────────────────────────────
@@ -294,28 +264,36 @@ exports.getAcademicYears = async (req, res) => {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// @desc    Return a signed Cloudinary URL for inline PDF/image preview
+// @desc    Serve PYQ inline for browser preview
 // @route   GET /api/pyq/:id/view
 // @access  Private
 //
-// Returns a signed URL valid for 1 hour. For PDFs stored as 'raw' resource type,
-// the signed URL serves actual PDF bytes (not a thumbnail image).
-// For files already stored as 'image' type (older uploads), this falls back to
-// a direct redirect so at least an image preview is shown.
+// Strategy:
+//   • New PDFs (uploaded as raw type, URL contains /raw/upload/):
+//       Add fl_attachment:false so Cloudinary serves the PDF inline.
+//   • Old PDFs (uploaded as image type, URL contains /image/upload/):
+//       Redirect directly — Cloudinary serves the first page as an image.
+//   • Images: Redirect directly — Cloudinary serves images inline by default.
+//
+// WHY no signed URLs? — The stored URLs are already public (uploaded without
+// private/authenticated mode). Signed URLs with expires_at are only for
+// type:'authenticated' assets; using them on type:'upload' assets produces
+// an invalid signature → HTTP 404.
 // ─────────────────────────────────────────────────────────────────────────────
 exports.viewPYQFile = async (req, res) => {
   try {
-    const pyq = await PYQ.findOne({
-      _id:     req.params.id,
-      college: req.user.college._id
-    });
-
+    const pyq = await PYQ.findOne({ _id: req.params.id, college: req.user.college._id });
     if (!pyq) return res.status(404).send('PYQ not found.');
 
-    // Generate a signed URL using the Cloudinary SDK — works for both
-    // private and public assets, and ensures correct resource_type is used
-    const signedUrl = buildSignedUrl(pyq.publicId, pyq.fileType, false);
-    return res.redirect(302, signedUrl);
+    let url = pyq.fileUrl;
+
+    // For new PDF uploads (raw type): need fl_attachment:false to serve inline
+    if (pyq.fileType === 'pdf' && url.includes('/raw/upload/')) {
+      url = injectFlag(url, 'fl_attachment:false');
+    }
+    // Old image-type PDFs or regular images: redirect as-is
+
+    return res.redirect(302, url);
   } catch (error) {
     console.error('viewPYQFile error:', error.message);
     return res.status(500).send('Error loading PYQ preview.');
@@ -323,22 +301,18 @@ exports.viewPYQFile = async (req, res) => {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// @desc    Return a signed Cloudinary URL for attachment download
+// @desc    Download PYQ as a file attachment
 // @route   GET /api/pyq/:id/download
 // @access  Private
 // ─────────────────────────────────────────────────────────────────────────────
 exports.downloadPYQFile = async (req, res) => {
   try {
-    const pyq = await PYQ.findOne({
-      _id:     req.params.id,
-      college: req.user.college._id
-    });
-
+    const pyq = await PYQ.findOne({ _id: req.params.id, college: req.user.college._id });
     if (!pyq) return res.status(404).send('PYQ not found.');
 
-    // Generate a signed URL with fl_attachment so the browser downloads the file
-    const signedUrl = buildSignedUrl(pyq.publicId, pyq.fileType, true);
-    return res.redirect(302, signedUrl);
+    // fl_attachment forces Cloudinary to send Content-Disposition: attachment
+    const downloadUrl = injectFlag(pyq.fileUrl, 'fl_attachment');
+    return res.redirect(302, downloadUrl);
   } catch (error) {
     console.error('downloadPYQFile error:', error.message);
     return res.status(500).send('Error downloading PYQ file.');
