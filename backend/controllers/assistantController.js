@@ -59,7 +59,7 @@ exports.chat = async (req, res) => {
     const keywords = extractKeywords(message);
 
     // ── Fetch ALL live data from MongoDB (no limits — always up to date) ─────
-    const [events, announcements, placements, questions, pyqs] = await Promise.all([
+    const [events, announcements, placements, questions, pyqs, offCampusJobs] = await Promise.all([
       Event.find({ college: collegeId, status: 'Approved' })
         .sort({ date: 1 })
         .select('name description date time venue category tags registrations likes'),
@@ -97,7 +97,7 @@ exports.chat = async (req, res) => {
       console.warn('[Assistant] Failed to fetch external jobs for AI context:', err.message);
     }
 
-    const allOffCampusJobs = [...offCampusJobs, ...liveExternalJobs].slice(0, 20);
+    const allOffCampusJobs = [...(offCampusJobs || []), ...(liveExternalJobs || [])].slice(0, 20);
 
     // Fetch all answers for queried Q&A threads
     const questionIds = questions.map(q => q._id);
