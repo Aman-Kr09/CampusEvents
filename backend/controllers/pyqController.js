@@ -23,12 +23,23 @@ const uploadToCloudinary = (buffer, options) => {
   });
 };
 
-// ─── Helper: add a Cloudinary transformation flag after "/upload/" ─────────────
-// Plain string replace — safe for filenames with spaces or special characters.
-// e.g. .../image/upload/v123/folder/file.pdf
-//   →  .../image/upload/fl_attachment/v123/folder/file.pdf
-const addCloudinaryFlag = (fileUrl, flag) => {
-  return fileUrl.replace('/upload/', `/upload/${flag}/`);
+// ─── Helper: build a Cloudinary signed URL for a stored asset ─────────────────
+// Generates a short-lived signed URL so the browser can access the file
+// regardless of account-level access control settings.
+// For PDFs: uses the 'raw' resource_type to serve actual PDF bytes.
+// For images: uses the 'image' resource_type.
+const buildSignedUrl = (publicId, fileType, forDownload = false) => {
+  const resourceType = fileType === 'pdf' ? 'raw' : 'image';
+  const options = {
+    resource_type: resourceType,
+    type:          'upload',
+    sign_url:      true,
+    expires_at:    Math.floor(Date.now() / 1000) + 3600, // 1 hour
+  };
+  if (forDownload) {
+    options.flags = 'attachment';
+  }
+  return cloudinary.url(publicId, options);
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -63,9 +74,12 @@ exports.uploadPYQ = async (req, res) => {
     const fileType  = isPDF ? 'pdf' : 'image';
     const collegeId = req.user.college._id.toString();
 
+    // ── Upload to Cloudinary ─────────────────────────────────────────────────
+    // PDFs are uploaded as 'raw' so the URL serves the actual PDF bytes (not a
+    // page-1 image thumbnail). Images keep 'image' resource type.
     const uploadResult = await uploadToCloudinary(req.file.buffer, {
       folder:        `campusevents/pyq/${collegeId}`,
-      resource_type: 'auto',
+      resource_type: isPDF ? 'raw' : 'image',
       public_id:     `${Date.now()}_${req.file.originalname.replace(/\s+/g, '_')}`
     });
 
@@ -174,7 +188,7 @@ exports.deletePYQ = async (req, res) => {
       return res.status(403).json({ success: false, message: 'Not authorized to delete this PYQ.' });
     }
 
-    // Try both resource types since Cloudinary auto-detection may vary
+    // Try both resource types since existing files may have been uploaded under either
     try { await cloudinary.uploader.destroy(pyq.publicId, { resource_type: 'raw' }); } catch (_) {}
     try { await cloudinary.uploader.destroy(pyq.publicId, { resource_type: 'image' }); } catch (_) {}
 
@@ -280,13 +294,14 @@ exports.getAcademicYears = async (req, res) => {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// @desc    Serve PYQ file inline for browser preview
+// @desc    Return a signed Cloudinary URL for inline PDF/image preview
 // @route   GET /api/pyq/:id/view
 // @access  Private
 //
-// Cloudinary stores PDFs uploaded with resource_type:'auto' as "image" type.
-// Image-type Cloudinary URLs do NOT set X-Frame-Options — iframes work fine.
-// We redirect directly to the stored Cloudinary URL (no streaming on Vercel).
+// Returns a signed URL valid for 1 hour. For PDFs stored as 'raw' resource type,
+// the signed URL serves actual PDF bytes (not a thumbnail image).
+// For files already stored as 'image' type (older uploads), this falls back to
+// a direct redirect so at least an image preview is shown.
 // ─────────────────────────────────────────────────────────────────────────────
 exports.viewPYQFile = async (req, res) => {
   try {
@@ -297,8 +312,10 @@ exports.viewPYQFile = async (req, res) => {
 
     if (!pyq) return res.status(404).send('PYQ not found.');
 
-    // Redirect directly — Cloudinary image-type URLs are served inline by default
-    return res.redirect(302, pyq.fileUrl);
+    // Generate a signed URL using the Cloudinary SDK — works for both
+    // private and public assets, and ensures correct resource_type is used
+    const signedUrl = buildSignedUrl(pyq.publicId, pyq.fileType, false);
+    return res.redirect(302, signedUrl);
   } catch (error) {
     console.error('viewPYQFile error:', error.message);
     return res.status(500).send('Error loading PYQ preview.');
@@ -306,7 +323,7 @@ exports.viewPYQFile = async (req, res) => {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// @desc    Download PYQ file as attachment
+// @desc    Return a signed Cloudinary URL for attachment download
 // @route   GET /api/pyq/:id/download
 // @access  Private
 // ─────────────────────────────────────────────────────────────────────────────
@@ -319,9 +336,9 @@ exports.downloadPYQFile = async (req, res) => {
 
     if (!pyq) return res.status(404).send('PYQ not found.');
 
-    // fl_attachment tells Cloudinary to serve the file as a downloadable attachment
-    const downloadUrl = addCloudinaryFlag(pyq.fileUrl, 'fl_attachment');
-    return res.redirect(302, downloadUrl);
+    // Generate a signed URL with fl_attachment so the browser downloads the file
+    const signedUrl = buildSignedUrl(pyq.publicId, pyq.fileType, true);
+    return res.redirect(302, signedUrl);
   } catch (error) {
     console.error('downloadPYQFile error:', error.message);
     return res.status(500).send('Error downloading PYQ file.');
