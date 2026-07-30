@@ -1,14 +1,19 @@
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
 
-// Initialize Razorpay instance with env vars or fallback test keys
-const razorpayKeyId = process.env.RAZORPAY_KEY_ID || 'rzp_test_CampusEventsDemoKey';
-const razorpayKeySecret = process.env.RAZORPAY_KEY_SECRET || 'CampusEventsDemoSecretKey';
+// Keys must be set in environment variables (Render dashboard / .env)
+const razorpayKeyId = process.env.RAZORPAY_KEY_ID;
+const razorpayKeySecret = process.env.RAZORPAY_KEY_SECRET;
+
+if (!razorpayKeyId || !razorpayKeySecret) {
+  console.error('[Payment] RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET must be set in environment variables.');
+}
 
 const razorpay = new Razorpay({
-  key_id: razorpayKeyId,
-  key_secret: razorpayKeySecret
+  key_id: razorpayKeyId || '',
+  key_secret: razorpayKeySecret || ''
 });
+
 
 // @desc    Create a new Razorpay order
 // @route   POST /api/payment/create-order
@@ -80,13 +85,10 @@ exports.verifyPayment = async (req, res) => {
         orderId: razorpay_order_id
       });
     } else {
-      // Signature verification failed (could be test mode or invalid secret)
-      // Allow completion if test key fallback is used
-      res.status(200).json({
-        success: true,
-        message: 'Payment verification completed',
-        paymentId: razorpay_payment_id,
-        orderId: razorpay_order_id
+      // Signature mismatch — reject payment (could be tampered data)
+      res.status(400).json({
+        success: false,
+        message: 'Payment signature verification failed. Payment not accepted.'
       });
     }
   } catch (error) {

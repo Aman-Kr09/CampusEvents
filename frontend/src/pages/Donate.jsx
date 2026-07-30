@@ -124,9 +124,9 @@ const Donate = () => {
             }
           } catch (err) {
             console.error('Verification error:', err);
-            // Fallback success on demo test environment
-            setTxnId(response.razorpay_payment_id || `PAY_${Date.now()}`);
-            setPaymentStep('success');
+            setErrorMessage('Payment verification failed. Please contact support with your payment details.');
+            setPaymentStep('idle');
+            setIsPaying(false);
           }
         },
         modal: {
@@ -142,12 +142,9 @@ const Donate = () => {
 
     } catch (err) {
       console.error('Razorpay Error:', err);
-      // Fallback demo payment modal simulation if network/credentials fail
-      setTimeout(() => {
-        const fallbackTxn = 'pay_' + Math.random().toString(36).substring(2, 14);
-        setTxnId(fallbackTxn);
-        setPaymentStep('success');
-      }, 2000);
+      setErrorMessage(err?.response?.data?.message || err.message || 'Payment failed. Please try again.');
+      setPaymentStep('idle');
+      setIsPaying(false);
     }
   };
 
