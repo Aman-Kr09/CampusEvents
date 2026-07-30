@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { api } from '../context/AuthContext';
 import {
-  Heart, CheckCircle2, QrCode, CreditCard,
-  Building2, ArrowRight, Lock, Copy, Check, RefreshCw, ShieldCheck
+  Heart, CheckCircle2, QrCode,
+  ArrowRight, Lock, Copy, Check, RefreshCw, ShieldCheck, Users, MessageSquareQuote, Star
 } from 'lucide-react';
 
 const PRESET_AMOUNTS = [
@@ -36,14 +36,36 @@ const Donate = () => {
   const [donorInfo, setDonorInfo] = useState({ name: '', email: '', college: '', message: '' });
   const [paymentMethod, setPaymentMethod] = useState('upi'); // 'upi' | 'card' | 'netbanking'
 
-  // Gateway Modal States
   const [isPaying, setIsPaying] = useState(false);
-  const [paymentStep, setPaymentStep] = useState('idle'); // 'idle' | 'processing' | 'success'
+  const [paymentStep, setPaymentStep] = useState('idle');
   const [txnId, setTxnId] = useState('');
   const [copiedTxn, setCopiedTxn] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
+  // Shoutout Wall
+  const [donors, setDonors] = useState([]);
+  const [donorsLoading, setDonorsLoading] = useState(true);
+
   const finalAmount = customAmount ? parseFloat(customAmount) || 0 : amount;
+
+  const fetchDonors = async () => {
+    try {
+      setDonorsLoading(true);
+      const res = await api.get('/payment/donors');
+      if (res.data.success) setDonors(res.data.data);
+    } catch (_) {}
+    finally { setDonorsLoading(false); }
+  };
+
+  useEffect(() => { fetchDonors(); }, []);
+
+  const timeAgo = (dateStr) => {
+    const diff = Math.floor((Date.now() - new Date(dateStr)) / 1000);
+    if (diff < 60) return 'just now';
+    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+    return `${Math.floor(diff / 86400)}d ago`;
+  };
 
   const handleProceedPay = async (e) => {
     e.preventDefault();
@@ -111,12 +133,18 @@ const Donate = () => {
             const verifyRes = await api.post('/payment/verify-payment', {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_signature: response.razorpay_signature
+              razorpay_signature: response.razorpay_signature,
+              donorName: donorInfo.name,
+              donorEmail: donorInfo.email,
+              donorCollege: donorInfo.college,
+              donorMessage: donorInfo.message,
+              amount: finalAmount
             });
 
             if (verifyRes.data.success) {
-              setTxnId(response.razorpay_payment_id || `PAY_${Date.now()}`);
+              setTxnId(response.razorpay_payment_id);
               setPaymentStep('success');
+              fetchDonors(); // refresh shoutout wall
             } else {
               setErrorMessage('Payment verification failed.');
               setPaymentStep('idle');
@@ -358,8 +386,78 @@ const Donate = () => {
         </motion.div>
       </div>
 
+      {/* ── Shoutout Wall ── */}
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.35 }}
+        className="max-w-3xl mx-auto w-full space-y-5"
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-lg bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center">
+              <Star className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" />
+            </div>
+            <h2 className="text-base font-extrabold text-white">Donor Shoutout Wall</h2>
+            <span className="text-[10px] font-bold text-yellow-400 bg-yellow-950/40 border border-yellow-500/20 px-2 py-0.5 rounded-full uppercase tracking-wider">Hall of Fame</span>
+          </div>
+          <div className="flex items-center gap-1.5 text-xs text-gray-500">
+            <Users className="w-3.5 h-3.5" />
+            <span>{donors.length} supporter{donors.length !== 1 ? 's' : ''}</span>
+          </div>
+        </div>
+
+        {donorsLoading ? (
+          <div className="glass-panel rounded-2xl p-8 flex items-center justify-center">
+            <RefreshCw className="w-5 h-5 text-purple-400 animate-spin" />
+          </div>
+        ) : donors.length === 0 ? (
+          <div className="glass-panel rounded-2xl p-8 text-center text-gray-500 text-sm">
+            <Heart className="w-8 h-8 mx-auto mb-3 text-rose-400/30" />
+            <p>Be the first to support CampusEvents! 💜</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {donors.map((d, idx) => (
+              <motion.div
+                key={d._id || idx}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.04 }}
+                className="glass-panel rounded-2xl p-4 space-y-2 border border-glassBorder hover:border-purple-500/30 transition-all duration-200"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    {/* Avatar */}
+                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-purple-600 to-indigo-600 flex items-center justify-center text-white font-black text-sm flex-shrink-0">
+                      {d.name.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-white leading-tight">{d.name}</p>
+                      {d.college && (
+                        <p className="text-[10px] text-gray-500 leading-tight truncate max-w-[130px]">{d.college}</p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="text-right flex-shrink-0">
+                    <p className="text-sm font-black text-emerald-400">₹{d.amount}</p>
+                    <p className="text-[10px] text-gray-600">{timeAgo(d.createdAt)}</p>
+                  </div>
+                </div>
+                {d.message && (
+                  <div className="flex items-start gap-1.5 pt-1 border-t border-white/[0.04]">
+                    <MessageSquareQuote className="w-3 h-3 text-purple-400 flex-shrink-0 mt-0.5" />
+                    <p className="text-[11px] text-gray-400 italic leading-relaxed">"{d.message}"</p>
+                  </div>
+                )}
+              </motion.div>
+            ))}
+          </div>
+        )}
+      </motion.div>
+
       {/* Footer Note */}
-      <div className="max-w-3xl mx-auto w-full text-center text-xs text-gray-500 pt-12">
+      <div className="max-w-3xl mx-auto w-full text-center text-xs text-gray-500 pt-8 pb-4">
         CampusEvents Community Fund &bull; Secured by Razorpay Payment Gateway.
       </div>
 
