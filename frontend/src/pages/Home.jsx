@@ -234,28 +234,29 @@ const Home = () => {
     try {
       const res = await api.post(`/events/${eventId}/register`);
       if (res.data.success) {
+        const userIdStr = user?._id?.toString();
         // Toggle user registration state locally
-        setEvents(events.map(e => {
+        setEvents(prev => prev.map(e => {
           if (e._id === eventId) {
-            const isReg = e.registrations.includes(user._id);
+            const isReg = e.registrations?.some(id => (id?._id || id)?.toString() === userIdStr);
             return {
               ...e,
               registrations: isReg
-                ? e.registrations.filter(id => id !== user._id)
-                : [...e.registrations, user._id]
+                ? e.registrations.filter(id => (id?._id || id)?.toString() !== userIdStr)
+                : [...(e.registrations || []), userIdStr]
             };
           }
           return e;
         }));
         // Update recommendations too
-        setRecommended(recommended.map(e => {
+        setRecommended(prev => prev.map(e => {
           if (e._id === eventId) {
-            const isReg = e.registrations.includes(user._id);
+            const isReg = e.registrations?.some(id => (id?._id || id)?.toString() === userIdStr);
             return {
               ...e,
               registrations: isReg
-                ? e.registrations.filter(id => id !== user._id)
-                : [...e.registrations, user._id]
+                ? e.registrations.filter(id => (id?._id || id)?.toString() !== userIdStr)
+                : [...(e.registrations || []), userIdStr]
             };
           }
           return e;
@@ -271,23 +272,28 @@ const Home = () => {
     try {
       const res = await api.post(`/events/${eventId}/like`);
       if (res.data.success) {
+        const userIdStr = user?._id?.toString();
         // Toggle user like state locally
-        setEvents(events.map(e => {
+        setEvents(prev => prev.map(e => {
           if (e._id === eventId) {
-            const isLiked = e.likes.includes(user._id);
+            const isLiked = e.likes?.some(id => (id?._id || id)?.toString() === userIdStr);
             return {
               ...e,
-              likes: isLiked ? e.likes.filter(id => id !== user._id) : [...e.likes, user._id]
+              likes: isLiked
+                ? e.likes.filter(id => (id?._id || id)?.toString() !== userIdStr)
+                : [...(e.likes || []), userIdStr]
             };
           }
           return e;
         }));
-        setRecommended(recommended.map(e => {
+        setRecommended(prev => prev.map(e => {
           if (e._id === eventId) {
-            const isLiked = e.likes.includes(user._id);
+            const isLiked = e.likes?.some(id => (id?._id || id)?.toString() === userIdStr);
             return {
               ...e,
-              likes: isLiked ? e.likes.filter(id => id !== user._id) : [...e.likes, user._id]
+              likes: isLiked
+                ? e.likes.filter(id => (id?._id || id)?.toString() !== userIdStr)
+                : [...(e.likes || []), userIdStr]
             };
           }
           return e;
@@ -750,8 +756,9 @@ const Home = () => {
                   {/* Horizontal Scroll Cards */}
                   <div className="flex gap-4 overflow-x-auto pb-4 scroll-smooth pr-2">
                     {recommended.slice(0, 4).map((event) => {
-                      const isRegistered = event.registrations?.includes(user._id);
-                      const isLiked = event.likes?.includes(user._id);
+                      const userIdStr = user?._id?.toString();
+                      const isRegistered = event.registrations?.some(id => (id?._id || id)?.toString() === userIdStr);
+                      const isLiked = event.likes?.some(id => (id?._id || id)?.toString() === userIdStr);
 
                       return (
                         <div
@@ -832,8 +839,9 @@ const Home = () => {
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {events.map((event) => {
-                        const isRegistered = event.registrations?.includes(user._id);
-                        const isLiked = event.likes?.includes(user._id);
+                        const userIdStr = user?._id?.toString();
+                        const isRegistered = event.registrations?.some(id => (id?._id || id)?.toString() === userIdStr);
+                        const isLiked = event.likes?.some(id => (id?._id || id)?.toString() === userIdStr);
 
                         return (
                           <div

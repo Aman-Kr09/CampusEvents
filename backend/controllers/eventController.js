@@ -224,6 +224,14 @@ exports.registerForEvent = async (req, res) => {
 
     await event.save();
 
+    // Invalidate recommendation & trending caches so state persists on refresh
+    const userIdStr = req.user._id.toString();
+    await cacheDelPattern(`recommended:${userIdStr}:*`);
+    await cacheDelPattern(`recommended:*`);
+    if (event.college) {
+      await cacheDel(`trending:${event.college.toString()}`);
+    }
+
     res.status(200).json({
       success: true,
       registered: !isRegistered,
@@ -254,7 +262,10 @@ exports.likeEvent = async (req, res) => {
 
     await event.save();
 
-    // Invalidate trending events cache for this college
+    // Invalidate recommendation & trending caches so state persists on refresh
+    const userIdStr = req.user._id.toString();
+    await cacheDelPattern(`recommended:${userIdStr}:*`);
+    await cacheDelPattern(`recommended:*`);
     if (event.college) {
       await cacheDel(`trending:${event.college.toString()}`);
     }
