@@ -1278,7 +1278,7 @@ const Home = () => {
                         >
                           {/* Card Top: Logo + company + badges */}
                           <div className="flex items-start justify-between gap-2 mb-3">
-                            <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-3 min-w-0 flex-1">
                               {job.logo ? (
                                 <img src={job.logo} alt={job.company} className="w-10 h-10 rounded-xl object-contain bg-white/5 border border-glassBorder p-1 shrink-0" onError={e => { e.target.style.display='none'; }} />
                               ) : (
