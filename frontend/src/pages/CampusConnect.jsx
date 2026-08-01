@@ -337,9 +337,6 @@ export default function CampusConnect() {
         <div className="absolute top-0 right-0 -mt-12 -mr-12 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div>
-            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-cyan-400 mb-2">
-              <Sparkles className="w-4 h-4" /> Verified Student Network
-            </div>
             <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
               Campus <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400">Connect</span>
             </h1>
@@ -1029,10 +1026,10 @@ function PostMarketplaceModal({ user, onClose, onSuccess }) {
               <select
                 value={formData.category}
                 onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                className="w-full glass-input bg-darkBg text-white"
+                className="w-full glass-input bg-[#11131c] text-white cursor-pointer"
               >
                 {MARKETPLACE_CATEGORIES.filter((c) => c !== 'All').map((cat) => (
-                  <option key={cat} value={cat}>
+                  <option key={cat} value={cat} className="bg-[#11131c] text-white py-1">
                     {cat}
                   </option>
                 ))}
@@ -1044,10 +1041,10 @@ function PostMarketplaceModal({ user, onClose, onSuccess }) {
               <select
                 value={formData.condition}
                 onChange={(e) => setFormData({ ...formData, condition: e.target.value })}
-                className="w-full glass-input bg-darkBg text-white"
+                className="w-full glass-input bg-[#11131c] text-white cursor-pointer"
               >
                 {ITEM_CONDITIONS.filter((c) => c !== 'All').map((cond) => (
-                  <option key={cond} value={cond}>
+                  <option key={cond} value={cond} className="bg-[#11131c] text-white py-1">
                     {cond}
                   </option>
                 ))}
@@ -1238,10 +1235,10 @@ function CreateRideModal({ user, onClose, onSuccess }) {
               <select
                 value={formData.tripType}
                 onChange={(e) => setFormData({ ...formData, tripType: e.target.value })}
-                className="w-full glass-input bg-darkBg text-white"
+                className="w-full glass-input bg-[#11131c] text-white cursor-pointer"
               >
                 {RIDE_TRIP_TYPES.filter((t) => t !== 'All').map((type) => (
-                  <option key={type} value={type}>
+                  <option key={type} value={type} className="bg-[#11131c] text-white py-1">
                     {type}
                   </option>
                 ))}

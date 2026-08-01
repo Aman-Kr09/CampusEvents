@@ -45,6 +45,16 @@
   box-shadow: 0 0 10px rgba(99, 102, 241, 0.15);
 }
 
+/* Select & Option Styling for Dark Theme */
+select {
+  color-scheme: dark;
+}
+select option {
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+  padding: 8px;
+}
+
 .glass-button-primary {
   background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
   @apply text-white font-medium px-5 py-2.5 rounded-lg transition-all duration-300 shadow-glow;
