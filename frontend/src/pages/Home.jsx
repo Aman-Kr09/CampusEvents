@@ -1124,7 +1124,6 @@ const Home = () => {
                     </div>
                     <div>
                       <h3 className="font-bold text-white text-lg">On-Campus Opportunities</h3>
-                      <p className="text-gray-400 text-xs mt-0.5">Approved company listings visiting the campus for direct recruitment.</p>
                     </div>
                   </div>
 
@@ -1254,7 +1253,6 @@ const Home = () => {
                           Live Feed
                         </span>
                       </div>
-                      <p className="text-gray-400 text-xs mt-0.5">Jobs aggregated live from LinkedIn Jobs (India), Arbeitnow, Remotive &amp; Himalayas — updated every 30 minutes.</p>
                     </div>
                   </div>
 
