@@ -94,6 +94,22 @@ const createSocketServer = (httpServer, allowedOrigins) => {
       socket.to(`question:${questionId}`).emit('user_stop_typing', { userId: user._id });
     });
 
+    // ── Campus Connect: join/leave listing or ride chat room ─────────────
+    socket.on('join_connect_room', ({ targetType, targetId }) => {
+      if (targetType && targetId) {
+        const room = `connect:${targetType.toLowerCase()}:${targetId}`;
+        socket.join(room);
+        console.log(`   ↳ ${user.name} joined room ${room}`);
+      }
+    });
+
+    socket.on('leave_connect_room', ({ targetType, targetId }) => {
+      if (targetType && targetId) {
+        const room = `connect:${targetType.toLowerCase()}:${targetId}`;
+        socket.leave(room);
+      }
+    });
+
     socket.on('disconnect', () => {
       console.log(`🔌 [Socket.io] ${user.name} disconnected`);
     });

@@ -58,7 +58,8 @@ const useSocket = (token, handlers = {}) => {
       'user_typing',
       'user_stop_typing',
       'tags_generated',
-      'new_announcement'
+      'new_announcement',
+      'new_connect_message'
     ];
 
     eventNames.forEach((eventName) => {
@@ -93,12 +94,22 @@ const useSocket = (token, handlers = {}) => {
     socketRef.current?.emit('stop_typing_answer', { questionId });
   }, []);
 
+  const joinConnectRoom = useCallback((targetType, targetId) => {
+    socketRef.current?.emit('join_connect_room', { targetType, targetId });
+  }, []);
+
+  const leaveConnectRoom = useCallback((targetType, targetId) => {
+    socketRef.current?.emit('leave_connect_room', { targetType, targetId });
+  }, []);
+
   return {
     socket: socketRef.current,
     joinQuestion,
     leaveQuestion,
     emitTyping,
-    emitStopTyping
+    emitStopTyping,
+    joinConnectRoom,
+    leaveConnectRoom
   };
 };
 

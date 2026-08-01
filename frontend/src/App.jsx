@@ -15,6 +15,7 @@ import SuperAdminLogin from './pages/SuperAdminLogin';
 import Contact from './pages/Contact';
 import Donate from './pages/Donate';
 import PYQ from './pages/PYQ';
+import CampusConnect from './pages/CampusConnect';
 
 // Import Components
 import Navbar from './components/Navbar';
@@ -83,6 +84,16 @@ function App() {
                   element={
                     <PrivateRoute>
                       <Home />
+                    </PrivateRoute>
+                  }
+                />
+
+                {/* Campus Connect Portal */}
+                <Route
+                  path="/campus-connect"
+                  element={
+                    <PrivateRoute>
+                      <CampusConnect />
                     </PrivateRoute>
                   }
                 />
