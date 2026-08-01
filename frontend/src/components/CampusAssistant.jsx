@@ -87,10 +87,11 @@ const TypingDots = () => (
 // ── Suggested prompts ──────────────────────────────────────────────────────────
 const SUGGESTIONS = [
   '📅 What upcoming events are at my college?',
+  '🛍️ What items are available in the marketplace?',
+  '🚕 Are there any cab shares available?',
   '👤 Give me a summary of my profile',
   '💼 What are the latest placement stats?',
   '📢 Any recent announcements?',
-  '🔥 What are the trending events this month?',
 ];
 
 // ── Pages where the widget should NOT appear ───────────────────────────────────
@@ -145,7 +146,7 @@ const CampusAssistant = () => {
     if (isOpen && !hasGreeted && user) {
       const greeting = {
         role: 'assistant',
-        content: `Hey **${user.name}**! 👋 I'm **Campus AI**, your personal CampusEvents assistant.\n\nI can help you with:\n- Upcoming events at **${user.college?.name || 'your college'}**\n- Your profile, badges & registered events\n- Latest placement stats & visiting companies\n- Recent announcements & Q&A board\n\nWhat would you like to know?`,
+        content: `Hey **${user.name}**! 👋 I'm **Campus AI**, your personal CampusEvents assistant.\n\nI can help you with:\n- Upcoming events at **${user.college?.name || 'your college'}**\n- Campus Marketplace items (books, cycles, lab coats, etc.)\n- Active cab facility sharing & travel routes\n- Your profile, badges & registered events\n- Latest placement stats & visiting companies\n- Recent announcements & Q&A board\n\nWhat would you like to know?`,
         id: Date.now()
       };
       setMessages([greeting]);

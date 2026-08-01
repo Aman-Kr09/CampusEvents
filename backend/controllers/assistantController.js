@@ -6,6 +6,8 @@ const Question = require('../models/Question');
 const Answer = require('../models/Answer');
 const PYQ = require('../models/PYQ');
 const OffCampusJob = require('../models/OffCampusJob');
+const MarketplaceItem = require('../models/MarketplaceItem');
+const RideShare = require('../models/RideShare');
 const { getExternalJobs } = require('../services/jobFeedService');
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
@@ -59,7 +61,7 @@ exports.chat = async (req, res) => {
     const keywords = extractKeywords(message);
 
     // ── Fetch ALL live data from MongoDB (no limits — always up to date) ─────
-    const [events, announcements, placements, questions, pyqs, offCampusJobs] = await Promise.all([
+    const [events, announcements, placements, questions, pyqs, offCampusJobs, marketplaceItems, rideShares] = await Promise.all([
       Event.find({ college: collegeId, status: 'Approved' })
         .sort({ date: 1 })
         .select('name description date time venue category tags registrations likes'),
@@ -86,7 +88,17 @@ exports.chat = async (req, res) => {
 
       OffCampusJob.find({ college: collegeId })
         .sort({ postedAt: -1 })
-        .select('title company location employmentType experience salary source applyUrl deadline skills description')
+        .select('title company location employmentType experience salary source applyUrl deadline skills description'),
+
+      MarketplaceItem.find({ college: collegeId, status: 'Available' })
+        .sort({ createdAt: -1 })
+        .populate('seller', 'name branch year')
+        .select('title description category condition price isGiveaway pickupLocation status seller createdAt'),
+
+      RideShare.find({ college: collegeId, status: 'Open' })
+        .sort({ departureTime: 1 })
+        .populate('creator', 'name branch year')
+        .select('origin destination tripType departureTime totalSeats availableSeats costPerSeat vehicleType location notes creator')
     ]);
 
     // Fetch live external jobs for AI context (fallback to empty if error)
@@ -147,6 +159,24 @@ exports.chat = async (req, res) => {
       .sort((a, b) => b._score - a._score || new Date(b.createdAt) - new Date(a.createdAt))
       .slice(0, 30);
 
+    // Sort Marketplace Items by relevance to query
+    const rankedMarketplaceItems = (marketplaceItems || [])
+      .map(item => ({
+        ...item.toObject(),
+        _score: relevanceScore(`${item.title} ${item.description} ${item.category} ${item.condition} ${item.pickupLocation}`, keywords)
+      }))
+      .sort((a, b) => b._score - a._score || new Date(b.createdAt) - new Date(a.createdAt))
+      .slice(0, 25);
+
+    // Sort Ride Shares by relevance to query
+    const rankedRideShares = (rideShares || [])
+      .map(ride => ({
+        ...ride.toObject(),
+        _score: relevanceScore(`${ride.origin} ${ride.destination} ${ride.tripType} ${ride.vehicleType} ${ride.location} ${ride.notes}`, keywords)
+      }))
+      .sort((a, b) => b._score - a._score || new Date(a.departureTime) - new Date(b.departureTime))
+      .slice(0, 25);
+
     // ── Context formatters ─────────────────────────────────────────────────────
     const formatEvent = (e) => {
       const isRegistered = e.registrations?.some(rId => rId.toString() === userId)
@@ -191,6 +221,17 @@ exports.chat = async (req, res) => {
     const formatOffCampusJob = (j) =>
       `- **${j.title}** @ **${j.company}** [${j.employmentType}] | Location: ${j.location || 'Remote'} | Salary: ${j.salary || 'N/A'} | Source: ${j.source || 'T&P Cell'} | Skills: ${j.skills?.join(', ') || 'N/A'} | Apply: ${j.applyUrl}`;
 
+    const formatMarketplaceItem = (m) => {
+      const priceText = m.isGiveaway || m.price === 0 ? 'FREE / Giveaway' : `₹${m.price}`;
+      return `- **${m.title}** [Category: ${m.category} | Condition: ${m.condition}] | Price: ${priceText} | Pickup: ${m.pickupLocation} | Seller: ${m.seller?.name || 'Student'}
+  ${trunc(m.description, 200)}`;
+    };
+
+    const formatRideShare = (r) => {
+      const costText = r.costPerSeat > 0 ? `₹${r.costPerSeat} / seat` : 'Free / Shared';
+      return `- **${r.origin} ➔ ${r.destination}** [Trip: ${r.tripType}] | Departure: ${new Date(r.departureTime).toLocaleString('en-IN')} | Seats Left: ${r.availableSeats}/${r.totalSeats} | Cost: ${costText} | Vehicle: ${r.vehicleType || 'Cab'} | Location: ${r.location || 'Campus'} | Offered by: ${r.creator?.name || 'Student'}${r.notes ? `\n  Notes: "${trunc(r.notes, 150)}"` : ''}`;
+    };
+
     // Registered events summary for student profile
     const registeredEventNames = upcomingEvents
       .filter(e => e.registrations?.some(rId => rId.toString() === userId))
@@ -206,9 +247,11 @@ You ONLY answer questions about:
 4. Placement data (on-campus companies & off-campus job opportunities) at ${collegeName}
 5. The Q&A discussion board at ${collegeName}
 6. Previous Year Question (PYQ) papers at ${collegeName}
-7. How to use CampusEvents
+7. Campus Marketplace items available for buy/sell/giveaway at ${collegeName}
+8. Active Cab Shares and travel coordination at ${collegeName}
+9. How to use CampusEvents
 
-**STRICT RULE**: For ANY question outside of CampusEvents (general knowledge, coding help, news, other platforms, math, science, etc.), respond ONLY with: "I'm Campus AI — I only help with CampusEvents topics like events, placements, announcements, Q&A, and PYQs. For other questions, please use a general-purpose AI assistant."
+**STRICT RULE**: For ANY question outside of CampusEvents (general knowledge, coding help, news, other platforms, math, science, etc.), respond ONLY with: "I'm Campus AI — I only help with CampusEvents topics like events, placements, announcements, Q&A, PYQs, Campus Marketplace, and Cab Sharing. For other questions, please use a general-purpose AI assistant."
 
 Tone: Friendly, concise, use markdown (bold, bullets). Address the student by name.
 Note: The data below is fetched live from the database — it reflects ALL current and future data at the moment of this conversation.
@@ -242,9 +285,15 @@ ${rankedQuestions.length > 0 ? rankedQuestions.map(formatQuestion).join('\n') : 
 
 ### 📚 PYQ Repository (${pyqs.length} papers total — showing top relevant)
 ${rankedPYQs.length > 0 ? rankedPYQs.map(formatPYQ).join('\n') : 'No question papers uploaded yet.'}
+
+### 🛍️ Campus Marketplace Items (${marketplaceItems.length} items available for buy/sell/giveaway — showing top relevant)
+${rankedMarketplaceItems.length > 0 ? rankedMarketplaceItems.map(formatMarketplaceItem).join('\n') : 'No marketplace items available right now.'}
+
+### 🚕 Active Cab Shares (${rideShares.length} rides available — showing top relevant)
+${rankedRideShares.length > 0 ? rankedRideShares.map(formatRideShare).join('\n') : 'No active cab shares posted right now.'}
 ---
 
-Base all answers on the LIVE DATA above. When students ask for PYQs or question papers, provide exact subject details, course codes, semester, branch/department, exam type, academic year, and direct download links. If someone asks about off-campus jobs or companies, summarize the available off-campus job titles, companies, locations, packages, and direct apply links. If something isn't in the data, say "I don't have that information right now — please check the platform directly."`;
+Base all answers on the LIVE DATA above. When students ask for marketplace items (books, lab coats, calculators, cycles, etc.), tell them exact titles, categories, condition, prices, pickup locations, and sellers. When students ask for PYQs or question papers, provide exact subject details, course codes, semester, branch/department, exam type, academic year, and direct download links. If someone asks about off-campus jobs or companies, summarize the available off-campus job titles, companies, locations, packages, and direct apply links. If something isn't in the data, say "I don't have that information right now — please check the platform directly."`;
 
     // ── Build Groq messages ────────────────────────────────────────────────────
     const sanitizedHistory = (Array.isArray(history) ? history : [])
@@ -279,6 +328,8 @@ Base all answers on the LIVE DATA above. When students ask for PYQs or question 
         placementYears: placements.length,
         announcementsTotal: announcements.length,
         pyqTotal: pyqs.length,
+        marketplaceTotal: marketplaceItems.length,
+        ridesTotal: rideShares.length,
         tokensUsed: completion.usage?.total_tokens
       }
     });
