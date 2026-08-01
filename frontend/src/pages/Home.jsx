@@ -1254,7 +1254,7 @@ const Home = () => {
                           Live Feed
                         </span>
                       </div>
-                      <p className="text-gray-400 text-xs mt-0.5">Jobs aggregated live from Remotive &amp; Himalayas — updated every 30 minutes.</p>
+                      <p className="text-gray-400 text-xs mt-0.5">Jobs aggregated live from LinkedIn Jobs (India), Arbeitnow, Remotive &amp; Himalayas — updated every 30 minutes.</p>
                     </div>
                   </div>
 
