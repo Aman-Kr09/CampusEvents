@@ -34,10 +34,10 @@ const infoCards = [
   {
     icon: Mail,
     title: 'Email Support',
-    value: 'amankumar19930000@gmail.com',
+    value: 'u5813051@gmail.com',
     sub: 'Response within 24 hours',
     color: 'indigo',
-    href: 'mailto:amankumar19930000@gmail.com',
+    href: 'mailto:u5813051@gmail.com',
   },
   {
     icon: Phone,
@@ -140,9 +140,9 @@ const FAQItem = ({ q, a, index }) => {
 };
 
 // ── EmailJS config ── read from .env / Vercel env vars
-const EMAILJS_SERVICE_ID  = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
 const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
-const EMAILJS_PUBLIC_KEY  = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
 
 const Contact = () => {
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
@@ -171,9 +171,9 @@ const Contact = () => {
         EMAILJS_SERVICE_ID,
         EMAILJS_TEMPLATE_ID,
         {
-          name:    form.name,
-          email:   form.email,
-          title:   form.subject,
+          name: form.name,
+          email: form.email,
+          title: form.subject,
           message: form.message,
         },
         EMAILJS_PUBLIC_KEY
