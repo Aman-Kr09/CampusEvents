@@ -1,128 +1,115 @@
 # 🎓 CampusEvents - Stay Connected to Your Campus
 
-**CampusEvents** is a modern, AI-powered, college-specific full-stack platform that enables students to discover campus events, engage in real-time academic discussions, track placement opportunities, and stay updated with official college announcements—all within a secure, personalized ecosystem.
+**CampusEvents** is a modern, AI-powered, college-specific full-stack platform that enables students to discover campus events, engage in real-time academic discussions, track placement opportunities, share rides, trade items on the campus marketplace, download PYQs, and stay updated with official college announcements—all within a secure, personalized ecosystem.
 
-Built with the **MERN Stack**, **Redis**, **BullMQ**, **Socket.IO**, and **Scikit-Learn**, the platform delivers **AI-powered event recommendations**, **real-time Q&A discussions**, **background job processing**, and **high-performance caching** for a fast and scalable user experience.
+Built with the **MERN Stack**, **Redis**, **BullMQ**, **Socket.IO**, **Groq AI (Llama 3.3 70B)**, and **Scikit-Learn**, the platform delivers **AI-powered event recommendations**, **location-based cab sharing with Google Maps**, **real-time Q&A discussions**, **India-based live job feeds**, **persistent job application tracking**, and **high-performance caching** for a fast and scalable user experience.
 
 The platform enforces **strict college-based content isolation**, ensuring students can only access content relevant to their institution. Advanced backend optimizations—including **Redis caching**, **bulk write buffering**, **asynchronous email & AI tag generation**, and **real-time WebSocket communication**—provide enterprise-grade performance, scalability, and security.
+
+---
 
 ## 🌐 Live Demo
 
 🔗 **Live Website:** https://campus-events-phi.vercel.app/
+
 <p align="center">
   <a href="https://campus-events-phi.vercel.app/" target="_blank">
     <img src="https://img.shields.io/badge/🚀%20Live%20Demo-Visit%20CampusEvents-blue?style=for-the-badge" alt="Live Demo">
   </a>
 </p>
 
-<p align="center">
-  <a href="https://campus-events-phi.vercel.app/" target="_blank">
-    <img src="https://img.shields.io/badge/Open%20Website-CampusEvents-success?style=for-the-badge&logo=vercel" />
-  </a>
-</p>
+---
 
 ## ✨ Features
 
 ### 👨‍🎓 Student Features
 
-* Secure Email/Password Authentication
-* Google Sign-In Support
-* Personalized Onboarding
-* AI-Powered Event Recommendations
-* Browse Upcoming & Trending Events
-* Beautiful, Custom **Event Details Modal** (supports direct registration/join actions, clickable external links, bookmarks, views/likes counters, and description text)
-* Interactive **Training & Placement Cell** portal:
-  * View active recruiters and placement metrics (highest/average packages, placement rate)
-  * View detailed company listings (CGPA requirements, job types, eligible branches, application deadlines)
-  * Directly apply using integrated external **Google Forms** links
-  * Recommend/suggest new recruiter profiles to the T&P Cell
-* Academic Q&A Discussion Forum (upvoting, commenting, and answering)
-* College-Specific Announcements
-* Profile Management
-
-### 🏫 College Admin Features
-
-* Create, Edit, and Delete Events
-* Review Student Event Proposals
-* Approve or Reject Events
-* **Training & Placement (TnP) Cell Management**:
-  * Create, edit, and delete detailed placement records
-  * Allow multiple placement records to be registered under the same academic year
-  * Manage active recruiters with detailed profiles: CGPA cutoff, job type (Internship, FTE, FTE+PPO), blocking status, package details, form links, eligible branches, and deadlines
-  * **Moderation queue** to review (Approve/Reject) recruiter entries suggested by students
-  * Display dedicated contact details for the Training & Placement Cell Head
-* Publish Announcements
-* Moderate Q&A Discussions
-* Ban/Unban Student Accounts
-
-### 🌍 Super Admin Features
-
-* Platform-Wide Analytics
-* College Approval Workflow
-* Create College Admin Accounts
-* Approve, Suspend, or Remove Colleges
-* System Monitoring & Governance
+* **Secure Authentication & Onboarding**:
+  * Email/Password & Google Sign-In support
+  * OTP-based password reset via Nodemailer / Google SMTP
+  * Branch, year, and interest-based onboarding customization
+* **AI-Powered Event Hub**:
+  * Scikit-Learn TF-IDF Cosine Similarity recommendations based on student interest profiles
+  * Browse Upcoming & Trending events with instant category filtering
+  * Event Details Modal with registrations counter, view/like metrics, bookmarks, and external links
+* **Training & Placement Cell & Job Tracker**:
+  * View active campus recruiters and placement statistics (highest/average packages, placement rate)
+  * Detailed company listings (CGPA requirements, job types, eligible branches, application deadlines)
+  * **Live India Off-Campus Tech Job Feed**: Automated live aggregation from LinkedIn Jobs (India), Arbeitnow, Remotive, & Himalayas
+  * **Persistent Job Application Tracker**: Mark On-Campus and Off-Campus jobs as **Applied** (`✓ Applied`). Applied jobs remain saved permanently on student profiles even after live feed updates
+  * Suggest recruiter profiles directly to the college T&P Cell
+* **🚕 Location-Based Cab Sharing**:
+  * Post ride offers or requests with departure time, fare split, seats available, and contact details
+  * Interactive **Google Maps** integration displaying origin, destination, and direct navigation directions links
+  * Real-time ride chat drawer and passenger join/leave management
+* **🛍️ Campus Marketplace**:
+  * Buy, sell, and rent textbooks, electronics, dorm essentials, and lab gear within your college campus
+  * Filter by price, category, condition, and item status
+* **📚 Previous Year Question (PYQ) Repository**:
+  * Access subject-wise PYQs organized by branch and semester
+  * Fast Cloudinary file preview and download links
+* **🤖 Groq AI Assistant (`CampusAI`)**:
+  * Powered by `llama-3.3-70b-versatile`
+  * Real-time context awareness of live campus events, marketplace listings, cab shares, PYQs, and placement drives
+* **Academic Q&A Forum**: Real-time Socket.IO discussion boards (upvoting, commenting, and answering)
+* **College-Specific Announcements**: Official notices published directly by college administrators
 
 ---
 
-## 🤖 AI Recommendation System
+### 🏫 College Admin Features
 
-### Event Recommendation Engine
+* **Event Management**: Create, edit, approve student event proposals, or remove events
+* **Training & Placement (TnP) Cell Management**:
+  * Add, edit, and manage placement records and statistics
+  * Manage active recruiters with detailed profiles: CGPA cutoff, job type (Internship, FTE, FTE+PPO), blocking status, package details, form links, eligible branches, and deadlines
+  * Recruiter Moderation Queue to review and approve/reject recruiter suggestions submitted by students
+* **Announcement Publishing**: Broadcast official notices to all enrolled students
+* **Forum Moderation & Account Controls**: Moderate Q&A discussions and ban/unban student accounts
 
-The recommendation engine uses **Scikit-Learn** to generate personalized event suggestions.
+---
 
-#### Workflow
+### 🌍 Super Admin Features
 
-1. Combine:
-   * Event Title
-   * Description
-   * Category
-   * Tags
-2. Generate TF-IDF vectors for all events.
-3. Convert user interests into a profile vector.
-4. Compute Cosine Similarity between user interests and event vectors.
-5. Return ranked event recommendations.
+* Platform-Wide Analytics Dashboard (total colleges, total students, total events, active drives)
+* College Approval Workflow (approve, suspend, or onboard new institutions)
+* Create College Admin Accounts and assign institution namespaces
+* Environment-based credential management (`SUPER_ADMIN_EMAIL` & `SUPER_ADMIN_PASSWORD`)
 
-### Automatic Tag Generation
+---
 
-* Extracts important keywords from event descriptions.
-* Uses TF-IDF analysis.
-* Generates 3–5 relevant tags automatically.
-* Improves discoverability and recommendation quality.
+## 🤖 AI Recommendation & Assistant System
+
+### 1. Event Recommendation Engine
+The recommendation engine uses **Scikit-Learn** in Python to generate personalized event suggestions.
+* Extracts event titles, descriptions, categories, and tags.
+* Computes TF-IDF vectors for all events and converts student interest profiles into feature vectors.
+* Ranks event recommendations via Cosine Similarity.
+
+### 2. Automatic Tag Generation
+* Extracts key topics from event descriptions using TF-IDF analysis.
+* Automatically generates 3–5 relevant tags to improve search discoverability.
+
+### 3. Groq AI Campus Assistant
+* Integrated with Groq (`llama-3.3-70b-versatile`).
+* Dynamically fetches live database context (Marketplace items, Cab rides, PYQs, Placements, Events) to answer student queries contextually.
 
 ---
 
 ## 🛠️ Tech Stack
 
 ### Frontend
-
-* React.js (Vite)
-* Tailwind CSS
-* Lucide React Icons
-* Framer Motion Animations
-* Recharts (Data Visualization)
-* React Router DOM
-* Context API
+* **Core**: React.js (Vite), React Router DOM, Context API
+* **Styling & Motion**: Tailwind CSS, Framer Motion
+* **Icons & Maps**: Lucide React Icons, Google Maps API (`CabGoogleMap.jsx`)
+* **Data Visualization**: Recharts
 
 ### Backend
-
-* Node.js
-* Express.js
-* MongoDB & Mongoose
-* Redis
-* BullMQ
-* Socket.IO
-* JWT Authentication
-* Nodemailer
-
-### Machine Learning
-
-* Python
-* Scikit-Learn
-* NumPy
-* Pandas
-* TF-IDF Vectorization
-* Cosine Similarity
+* **Runtime & Framework**: Node.js, Express.js
+* **Database & ORM**: MongoDB, Mongoose
+* **Caching & Queues**: Upstash Redis, BullMQ
+* **Real-time WebSockets**: Socket.IO
+* **AI & LLM Integration**: Groq SDK (`llama-3.3-70b-versatile`), Python Scikit-Learn
+* **File Storage & Auth**: Cloudinary (PYQs), JWT, bcryptjs, Nodemailer (Gmail SMTP / Relay)
 
 ---
 
@@ -131,13 +118,13 @@ The recommendation engine uses **Scikit-Learn** to generate personalized event s
 ```text
 CampusEvents/
 ├── backend/
-│   ├── config/
-│   ├── controllers/
-│   ├── middleware/
-│   ├── models/
-│   ├── routes/
-│   ├── recommendation/
-│   ├── scripts/
+│   ├── config/             # DB connection, Redis setup, SMTP config
+│   ├── controllers/        # Auth, Event, Placement, RideShare, Marketplace, Assistant controllers
+│   ├── middleware/         # JWT Auth, Role Authorization, Rate Limiting
+│   ├── models/             # Mongoose schemas (User, Event, Placement, RideShare, Marketplace, etc.)
+│   ├── routes/             # REST API endpoints
+│   ├── recommendation/     # Python TF-IDF recommendation scripts
+│   ├── services/           # Live Job Feed aggregator (LinkedIn India, Arbeitnow, Remotive)
 │   ├── .env
 │   ├── package.json
 │   └── server.js
@@ -145,14 +132,12 @@ CampusEvents/
 ├── frontend/
 │   ├── public/
 │   ├── src/
-│   │   ├── components/
-│   │   ├── context/
-│   │   ├── pages/
-│   │   ├── styles/
+│   │   ├── components/     # CampusAssistant, CabGoogleMap, EventModal, Navbar, Footer
+│   │   ├── context/        # AuthContext, CollegeContext
+│   │   ├── pages/          # Home, Profile, CampusConnect, PYQ, Marketplace, Admin, SuperAdmin
 │   │   ├── App.jsx
 │   │   └── main.jsx
 │   ├── tailwind.config.js
-│   ├── App.css
 │   ├── vercel.json
 │   └── package.json
 │
@@ -162,302 +147,79 @@ CampusEvents/
 
 ---
 
-## 🗄️ Database Models
+## 🗄️ Database Models Summary
 
-### College
-
-* Name
-* State
-* Website
-* Description
-* Logo
-* Status
-
-### User
-
-* Name
-* Email
-* Password
-* GoogleId
-* Role (Student, Admin, SuperAdmin)
-* College (Ref College)
-* Interests
-* Branch
-* Year
-* EventsJoined
-* Badges
-* Status
-
-### Event
-
-* Name
-* Description
-* Banner
-* Date
-* Time
-* Venue
-* Category
-* Tags
-* RegistrationLink
-* College (Ref College)
-* CreatedBy (Ref User)
-* Status (Pending, Approved, Rejected)
-* Views
-* Likes
-* Registrations
-
-### Question & Answer
-
-* Questions
-* Answers
-* Comments
-* Upvotes
-
-### Placement
-
-* **college**: Reference to College
-* **highestPackage**: Highest Package offered (Number in LPA)
-* **averagePackage**: Average Package offered (Number in LPA)
-* **placementPercentage**: Placement percentage metric (Number)
-* **companiesVisited**: Array of recruiter objects:
-  * **name**: Company Name (String)
-  * **cpaRequired**: CGPA/CPA Cutoff requirement (String, e.g., "7.5" or "nil")
-  * **package**: Offered package package (String, e.g., "12 LPA" or "nil")
-  * **type**: Placement drive classification (Enum: `Blocking`, `Non-Blocking`)
-  * **jobType**: Position availability (Enum: `Internship`, `FTE`, `FTE+PPO`)
-  * **googleFormLink**: External application form link (String)
-  * **deadline**: Form submission deadline (String)
-  * **branchesEligible**: Allowed academic disciplines (String)
-  * **status**: Verification status (Enum: `Pending`, `Approved`, `Rejected`)
-  * **addedBy**: User ID of the suggestion sender (Ref User)
-* **year**: Academic Year (Number)
-
-### Announcement
-
-* College Notices & Updates
-
-### OTP
-
-* Email Verification
-* Password Reset
-* Auto Expiry (10 Minutes)
+* **User**: Name, Email, Password, Role (`Student`, `Admin`, `SuperAdmin`), College (Ref), Interests, Branch, Year, `eventsJoined`, `appliedJobs`, Badges, Status.
+* **College**: Name, State, Website, Description, Logo, Status.
+* **Event**: Name, Description, Banner, Date, Time, Venue, Category, Tags, RegistrationLink, College (Ref), CreatedBy (Ref), Status (`Pending`, `Approved`, `Rejected`), Views, Likes, Registrations.
+* **Placement**: College (Ref), HighestPackage, AveragePackage, PlacementPercentage, CompaniesVisited (CGPA cutoff, package, type, jobType, googleFormLink, deadline, branchesEligible, status), Year.
+* **RideShare (Cab Sharing)**: College (Ref), Host (Ref User), Origin, Destination, DepartureTime, SeatsAvailable, Passengers, FareSplit, ContactPhone, Notes, MapUrl, Status.
+* **MarketplaceItem**: College (Ref), Seller (Ref User), Title, Description, Price, Category, Condition, Images, ContactInfo, Status (`Available`, `Sold`).
+* **Question & Answer**: College (Ref), Author (Ref User), Title, Body, Category, Upvotes, Answers, Comments.
+* **Announcement**: College (Ref), Title, Content, Priority, CreatedBy (Ref User).
 
 ---
 
-## 🔐 Security Features
+## 🔐 Security & Data Isolation Features
 
-* JWT Authentication
-* Role-Based Access Control (RBAC)
-* College-Level Data Isolation (strict filters ensuring students only view their own institution's events, discussion forums, placements, and announcements)
-* OTP-Based Password Reset
-* Protected API Routes
-* User Moderation Controls
+* **Strict College Data Isolation**: Every resource (Events, Discussions, Placements, Marketplace, Cab Rides) is filtered by college namespace to prevent cross-institution data leakage.
+* **JWT & Role-Based Access Control (RBAC)**: Enforces access bounds across `Student`, `College Admin`, and `SuperAdmin`.
+* **Rate Limiting & Password Hashing**: Upstash Redis rate limiting protection and single-hash bcrypt security.
+* **Environment Credentials**: SuperAdmin and secret keys configured entirely through untracked environment variables (`.env`).
 
 ---
 
 ## 🚀 Installation & Setup
 
 ### Prerequisites
-
 * Node.js (v18+)
-* MongoDB
-* Python 3
+* MongoDB (Local or MongoDB Atlas)
+* Python 3 (for TF-IDF recommendations)
 
-### Environment Configuration
-
-Create a `.env` file in the `/backend` folder. Below is a reference template:
+### Environment Setup (`backend/.env`)
 
 ```env
 PORT=5000
 MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret_key
 
-# Email SMTP configuration (Optional, for OTP verification and password reset)
+# SMTP Configuration (for OTP verification and password reset)
 SMTP_HOST=smtp.gmail.com
 SMTP_PORT=465
 SMTP_USER=your_email@gmail.com
 SMTP_PASS=your_app_password
 SMTP_FROM=your_email@gmail.com
-GMAIL_RELAY_URL=optional_gmail_relay_macro_url
 
-# Google OAuth Configuration (Optional, for Google Sign-In)
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
-FRONTEND_URL=http://localhost:5173
+# Groq AI Key (for Campus AI Assistant)
+GROQ_API_KEY=your_groq_api_key
 
-# Super Admin Seeding Credentials (Loaded by npm run seed)
-SUPER_ADMIN_EMAIL=superadmin@campusevents.com
-SUPER_ADMIN_PASSWORD=SuperAdminSecure123!
+# Super Admin Credentials
+SUPER_ADMIN_EMAIL=your_super_admin_email@gmail.com
+SUPER_ADMIN_PASSWORD=your_super_admin_password
 ```
 
----
+### Running the Application
 
-### Backend Setup
+1. **Install Backend Dependencies & Start Server**:
+   ```bash
+   cd backend
+   npm install
+   npm run dev
+   ```
 
-1. Navigate to the backend directory and install dependencies:
-```bash
-cd backend
-npm install
-```
+2. **Install Frontend Dependencies & Start App**:
+   ```bash
+   cd frontend
+   npm install
+   npm run dev
+   ```
 
-2. Create a virtual environment and install recommendation system packages:
-```bash
-python -m venv venv
-./venv/Scripts/python.exe -m pip install scikit-learn pandas numpy
-```
-
-3. Configure your local environment file (`backend/.env`) with database credentials, setup parameters, and desired Super Admin seeding credentials.
-
-4. Seed the database with colleges, categories, and the initial Super Admin:
-```bash
-npm run seed
-```
-
-5. Run the backend server:
-```bash
-npm run dev
-```
-
----
-
-### Frontend Setup
-
-1. Navigate to the frontend directory:
-```bash
-cd frontend
-npm install
-```
-
-2. Run the React development server:
-```bash
-npm run dev
-```
-
-Frontend runs at:
-```text
-http://localhost:5173
-```
-
-Backend API runs at:
-```text
-http://localhost:5000
-```
-
----
-
-## 🌐 Production Deployment & SPA Routing
-
-The React frontend handles routing via React Router DOM. To prevent `404 Not Found` errors when refreshing routes in production on Vercel, the project uses `vercel.json` configurations at the root and frontend directories:
-
-```json
-{
-  "rewrites": [{ "source": "/(.*)", "destination": "/" }]
-}
-```
-
----
-
-## 📌 REST API Modules
-
-### Authentication
-
-* Register
-* Login
-* Google OAuth
-* Forgot Password
-* OTP Verification
-* Reset Password
-* Profile Management
-
-### Events
-
-* Create Events
-* Recommended Events
-* Trending Events
-* Event Registration
-* Likes & Views
-* Auto Tag Generation
-
-### Forum & Q&A
-
-* Questions
-* Answers
-* Comments
-* Upvotes
-* Moderation
-
-### Placement Management
-
-* Add Statistics
-* Edit Statistics
-* Delete Statistics
-* Suggest Company Recruiter (Student / Admin)
-* Approve / Reject Suggested Recruiter (Admin Only)
-
-### Announcements
-
-* Create
-* Update
-* Delete
-* View
-
-### Administration
-
-* College Management
-* User Moderation
-* Analytics Dashboard
-
----
-
-## 🌟 Key Highlights
-
-* **Full-Stack MERN Application** with clean, modern glassmorphism UI.
-* **AI-Powered Event Recommendation Engine** utilizing TF-IDF and Cosine Similarity.
-* **T&P Cell Portal & Recruiter Moderation Queue** to suggest, approve, track, and apply for placement drives.
-* **Beautiful Event Details Modal** with rich metadata, bookmarks, registration buttons, and external hyperlinks.
-* **Strict College-Specific Content Isolation** to shield and filter events/forum/placement records per college domain.
-* **Multi-Role Dashboards** (Students, College Admins, and Super Admins).
-* **Robust Security Suite** containing JWT, protected API routes, RBAC, and SMTP OTP verification.
-* **Production Deployment Ready** featuring favicon branding, customized page titles, and Vercel routing configs.
-
----
-
-# ⚡ Performance & Scalability Enhancements
-
-### 🚀 Redis Caching
-- Cached AI event recommendations (10 min TTL) per user.
-- Cached trending events (5 min TTL).
-- Cached placement statistics and college announcements (15 min TTL).
-- Automatic cache invalidation whenever events, interests, placements, or announcements are updated.
-
-### ⚙️ Asynchronous Background Jobs (BullMQ + Redis)
-- Email sending (OTP & password reset) processed asynchronously using BullMQ workers.
-- Automatic AI tag generation executed in background through Python workers.
-- Non-blocking request handling for faster API responses.
-
-### 📊 Redis Write-Back Buffer
-- Event views and likes are buffered in Redis.
-- Metrics are periodically flushed to MongoDB using bulk write operations and Redis pipelining.
-- Significantly reduces database write load under high traffic.
-
-### 🔴 Real-Time Communication
-- Integrated Socket.IO for live Q&A discussions.
-- Real-time updates for:
-  - New Questions
-  - Answers
-  - Comments
-  - Upvotes
-- College and question-based Socket.IO rooms for efficient event broadcasting.
-
-### 🛡️ Security & Reliability
-- Redis-backed rate limiting for authentication endpoints.
-- IP and account-level protection against brute-force attacks.
-- Background workers improve resilience by isolating long-running tasks.
+Frontend runs at `http://localhost:5173` and Backend runs at `http://localhost:5000`.
 
 ---
 
 ## 📬 Live Application
 
-**Website:** https://campus-events-phi.vercel.app/
+🔗 **Website:** https://campus-events-phi.vercel.app/
 
-CampusEvents bridges the gap between students, administrators, and campus opportunities through a secure, intelligent, and personalized campus engagement platform.
+CampusEvents bridges the gap between students, administrators, and campus opportunities through a secure, intelligent, and unified campus ecosystem.
