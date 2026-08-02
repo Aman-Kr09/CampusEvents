@@ -34,10 +34,9 @@ const UserSchema = new mongoose.Schema({
         if (v.startsWith('$2') && v.length === 60) {
           return true;
         }
-        // Validate password strength: min 8 chars, 1 uppercase, 1 lowercase, 1 digit, 1 special char
-        return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(v);
+        return v.length >= 6;
       },
-      message: 'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character.'
+      message: 'Password must be at least 6 characters long.'
     }
   },
   googleId: {

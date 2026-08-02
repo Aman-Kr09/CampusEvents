@@ -91,11 +91,6 @@ exports.login = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Please provide a valid email address' });
     }
 
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
-    if (!passwordRegex.test(password)) {
-      return res.status(401).json({ success: false, message: 'Invalid credentials' });
-    }
-
     // Find user by email (and include password field)
     const user = await User.findOne({ email }).populate('college');
     if (!user) {

@@ -1,23 +1,46 @@
 const mongoose = require('mongoose');
 const User = require('../models/User');
 
+const bcrypt = require('bcryptjs');
+
 const seedDefaultSuperAdmin = async () => {
   try {
-    const superAdminExists = await User.findOne({ role: 'SuperAdmin' });
-    if (!superAdminExists) {
-      console.log('No SuperAdmin found in database. Seeding default SuperAdmin...');
+    const targetEmail = process.env.SUPER_ADMIN_EMAIL;
+    const targetPassword = process.env.SUPER_ADMIN_PASSWORD;
+
+    if (!targetEmail || !targetPassword) {
+      console.log('[DB] SUPER_ADMIN_EMAIL or SUPER_ADMIN_PASSWORD not configured in environment. Skipping auto-seeding.');
+      return;
+    }
+
+    const hashedPassword = await bcrypt.hash(targetPassword, 10);
+
+    // Remove any outdated default SuperAdmin with old email if present
+    await User.deleteMany({ role: 'SuperAdmin', email: { $ne: targetEmail } });
+
+    let superAdmin = await User.findOne({ email: targetEmail });
+    if (!superAdmin) {
+      superAdmin = await User.findOne({ role: 'SuperAdmin' });
+    }
+
+    if (superAdmin) {
+      superAdmin.email = targetEmail;
+      superAdmin.password = hashedPassword;
+      superAdmin.role = 'SuperAdmin';
+      superAdmin.name = 'Super Admin';
+      await superAdmin.save();
+      console.log(`[DB] SuperAdmin credentials updated: ${targetEmail}`);
+    } else {
       await User.create({
-        name: 'Super Admin User',
-        email: 'superadmin@campusevents.com',
-        password: 'SuperAdminSecure123!',
+        name: 'Super Admin',
+        email: targetEmail,
+        password: hashedPassword,
         role: 'SuperAdmin'
       });
-      console.log('Default SuperAdmin seeded: superadmin@campusevents.com / SuperAdminSecure123!');
-    } else {
-      console.log('SuperAdmin already exists in database.');
+      console.log(`[DB] SuperAdmin created: ${targetEmail}`);
     }
   } catch (error) {
-    console.error('Error seeding default SuperAdmin:', error.message);
+    console.error('Error seeding/updating SuperAdmin:', error.message);
   }
 };
 
