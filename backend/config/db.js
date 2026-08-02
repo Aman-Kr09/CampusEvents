@@ -13,8 +13,6 @@ const seedDefaultSuperAdmin = async () => {
       return;
     }
 
-    const hashedPassword = await bcrypt.hash(targetPassword, 10);
-
     // Remove any outdated default SuperAdmin with old email if present
     await User.deleteMany({ role: 'SuperAdmin', email: { $ne: targetEmail } });
 
@@ -25,19 +23,19 @@ const seedDefaultSuperAdmin = async () => {
 
     if (superAdmin) {
       superAdmin.email = targetEmail;
-      superAdmin.password = hashedPassword;
+      superAdmin.password = targetPassword; // pre('save') hook will hash it ONCE
       superAdmin.role = 'SuperAdmin';
       superAdmin.name = 'Super Admin';
       await superAdmin.save();
-      console.log(`[DB] SuperAdmin credentials updated: ${targetEmail}`);
+      console.log(`[DB] SuperAdmin credentials updated for ${targetEmail}`);
     } else {
       await User.create({
         name: 'Super Admin',
         email: targetEmail,
-        password: hashedPassword,
+        password: targetPassword, // pre('save') hook will hash it ONCE
         role: 'SuperAdmin'
       });
-      console.log(`[DB] SuperAdmin created: ${targetEmail}`);
+      console.log(`[DB] SuperAdmin created for ${targetEmail}`);
     }
   } catch (error) {
     console.error('Error seeding/updating SuperAdmin:', error.message);
