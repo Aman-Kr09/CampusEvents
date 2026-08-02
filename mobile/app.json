@@ -5,15 +5,31 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
+    "icon": "./assets/icon.png",
     "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
       "backgroundColor": "#0b0f17"
     },
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.campusevents.app"
+      "supportsTablet": false,
+      "bundleIdentifier": "com.campusevents.app",
+      "buildNumber": "1"
     },
     "android": {
-      "package": "com.campusevents.app"
+      "package": "com.campusevents.app",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0b0f17"
+      },
+      "permissions": ["android.permission.INTERNET"]
+    },
+    "extra": {
+      "eas": {
+        "projectId": ""
+      }
     }
   }
 }
+
