@@ -110,6 +110,14 @@ export const AuthProvider = ({ children }) => {
     return res.data;
   };
 
+  const applyToJob = async (jobData) => {
+    const res = await api.post('/auth/apply-job', jobData);
+    if (res.data.success) {
+      setUser(res.data.user);
+    }
+    return res.data;
+  };
+
   return (
     <AuthContext.Provider value={{
       user,
@@ -119,7 +127,8 @@ export const AuthProvider = ({ children }) => {
       register,
       completeOnboarding,
       logout,
-      updateProfile
+      updateProfile,
+      applyToJob
     }}>
       {children}
     </AuthContext.Provider>

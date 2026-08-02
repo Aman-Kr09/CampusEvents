@@ -339,3 +339,63 @@ exports.updateProfile = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+// @desc    Toggle / Mark job as applied for student tracking
+// @route   POST /api/auth/apply-job
+// @access  Private
+exports.toggleApplyJob = async (req, res) => {
+  const { jobId, title, company, type, applyUrl, location, salary } = req.body;
+
+  try {
+    if (!jobId || !title || !company) {
+      return res.status(400).json({ success: false, message: 'jobId, title, and company are required' });
+    }
+
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    if (!Array.isArray(user.appliedJobs)) {
+      user.appliedJobs = [];
+    }
+
+    const existingIndex = user.appliedJobs.findIndex(j => String(j.jobId) === String(jobId));
+
+    let isApplied = false;
+    if (existingIndex > -1) {
+      // Toggle off / remove
+      user.appliedJobs.splice(existingIndex, 1);
+      isApplied = false;
+    } else {
+      // Add job to tracked applied jobs
+      user.appliedJobs.unshift({
+        jobId: String(jobId),
+        title: title.trim(),
+        company: company.trim(),
+        type: type || 'Off-Campus',
+        applyUrl: applyUrl || '#',
+        location: location || '',
+        salary: salary || '',
+        appliedAt: new Date()
+      });
+      isApplied = true;
+    }
+
+    await user.save();
+
+    const updatedUser = await User.findById(req.user._id)
+      .populate('college')
+      .populate('eventsJoined')
+      .select('-password');
+
+    res.status(200).json({
+      success: true,
+      isApplied,
+      message: isApplied ? 'Marked as applied' : 'Removed from applied list',
+      user: updatedUser
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};

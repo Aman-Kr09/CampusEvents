@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth, api } from '../context/AuthContext';
 import { motion } from 'framer-motion';
-import { User, GraduationCap, Calendar, Award, BookOpen, Compass, CheckCircle2, ChevronRight, X, Edit2 } from 'lucide-react';
+import { User, GraduationCap, Calendar, Award, BookOpen, Compass, CheckCircle2, ChevronRight, X, Edit2, Briefcase, ExternalLink, Trash2 } from 'lucide-react';
 
 const INTERESTS_PRESETS = [
   'Coding', 'AI/ML', 'Data Science', 'Robotics', 'Sports', 'Design',
@@ -12,7 +12,7 @@ const INTERESTS_PRESETS = [
 ];
 
 const Profile = () => {
-  const { user, updateProfile } = useAuth();
+  const { user, updateProfile, applyToJob } = useAuth();
 
   const [isEditing, setIsEditing] = useState(false);
   const [form, setForm] = useState({
@@ -315,6 +315,76 @@ const Profile = () => {
                     <span className="text-xs bg-emerald-950/40 text-emerald-400 px-2.5 py-1 rounded border border-emerald-500/10 font-bold uppercase tracking-wider whitespace-nowrap">
                       Registered
                     </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Placements & Jobs Applied Tracker */}
+          <div className="glass-panel p-6 rounded-2xl space-y-4 border-emerald-500/20">
+            <div className="flex items-center justify-between">
+              <h3 className="font-bold text-white text-sm sm:text-base flex items-center space-x-2">
+                <Briefcase className="w-5 h-5 text-emerald-400" />
+                <span>Placements &amp; Jobs Applied ({user?.appliedJobs?.length || 0})</span>
+              </h3>
+              <span className="text-[10px] bg-emerald-950/60 text-emerald-400 border border-emerald-500/20 px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">
+                Application Tracker
+              </span>
+            </div>
+
+            {!user?.appliedJobs || user.appliedJobs.length === 0 ? (
+              <p className="text-xs text-gray-500">You haven't tracked any job or placement applications yet. Click "Mark Applied" or "Apply Now" on placement listings to save them here permanently.</p>
+            ) : (
+              <div className="grid gap-3">
+                {user.appliedJobs.map(job => (
+                  <div
+                    key={job.jobId}
+                    className="p-4 bg-white/[0.01] border border-glassBorder rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-white/[0.02] transition-colors"
+                  >
+                    <div className="space-y-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-bold text-white text-sm truncate">{job.title}</span>
+                        <span className="text-xs text-emerald-400 font-semibold">@ {job.company}</span>
+                        <span className={`px-2 py-0.5 rounded text-[9px] font-bold border ${
+                          job.type === 'On-Campus' ? 'bg-indigo-950/60 text-indigo-300 border-indigo-500/30' : 'bg-emerald-950/60 text-emerald-300 border-emerald-500/30'
+                        }`}>
+                          {job.type || 'Off-Campus'}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-3 text-xs text-gray-400 flex-wrap">
+                        {job.location && <span>📍 {job.location}</span>}
+                        {job.salary && <span className="text-emerald-400 font-semibold">💰 {job.salary}</span>}
+                        <span>📅 Applied on {new Date(job.appliedAt || Date.now()).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
+                      {job.applyUrl && job.applyUrl !== '#' && (
+                        <a
+                          href={job.applyUrl.startsWith('http') ? job.applyUrl : `https://${job.applyUrl}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition-all"
+                        >
+                          <ExternalLink className="w-3.5 h-3.5" />
+                          <span>Visit Link</span>
+                        </a>
+                      )}
+                      <button
+                        onClick={() => {
+                          applyToJob({
+                            jobId: job.jobId,
+                            title: job.title,
+                            company: job.company
+                          });
+                        }}
+                        className="p-1.5 text-gray-500 hover:text-red-400 rounded-lg hover:bg-white/5 transition-colors"
+                        title="Remove from tracking"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>

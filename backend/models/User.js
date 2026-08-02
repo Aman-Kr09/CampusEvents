@@ -73,6 +73,16 @@ const UserSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Event'
   }],
+  appliedJobs: [{
+    jobId: { type: String, required: true },
+    title: { type: String, required: true },
+    company: { type: String, required: true },
+    type: { type: String, default: 'Off-Campus' }, // 'On-Campus' | 'Off-Campus'
+    applyUrl: { type: String, default: '#' },
+    location: { type: String, default: '' },
+    salary: { type: String, default: '' },
+    appliedAt: { type: Date, default: Date.now }
+  }],
   badges: {
     type: [String],
     default: [] // e.g. ['Inquisitive', 'Event Enthusiast', 'Helper']

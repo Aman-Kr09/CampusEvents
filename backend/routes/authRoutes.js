@@ -8,7 +8,8 @@ const {
   resetPassword,
   saveOnboardingInterests,
   getMe,
-  updateProfile
+  updateProfile,
+  toggleApplyJob
 } = require('../controllers/authController');
 const { protect } = require('../middleware/auth');
 
@@ -23,6 +24,7 @@ router.post('/resetpassword', resetPassword);
 router.get('/me', protect, getMe);
 router.put('/profile', protect, updateProfile);
 router.put('/profile/onboarding', protect, saveOnboardingInterests);
+router.post('/apply-job', protect, toggleApplyJob);
 
 // Diagnostics endpoints
 router.get('/test-smtp', async (req, res) => {

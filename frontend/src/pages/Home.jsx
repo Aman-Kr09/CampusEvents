@@ -17,7 +17,7 @@ const isNITDelhi = (college) => {
 };
 
 const Home = () => {
-  const { user, token: authCtxToken } = useAuth();
+  const { user, token: authCtxToken, applyToJob } = useAuth();
   const { selectedCollege } = useCollege();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('events'); // 'events' | 'qa' | 'placements' | 'announcements'
@@ -1217,19 +1217,53 @@ const Home = () => {
                               </div>
                             )}
 
-                            {c.googleFormLink && c.googleFormLink.trim().toLowerCase() !== 'nil' && (
-                              <div className="mt-4 pt-3 border-t border-white/[0.03]">
+                            <div className="mt-4 pt-3 border-t border-white/[0.03] flex items-center justify-between gap-2">
+                              {c.googleFormLink && c.googleFormLink.trim().toLowerCase() !== 'nil' ? (
                                 <a
                                   href={c.googleFormLink.startsWith('http') ? c.googleFormLink : `https://${c.googleFormLink}`}
                                   target="_blank"
                                   rel="noopener noreferrer"
+                                  onClick={() => {
+                                    applyToJob({
+                                      jobId: `oncampus_${c._id || c.name}`,
+                                      title: c.name,
+                                      company: c.name,
+                                      type: 'On-Campus',
+                                      applyUrl: c.googleFormLink,
+                                      location: 'On Campus',
+                                      salary: c.package || 'N/A'
+                                    });
+                                  }}
                                   className="inline-flex items-center space-x-1.5 text-xs font-bold text-indigo-400 hover:text-indigo-300 transition-colors"
                                 >
                                   <Link2 className="w-3.5 h-3.5" />
-                                  <span>Apply via Google Form</span>
+                                  <span>Apply via Form</span>
                                 </a>
-                              </div>
-                            )}
+                              ) : (
+                                <span className="text-[10px] text-gray-500 font-semibold">T&amp;P Cell Listing</span>
+                              )}
+
+                              <button
+                                onClick={() => {
+                                  applyToJob({
+                                    jobId: `oncampus_${c._id || c.name}`,
+                                    title: c.name,
+                                    company: c.name,
+                                    type: 'On-Campus',
+                                    applyUrl: c.googleFormLink || '#',
+                                    location: 'On Campus',
+                                    salary: c.package || 'N/A'
+                                  });
+                                }}
+                                className={`px-2.5 py-1 rounded text-[10px] font-bold border transition-all ${
+                                  user?.appliedJobs?.some(j => j.jobId === `oncampus_${c._id || c.name}`)
+                                    ? 'bg-emerald-950/80 text-emerald-300 border-emerald-500/30'
+                                    : 'bg-white/[0.03] text-gray-400 border-glassBorder hover:text-white hover:bg-white/5'
+                                }`}
+                              >
+                                {user?.appliedJobs?.some(j => j.jobId === `oncampus_${c._id || c.name}`) ? '✓ Applied' : 'Mark Applied'}
+                              </button>
+                            </div>
                           </div>
                         ))}
                     </div>
@@ -1385,15 +1419,49 @@ const Home = () => {
                               <span className="text-[10px] text-gray-600">via T&P Cell</span>
                             )}
 
-                            <a
-                              href={job.applyUrl.startsWith('http') ? job.applyUrl : `https://${job.applyUrl}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 hover:text-emerald-300 transition-all"
-                            >
-                              <ExternalLink className="w-3.5 h-3.5" />
-                              Apply Now
-                            </a>
+                             <div className="flex items-center gap-1.5">
+                              <a
+                                href={job.applyUrl.startsWith('http') ? job.applyUrl : `https://${job.applyUrl}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={() => {
+                                  applyToJob({
+                                    jobId: String(job._id),
+                                    title: job.title,
+                                    company: job.company,
+                                    type: 'Off-Campus',
+                                    applyUrl: job.applyUrl,
+                                    location: job.location || '',
+                                    salary: job.salary || ''
+                                  });
+                                }}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 hover:text-emerald-300 transition-all"
+                              >
+                                <ExternalLink className="w-3.5 h-3.5" />
+                                Apply Now
+                              </a>
+
+                              <button
+                                onClick={() => {
+                                  applyToJob({
+                                    jobId: String(job._id),
+                                    title: job.title,
+                                    company: job.company,
+                                    type: 'Off-Campus',
+                                    applyUrl: job.applyUrl,
+                                    location: job.location || '',
+                                    salary: job.salary || ''
+                                  });
+                                }}
+                                className={`px-2.5 py-1.5 rounded-lg text-xs font-bold border transition-all ${
+                                  user?.appliedJobs?.some(j => String(j.jobId) === String(job._id))
+                                    ? 'bg-emerald-950/80 text-emerald-300 border-emerald-500/30 shadow-glow/10'
+                                    : 'bg-white/[0.03] text-gray-400 border-glassBorder hover:text-white hover:bg-white/5'
+                                }`}
+                              >
+                                {user?.appliedJobs?.some(j => String(j.jobId) === String(job._id)) ? '✓ Applied' : 'Mark Applied'}
+                              </button>
+                            </div>
                           </div>
                         </div>
                       ))}
