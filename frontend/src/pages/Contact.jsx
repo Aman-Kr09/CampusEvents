@@ -18,7 +18,7 @@ const faqs = [
   },
   {
     q: 'Who can I contact for technical issues or bugs?',
-    a: 'Use the contact form on this page or email us directly at u5813051@gmail.com. For urgent bugs, please include a description and screenshots. We typically respond within 24 hours.',
+    a: 'Use the contact form on this page or email us directly at amankumar19930000@gmail.com. For urgent bugs, please include a description and screenshots. We typically respond within 24 hours.',
   },
   {
     q: 'Can students moderate content themselves?',
@@ -34,10 +34,10 @@ const infoCards = [
   {
     icon: Mail,
     title: 'Email Support',
-    value: 'u5813051@gmail.com',
+    value: 'amankumar19930000@gmail.com',
     sub: 'Response within 24 hours',
     color: 'indigo',
-    href: 'mailto:u5813051@gmail.com',
+    href: 'mailto:amankumar19930000@gmail.com',
   },
   {
     icon: Phone,
@@ -324,7 +324,7 @@ const Contact = () => {
                   >
                     <div className="flex items-center space-x-2.5">
                       <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                      <span>⚠️ Failed to send. Please email us directly at u5813051@gmail.com</span>
+                      <span>⚠️ Failed to send. Please email us directly at amankumar19930000@gmail.com</span>
                     </div>
                     {errorDetail && (
                       <p className="text-[11px] text-red-400/70 pl-6 font-mono break-all">{errorDetail}</p>
