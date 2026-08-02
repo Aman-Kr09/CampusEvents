@@ -125,6 +125,47 @@ exports.login = async (req, res) => {
 
 
 
+// @desc    Admin Login — only allows Admin / CollegeAdmin roles
+// @route   POST /api/auth/admin-login
+// @access  Public
+exports.adminLogin = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    if (!email || !password) {
+      return res.status(400).json({ success: false, message: 'Please provide email and password' });
+    }
+
+    const user = await User.findOne({ email }).populate('college');
+    if (!user) {
+      return res.status(401).json({ success: false, message: 'Invalid credentials' });
+    }
+
+    // Only allow admin roles
+    if (!['Admin', 'CollegeAdmin', 'SuperAdmin'].includes(user.role)) {
+      return res.status(403).json({ success: false, message: 'Access denied. Admin credentials required.' });
+    }
+
+    if (user.status === 'Banned') {
+      return res.status(403).json({ success: false, message: 'This admin account has been suspended.' });
+    }
+
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      return res.status(401).json({ success: false, message: 'Invalid credentials' });
+    }
+
+    const token = generateToken(user._id);
+
+    const userResponse = user.toObject();
+    delete userResponse.password;
+
+    res.status(200).json({ success: true, token, user: userResponse });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 // @desc    Request Password Reset OTP
 // @route   POST /api/auth/forgotpassword
 // @access  Public

@@ -260,11 +260,16 @@ exports.createRideShare = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Total seats must be at least 1' });
     }
 
+    let depDate = new Date(departureTime);
+    if (isNaN(depDate.getTime())) {
+      depDate = new Date();
+    }
+
     const ride = await RideShare.create({
       origin,
       destination,
       tripType: tripType || 'Other',
-      departureTime: new Date(departureTime),
+      departureTime: depDate,
       totalSeats: seats,
       availableSeats: seats,
       costPerSeat: Number(costPerSeat) || 0,
@@ -436,7 +441,7 @@ exports.getConnectMessages = async (req, res) => {
 exports.sendConnectMessage = async (req, res) => {
   try {
     const { targetType, targetId } = req.params;
-    const { text } = req.body;
+    const text = req.body.text || req.body.content;
 
     if (!text || !text.trim()) {
       return res.status(400).json({ success: false, message: 'Message text cannot be empty' });

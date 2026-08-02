@@ -26,6 +26,7 @@ const pyqRoutes        = require('./routes/pyqRoutes');
 const offCampusRoutes  = require('./routes/offCampusRoutes');
 const paymentRoutes    = require('./routes/paymentRoutes');
 const campusConnectRoutes = require('./routes/campusConnectRoutes');
+const contactRoutes    = require('./routes/contactRoutes');
 
 const app = express();
 app.set('trust proxy', 1);
@@ -104,6 +105,7 @@ app.use('/api/pyq',       generalLimiter, pyqRoutes);
 app.use('/api/off-campus', generalLimiter, offCampusRoutes);
 app.use('/api/payment',    generalLimiter, paymentRoutes);
 app.use('/api/campus-connect', generalLimiter, campusConnectRoutes);
+app.use('/api/contact', generalLimiter, contactRoutes);
 
 // ─── Global Error Handler ─────────────────────────────────────────────────────
 app.use((err, req, res, next) => {

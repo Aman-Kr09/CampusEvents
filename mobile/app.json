@@ -1,0 +1,19 @@
+{
+  "expo": {
+    "name": "CampusEvents",
+    "slug": "campusevents-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "backgroundColor": "#0b0f17"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.campusevents.app"
+    },
+    "android": {
+      "package": "com.campusevents.app"
+    }
+  }
+}

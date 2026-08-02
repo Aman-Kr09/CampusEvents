@@ -3,6 +3,7 @@ const router = express.Router();
 const {
   register,
   login,
+  adminLogin,
   forgotPassword,
   verifyOTP,
   resetPassword,
@@ -16,6 +17,7 @@ const { protect } = require('../middleware/auth');
 // Public routes
 router.post('/register', register);
 router.post('/login', login);
+router.post('/admin-login', adminLogin);
 router.post('/forgotpassword', forgotPassword);
 router.post('/verifyotp', verifyOTP);
 router.post('/resetpassword', resetPassword);

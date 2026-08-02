@@ -37,43 +37,43 @@ const injectFlag = (fileUrl, flag) => fileUrl.replace('/upload/', `/upload/${fla
 
 // ─────────────────────────────────────────────────────────────────────────────
 // @desc    Upload a new PYQ (file + metadata)
-// @route   POST /api/pyq
-// @access  Private
-// ─────────────────────────────────────────────────────────────────────────────
 exports.uploadPYQ = async (req, res) => {
   try {
-    if (!req.file) {
-      return res.status(400).json({ success: false, message: 'Please attach a file (PDF or image).' });
-    }
-
     const { subjectName, courseCode, semester, department, academicYear, examType } = req.body;
 
-    if (!subjectName || !courseCode || !semester || !department || !academicYear || !examType) {
-      return res.status(400).json({ success: false, message: 'All metadata fields are required.' });
+    if (!subjectName || !courseCode || !semester || !department) {
+      return res.status(400).json({ success: false, message: 'Please provide subject name, course code, semester, and department.' });
     }
 
-    const semNum = Number(semester);
-    if (semNum < 1 || semNum > 7) {
-      return res.status(400).json({ success: false, message: 'Semester must be between 1 and 7.' });
+    const semNum = Number(semester) || 1;
+    let fileUrl = '';
+    let publicId = '';
+    let fileType = 'pdf';
+
+    if (req.file) {
+      const mime = req.file.mimetype;
+      const isPDF = mime === 'application/pdf';
+      const isImage = mime.startsWith('image/');
+      if (!isPDF && !isImage) {
+        return res.status(400).json({ success: false, message: 'Only PDF and image files are allowed.' });
+      }
+      fileType = isPDF ? 'pdf' : 'image';
+      const collegeId = req.user.college._id.toString();
+
+      const uploadResult = await uploadToCloudinary(req.file.buffer, {
+        folder: `campusevents/pyq/${collegeId}`,
+        resource_type: isPDF ? 'raw' : 'image',
+        public_id: `${Date.now()}_${req.file.originalname.replace(/\s+/g, '_')}`
+      });
+      fileUrl = uploadResult.secure_url;
+      publicId = uploadResult.public_id;
+    } else if (req.body.fileUrl) {
+      fileUrl = req.body.fileUrl.trim();
+      fileType = fileUrl.toLowerCase().includes('.pdf') ? 'pdf' : 'image';
+      publicId = `external_${Date.now()}`;
+    } else {
+      return res.status(400).json({ success: false, message: 'Please attach a file or provide a valid document URL.' });
     }
-
-    const mime    = req.file.mimetype;
-    const isPDF   = mime === 'application/pdf';
-    const isImage = mime.startsWith('image/');
-    if (!isPDF && !isImage) {
-      return res.status(400).json({ success: false, message: 'Only PDF and image files are allowed.' });
-    }
-
-    const fileType  = isPDF ? 'pdf' : 'image';
-    const collegeId = req.user.college._id.toString();
-
-    // PDFs → resource_type:'raw'   so the URL serves actual PDF bytes (not a thumbnail)
-    // Images → resource_type:'image'
-    const uploadResult = await uploadToCloudinary(req.file.buffer, {
-      folder:        `campusevents/pyq/${collegeId}`,
-      resource_type: isPDF ? 'raw' : 'image',
-      public_id:     `${Date.now()}_${req.file.originalname.replace(/\s+/g, '_')}`
-    });
 
     const pyq = await PYQ.create({
       college:      req.user.college._id,
@@ -83,8 +83,8 @@ exports.uploadPYQ = async (req, res) => {
       department:   department.trim(),
       academicYear: academicYear.trim(),
       examType,
-      fileUrl:      uploadResult.secure_url,
-      publicId:     uploadResult.public_id,
+      fileUrl:      fileUrl,
+      publicId:     publicId,
       fileType,
       uploadedBy:   req.user._id
     });

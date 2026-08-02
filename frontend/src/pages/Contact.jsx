@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import emailjs from '@emailjs/browser';
+import { api } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Mail, Phone, MapPin, Send, CheckCircle2, AlertCircle,
@@ -165,26 +166,52 @@ const Contact = () => {
     setSubmitting(true);
     setStatus(null);
     setErrorDetail('');
-    console.log('EmailJS IDs:', EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, EMAILJS_PUBLIC_KEY);
+
     try {
-      const result = await emailjs.send(
-        EMAILJS_SERVICE_ID,
-        EMAILJS_TEMPLATE_ID,
-        {
-          name: form.name,
-          email: form.email,
-          title: form.subject,
-          message: form.message,
-        },
-        EMAILJS_PUBLIC_KEY
-      );
-      console.log('EmailJS success:', result);
-      showStatus('success');
-      setForm({ name: '', email: '', subject: '', message: '' });
-    } catch (err) {
-      console.error('EmailJS error:', err);
-      const detail = err?.text || err?.message || JSON.stringify(err);
-      setErrorDetail(detail);
+      // 1. Try sending via backend contact API (uses SMTP / Gmail Relay / BullMQ)
+      try {
+        const res = await api.post('/contact', form);
+        if (res.data.success) {
+          showStatus('success');
+          setForm({ name: '', email: '', subject: '', message: '' });
+          return;
+        }
+      } catch (apiErr) {
+        console.warn('Backend contact API failed, attempting EmailJS fallback:', apiErr.message);
+      }
+
+      // 2. Fallback to client-side EmailJS if configured
+      if (EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID && EMAILJS_PUBLIC_KEY) {
+        try {
+          await emailjs.send(
+            EMAILJS_SERVICE_ID,
+            EMAILJS_TEMPLATE_ID,
+            {
+              name: form.name,
+              email: form.email,
+              title: form.subject,
+              message: form.message,
+            },
+            EMAILJS_PUBLIC_KEY
+          );
+          showStatus('success');
+          setForm({ name: '', email: '', subject: '', message: '' });
+          return;
+        } catch (err) {
+          console.error('EmailJS error:', err);
+          const detail = err?.text || err?.message || JSON.stringify(err);
+          setErrorDetail(detail);
+          showStatus('error');
+          return;
+        }
+      }
+
+      // If both failed or EmailJS wasn't set, show error banner
+      setErrorDetail('Could not send email. Please email us directly at u5813051@gmail.com');
+      showStatus('error');
+    } catch (globalErr) {
+      console.error('Submit error:', globalErr);
+      setErrorDetail(globalErr.message || 'An error occurred while sending your message.');
       showStatus('error');
     } finally {
       setSubmitting(false);
