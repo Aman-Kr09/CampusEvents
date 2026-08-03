@@ -202,8 +202,8 @@ const Donate = () => {
                       type="button"
                       onClick={() => { setAmount(item.amount); setCustomAmount(''); }}
                       className={`p-3 rounded-xl border text-center transition-all duration-200 ${isSelected
-                          ? 'bg-cyan-600 border-cyan-600 text-white shadow-sm'
-                          : 'bg-slate-50 border-slate-200 text-slate-700 hover:border-cyan-400 hover:bg-cyan-50'
+                        ? 'bg-cyan-600 border-cyan-600 text-white shadow-sm'
+                        : 'bg-slate-50 border-slate-200 text-slate-700 hover:border-cyan-400 hover:bg-cyan-50'
                         }`}
                     >
                       <span className="text-base font-black block">{item.label}</span>
@@ -286,7 +286,6 @@ const Donate = () => {
               onClick={handleProceedPay}
               className="w-full glass-button-primary flex items-center justify-center space-x-2 py-3 text-sm font-bold"
             >
-              <Heart className="w-4 h-4" />
               <span>Donate ₹{finalAmount || 0} via Razorpay</span>
               <ArrowRight className="w-4 h-4" />
             </button>
