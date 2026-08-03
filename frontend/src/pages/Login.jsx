@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useCollege } from '../context/CollegeContext';
 import { api } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Lock, User, GraduationCap, Calendar, ArrowRight, ShieldAlert, Key, Sparkles, Check, X } from 'lucide-react';
+import { ArrowRight, ShieldAlert, Key, Sparkles } from 'lucide-react';
 
 const checkPasswordStrength = (password) => {
   if (!password) return { score: 0, feedback: '', met: {} };
@@ -26,12 +26,23 @@ const checkPasswordStrength = (password) => {
   return { score, feedback, met };
 };
 
+const getMissingRequirements = (met) => {
+  if (!met) return [];
+  const missing = [];
+  if (!met.length) missing.push('8+ characters');
+  if (!met.uppercase) missing.push('uppercase letter');
+  if (!met.lowercase) missing.push('lowercase letter');
+  if (!met.number) missing.push('number');
+  if (!met.special) missing.push('special symbol');
+  return missing;
+};
+
 const Login = () => {
   const { login, register, token } = useAuth();
   const { selectedCollege } = useCollege();
   const navigate = useNavigate();
 
-  // Tracks whether auth was just completed by a handler (so we skip the auto-redirect)
+  // Tracks whether auth was just completed by a handler
   const [justAuthed, setJustAuthed] = useState(false);
 
   // Redirect to home ONLY if user was already logged in when they visited /login
@@ -118,7 +129,8 @@ const Login = () => {
     }
 
     if (strength.score < 5) {
-      setError('Your password does not meet the security strength requirements.');
+      const missing = getMissingRequirements(strength.met);
+      setError(`Password requires: ${missing.join(', ')}.`);
       setLoading(false);
       return;
     }
@@ -160,7 +172,7 @@ const Login = () => {
     try {
       const res = await api.post('/auth/forgotpassword', { email: form.email });
       if (res.data.success) {
-        setInfoMessage(res.data.message || 'OTP sent! Please check the terminal command window (development mode logs OTP to console).');
+        setInfoMessage(res.data.message || 'OTP sent! Please check your email.');
         setForgotStep(2);
       }
     } catch (err) {
@@ -185,7 +197,8 @@ const Login = () => {
     }
 
     if (resetStrength.score < 5) {
-      setError('Your new password does not meet the security strength requirements.');
+      const missing = getMissingRequirements(resetStrength.met);
+      setError(`New password requires: ${missing.join(', ')}.`);
       setLoading(false);
       return;
     }
@@ -210,43 +223,45 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-[calc(screen-16px)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+    <div className="min-h-[calc(100vh-64px)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-[#F6FBFF]">
       {/* Background decoration glows */}
-      <div className="absolute top-1/3 right-1/4 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl -z-10 animate-pulse-slow"></div>
-      <div className="absolute bottom-1/3 left-1/4 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl -z-10 animate-pulse-slow"></div>
+      <div className="absolute top-1/3 right-1/4 w-80 h-80 bg-sky-200/40 rounded-full blur-3xl -z-10 animate-pulse-slow"></div>
+      <div className="absolute bottom-1/3 left-1/4 w-80 h-80 bg-teal-200/30 rounded-full blur-3xl -z-10 animate-pulse-slow"></div>
 
       <div className="max-w-md w-full space-y-6">
         
         {/* College identifier */}
         {selectedCollege && tab !== 'forgot' && (
           <div className="text-center">
-            <span className="text-xs font-semibold text-gray-500 tracking-wide uppercase">Joining Portal</span>
-            <h2 className="text-xl font-bold text-indigo-400 mt-1">{selectedCollege.name}</h2>
+            <span className="text-xs font-bold text-slate-400 tracking-wider uppercase">Joining Portal</span>
+            <h2 className="text-xl font-extrabold text-cyan-700 mt-1">{selectedCollege.name}</h2>
           </div>
         )}
 
         {/* Card wrapper */}
-        <div className="glass-panel rounded-2xl overflow-hidden p-8 space-y-6">
+        <div className="bg-white border border-[#D6EAF8] rounded-2xl shadow-xl overflow-hidden p-8 space-y-6">
           
           {/* Tab Selection */}
           {tab !== 'forgot' && (
-            <div className="flex border-b border-glassBorder pb-4">
+            <div className="flex border-b border-[#D6EAF8] pb-3">
               <button
+                type="button"
                 onClick={() => { setTab('login'); setError(''); }}
-                className={`flex-1 text-center pb-2.5 text-sm font-semibold transition-all duration-200 ${
+                className={`flex-1 text-center pb-2 text-sm font-extrabold transition-all duration-200 ${
                   tab === 'login' 
-                    ? 'text-white border-b-2 border-indigo-500' 
-                    : 'text-gray-400 hover:text-gray-200'
+                    ? 'text-cyan-700 border-b-2 border-cyan-600' 
+                    : 'text-slate-400 hover:text-slate-600'
                 }`}
               >
                 Sign In
               </button>
               <button
+                type="button"
                 onClick={() => { setTab('signup'); setError(''); }}
-                className={`flex-1 text-center pb-2.5 text-sm font-semibold transition-all duration-200 ${
+                className={`flex-1 text-center pb-2 text-sm font-extrabold transition-all duration-200 ${
                   tab === 'signup' 
-                    ? 'text-white border-b-2 border-indigo-500' 
-                    : 'text-gray-400 hover:text-gray-200'
+                    ? 'text-cyan-700 border-b-2 border-cyan-600' 
+                    : 'text-slate-400 hover:text-slate-600'
                 }`}
               >
                 Sign Up
@@ -256,14 +271,14 @@ const Login = () => {
 
           {/* Feedback states */}
           {error && (
-            <div className="p-3 bg-red-950/40 border border-red-500/20 text-red-300 rounded-lg text-sm flex items-center space-x-2">
-              <ShieldAlert className="w-4.5 h-4.5 flex-shrink-0" />
+            <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl text-xs font-semibold flex items-center space-x-2">
+              <ShieldAlert className="w-4 h-4 flex-shrink-0 text-rose-600" />
               <span>{error}</span>
             </div>
           )}
           {infoMessage && (
-            <div className="p-3 bg-indigo-950/40 border border-indigo-500/20 text-indigo-300 rounded-lg text-sm flex items-center space-x-2">
-              <Sparkles className="w-4.5 h-4.5 flex-shrink-0 text-indigo-400" />
+            <div className="p-3 bg-cyan-50 border border-cyan-200 text-cyan-800 rounded-xl text-xs font-semibold flex items-center space-x-2">
+              <Sparkles className="w-4 h-4 flex-shrink-0 text-cyan-600" />
               <span>{infoMessage}</span>
             </div>
           )}
@@ -280,50 +295,44 @@ const Login = () => {
                 className="space-y-4"
               >
                 <div>
-                  <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Campus Email</label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-3 w-4.5 h-4.5 text-gray-500" />
-                    <input
-                      type="email"
-                      name="email"
-                      required
-                      placeholder="e.g. student@college.edu"
-                      value={form.email}
-                      onChange={handleChange}
-                      className="w-full pl-10 glass-input"
-                    />
-                  </div>
+                  <label className="block text-xs font-extrabold text-slate-500 mb-1.5 uppercase">Campus Email</label>
+                  <input
+                    type="email"
+                    name="email"
+                    required
+                    placeholder="e.g. student@college.edu"
+                    value={form.email}
+                    onChange={handleChange}
+                    className="w-full bg-slate-50 border border-[#D6EAF8] rounded-xl text-slate-900 text-sm px-4 py-2.5 outline-none focus:bg-white focus:border-cyan-600 focus:ring-4 focus:ring-cyan-500/10 transition-all font-medium"
+                  />
                 </div>
 
                 <div>
                   <div className="flex justify-between items-center mb-1.5">
-                    <label className="block text-xs font-semibold text-gray-400 uppercase">Password</label>
+                    <label className="block text-xs font-extrabold text-slate-500 uppercase">Password</label>
                     <button
                       type="button"
                       onClick={() => { setTab('forgot'); setError(''); setInfoMessage(''); }}
-                      className="text-xs text-indigo-400 hover:text-indigo-300 font-medium"
+                      className="text-xs text-cyan-600 hover:text-cyan-800 font-bold"
                     >
                       Forgot?
                     </button>
                   </div>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-3 w-4.5 h-4.5 text-gray-500" />
-                    <input
-                      type="password"
-                      name="password"
-                      required
-                      placeholder="••••••••"
-                      value={form.password}
-                      onChange={handleChange}
-                      className="w-full pl-10 glass-input"
-                    />
-                  </div>
+                  <input
+                    type="password"
+                    name="password"
+                    required
+                    placeholder="••••••••"
+                    value={form.password}
+                    onChange={handleChange}
+                    className="w-full bg-slate-50 border border-[#D6EAF8] rounded-xl text-slate-900 text-sm px-4 py-2.5 outline-none focus:bg-white focus:border-cyan-600 focus:ring-4 focus:ring-cyan-500/10 transition-all font-medium"
+                  />
                 </div>
 
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full glass-button-primary py-3 flex items-center justify-center space-x-2 mt-2"
+                  className="w-full bg-gradient-to-r from-cyan-600 to-sky-600 hover:from-cyan-700 hover:to-sky-700 text-white font-bold py-3 rounded-xl flex items-center justify-center space-x-2 mt-2 shadow-md transition-all text-sm"
                 >
                   <span>{loading ? 'Authenticating...' : 'Sign In'}</span>
                   {!loading && <ArrowRight className="w-4 h-4" />}
@@ -341,157 +350,84 @@ const Login = () => {
                 className="space-y-4"
               >
                 <div>
-                  <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Full Name</label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-3 w-4.5 h-4.5 text-gray-500" />
-                    <input
-                      type="text"
-                      name="name"
-                      required
-                      placeholder="Your Name"
-                      value={form.name}
-                      onChange={handleChange}
-                      className="w-full pl-10 glass-input"
-                    />
-                  </div>
+                  <label className="block text-xs font-extrabold text-slate-500 mb-1.5 uppercase">Full Name</label>
+                  <input
+                    type="text"
+                    name="name"
+                    required
+                    placeholder="Your Name"
+                    value={form.name}
+                    onChange={handleChange}
+                    className="w-full bg-slate-50 border border-[#D6EAF8] rounded-xl text-slate-900 text-sm px-4 py-2.5 outline-none focus:bg-white focus:border-cyan-600 focus:ring-4 focus:ring-cyan-500/10 transition-all font-medium"
+                  />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Email Address</label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-3 w-4.5 h-4.5 text-gray-500" />
-                    <input
-                      type="email"
-                      name="email"
-                      required
-                      placeholder="student@college.edu"
-                      value={form.email}
-                      onChange={handleChange}
-                      className="w-full pl-10 glass-input"
-                    />
-                  </div>
+                  <label className="block text-xs font-extrabold text-slate-500 mb-1.5 uppercase">Email Address</label>
+                  <input
+                    type="email"
+                    name="email"
+                    required
+                    placeholder="student@college.edu"
+                    value={form.email}
+                    onChange={handleChange}
+                    className="w-full bg-slate-50 border border-[#D6EAF8] rounded-xl text-slate-900 text-sm px-4 py-2.5 outline-none focus:bg-white focus:border-cyan-600 focus:ring-4 focus:ring-cyan-500/10 transition-all font-medium"
+                  />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Academic Branch</label>
-                    <div className="relative">
-                      <GraduationCap className="absolute left-3 top-3.5 w-4.5 h-4.5 text-gray-500" />
-                      <input
-                        type="text"
-                        name="branch"
-                        required
-                        placeholder="e.g. CSE"
-                        value={form.branch}
-                        onChange={handleChange}
-                        className="w-full pl-10 glass-input"
-                      />
-                    </div>
+                    <label className="block text-xs font-extrabold text-slate-500 mb-1.5 uppercase">Academic Branch</label>
+                    <input
+                      type="text"
+                      name="branch"
+                      required
+                      placeholder="e.g. CSE"
+                      value={form.branch}
+                      onChange={handleChange}
+                      className="w-full bg-slate-50 border border-[#D6EAF8] rounded-xl text-slate-900 text-sm px-4 py-2.5 outline-none focus:bg-white focus:border-cyan-600 focus:ring-4 focus:ring-cyan-500/10 transition-all font-medium"
+                    />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Current Year</label>
-                    <div className="relative">
-                      <Calendar className="absolute left-3 top-3.5 w-4.5 h-4.5 text-gray-500" />
-                      <select
-                        name="year"
-                        value={form.year}
-                        onChange={handleChange}
-                        className="w-full pl-10 glass-input appearance-none bg-darkCard"
-                      >
-                        <option value="1">1st Year</option>
-                        <option value="2">2nd Year</option>
-                        <option value="3">3rd Year</option>
-                        <option value="4">4th Year</option>
-                      </select>
-                    </div>
+                    <label className="block text-xs font-extrabold text-slate-500 mb-1.5 uppercase">Current Year</label>
+                    <select
+                      name="year"
+                      value={form.year}
+                      onChange={handleChange}
+                      className="w-full bg-slate-50 border border-[#D6EAF8] rounded-xl text-slate-900 text-sm px-4 py-2.5 outline-none focus:bg-white focus:border-cyan-600 focus:ring-4 focus:ring-cyan-500/10 transition-all font-medium"
+                    >
+                      <option value="1">1st Year</option>
+                      <option value="2">2nd Year</option>
+                      <option value="3">3rd Year</option>
+                      <option value="4">4th Year</option>
+                    </select>
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Password</label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-3 w-4.5 h-4.5 text-gray-500" />
-                    <input
-                      type="password"
-                      name="password"
-                      required
-                      placeholder="At least 8 strong characters"
-                      value={form.password}
-                      onChange={handleChange}
-                      className="w-full pl-10 glass-input"
-                    />
-                  </div>
+                  <label className="block text-xs font-extrabold text-slate-500 mb-1.5 uppercase">Password</label>
+                  <input
+                    type="password"
+                    name="password"
+                    required
+                    placeholder="At least 8 characters"
+                    value={form.password}
+                    onChange={handleChange}
+                    className="w-full bg-slate-50 border border-[#D6EAF8] rounded-xl text-slate-900 text-sm px-4 py-2.5 outline-none focus:bg-white focus:border-cyan-600 focus:ring-4 focus:ring-cyan-500/10 transition-all font-medium"
+                  />
 
+                  {/* One Line Password Requirement Summary */}
                   {form.password && (
-                    <div className="mt-3.5 space-y-2.5 p-3.5 rounded-xl bg-white/[0.01] border border-glassBorder">
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="text-gray-400 font-medium">Password Strength:</span>
-                        <span className={`font-extrabold transition-colors ${
-                          strength.score <= 2 ? 'text-red-400' : strength.score <= 4 ? 'text-amber-400' : 'text-emerald-400'
-                        }`}>
-                          {strength.feedback}
+                    <div className="mt-2 text-xs font-semibold">
+                      {strength.score < 5 ? (
+                        <span className="text-amber-600">
+                          Missing: {getMissingRequirements(strength.met).join(', ')}
                         </span>
-                      </div>
-                      
-                      <div className="flex gap-1.5 h-1">
-                        {[1, 2, 3, 4, 5].map((index) => (
-                          <div
-                            key={index}
-                            className={`flex-1 rounded-full transition-all duration-300 ${
-                              index <= strength.score
-                                ? strength.score <= 2
-                                  ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]'
-                                  : strength.score <= 4
-                                    ? 'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]'
-                                    : 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]'
-                                : 'bg-white/10'
-                            }`}
-                          />
-                        ))}
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-x-3 gap-y-2 pt-1 text-[10px]">
-                        <div className="flex items-center space-x-1.5">
-                          {strength.met.length ? (
-                            <Check className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
-                          ) : (
-                            <X className="w-3.5 h-3.5 text-red-500/60 flex-shrink-0" />
-                          )}
-                          <span className={strength.met.length ? 'text-gray-300 font-medium' : 'text-gray-500'}>8+ Characters</span>
-                        </div>
-                        <div className="flex items-center space-x-1.5">
-                          {strength.met.uppercase ? (
-                            <Check className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
-                          ) : (
-                            <X className="w-3.5 h-3.5 text-red-500/60 flex-shrink-0" />
-                          )}
-                          <span className={strength.met.uppercase ? 'text-gray-300 font-medium' : 'text-gray-500'}>1 Uppercase (A-Z)</span>
-                        </div>
-                        <div className="flex items-center space-x-1.5">
-                          {strength.met.lowercase ? (
-                            <Check className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
-                          ) : (
-                            <X className="w-3.5 h-3.5 text-red-500/60 flex-shrink-0" />
-                          )}
-                          <span className={strength.met.lowercase ? 'text-gray-300 font-medium' : 'text-gray-500'}>1 Lowercase (a-z)</span>
-                        </div>
-                        <div className="flex items-center space-x-1.5">
-                          {strength.met.number ? (
-                            <Check className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
-                          ) : (
-                            <X className="w-3.5 h-3.5 text-red-500/60 flex-shrink-0" />
-                          )}
-                          <span className={strength.met.number ? 'text-gray-300 font-medium' : 'text-gray-500'}>1 Number (0-9)</span>
-                        </div>
-                        <div className="flex items-center space-x-1.5 col-span-2 border-t border-white/[0.03] pt-1.5 mt-0.5">
-                          {strength.met.special ? (
-                            <Check className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
-                          ) : (
-                            <X className="w-3.5 h-3.5 text-red-500/60 flex-shrink-0" />
-                          )}
-                          <span className={strength.met.special ? 'text-gray-300 font-medium' : 'text-gray-500'}>1 Special Character (e.g. @$!%*?&)</span>
-                        </div>
-                      </div>
+                      ) : (
+                        <span className="text-emerald-600">
+                          ✓ Strong password meets all requirements
+                        </span>
+                      )}
                     </div>
                   )}
                 </div>
@@ -499,7 +435,7 @@ const Login = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full glass-button-primary py-3 flex items-center justify-center space-x-2 mt-2"
+                  className="w-full bg-gradient-to-r from-cyan-600 to-sky-600 hover:from-cyan-700 hover:to-sky-700 text-white font-bold py-3 rounded-xl flex items-center justify-center space-x-2 mt-2 shadow-md transition-all text-sm"
                 >
                   <span>{loading ? 'Creating Profile...' : 'Sign Up'}</span>
                   {!loading && <ArrowRight className="w-4 h-4" />}
@@ -515,44 +451,41 @@ const Login = () => {
                 exit={{ opacity: 0, scale: 0.95 }}
                 className="space-y-4"
               >
-                <div className="flex items-center space-x-2 pb-2 border-b border-glassBorder">
-                  <Key className="w-5 h-5 text-indigo-400" />
-                  <h3 className="font-bold text-white">Reset Account Password</h3>
+                <div className="flex items-center space-x-2 pb-2 border-b border-[#D6EAF8]">
+                  <Key className="w-5 h-5 text-cyan-600" />
+                  <h3 className="font-extrabold text-slate-900 text-sm">Reset Account Password</h3>
                 </div>
 
                 {forgotStep === 1 ? (
                   <form onSubmit={handleRequestOTP} className="space-y-4">
-                    <p className="text-xs text-gray-400 leading-relaxed">
+                    <p className="text-xs text-slate-500 leading-relaxed">
                       Enter your registered campus email address. We will generate and send a 6-digit One Time Password (OTP) validation key to reset your credential.
                     </p>
                     <div>
-                      <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Campus Email</label>
-                      <div className="relative">
-                        <Mail className="absolute left-3 top-3 w-4.5 h-4.5 text-gray-500" />
-                        <input
-                          type="email"
-                          name="email"
-                          required
-                          placeholder="student@college.edu"
-                          value={form.email}
-                          onChange={handleChange}
-                          className="w-full pl-10 glass-input"
-                        />
-                      </div>
+                      <label className="block text-xs font-extrabold text-slate-500 mb-1.5 uppercase">Campus Email</label>
+                      <input
+                        type="email"
+                        name="email"
+                        required
+                        placeholder="student@college.edu"
+                        value={form.email}
+                        onChange={handleChange}
+                        className="w-full bg-slate-50 border border-[#D6EAF8] rounded-xl text-slate-900 text-sm px-4 py-2.5 outline-none focus:bg-white focus:border-cyan-600 focus:ring-4 focus:ring-cyan-500/10 transition-all font-medium"
+                      />
                     </div>
                     
                     <div className="flex items-center justify-end space-x-2 pt-2">
                       <button
                         type="button"
                         onClick={() => { setTab('login'); setError(''); setInfoMessage(''); }}
-                        className="glass-button-secondary py-2 px-4 text-xs"
+                        className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2 px-4 rounded-xl text-xs transition-all"
                       >
                         Back
                       </button>
                       <button
                         type="submit"
                         disabled={loading}
-                        className="glass-button-primary py-2 px-5 text-xs flex items-center space-x-1"
+                        className="bg-gradient-to-r from-cyan-600 to-sky-600 hover:from-cyan-700 hover:to-sky-700 text-white font-bold py-2 px-5 rounded-xl text-xs flex items-center space-x-1 shadow-md transition-all"
                       >
                         <span>{loading ? 'Requesting...' : 'Request OTP'}</span>
                       </button>
@@ -561,7 +494,7 @@ const Login = () => {
                 ) : (
                   <form onSubmit={handleResetPassword} className="space-y-4">
                     <div>
-                      <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">OTP Verification Code</label>
+                      <label className="block text-xs font-extrabold text-slate-500 mb-1.5 uppercase">OTP Verification Code</label>
                       <input
                         type="text"
                         name="otp"
@@ -569,92 +502,33 @@ const Login = () => {
                         placeholder="Enter 6-digit code"
                         value={form.otp}
                         onChange={handleChange}
-                        className="w-full glass-input text-center tracking-widest text-lg font-bold"
+                        className="w-full bg-slate-50 border border-[#D6EAF8] rounded-xl text-slate-900 text-center tracking-widest text-lg font-bold py-2.5 outline-none focus:bg-white focus:border-cyan-600 transition-all"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Create New Password</label>
+                      <label className="block text-xs font-extrabold text-slate-500 mb-1.5 uppercase">Create New Password</label>
                       <input
                         type="password"
                         name="newPassword"
                         required
-                        placeholder="At least 8 strong characters"
+                        placeholder="At least 8 characters"
                         value={form.newPassword}
                         onChange={handleChange}
-                        className="w-full glass-input"
+                        className="w-full bg-slate-50 border border-[#D6EAF8] rounded-xl text-slate-900 text-sm px-4 py-2.5 outline-none focus:bg-white focus:border-cyan-600 focus:ring-4 focus:ring-cyan-500/10 transition-all font-medium"
                       />
 
                       {form.newPassword && (
-                        <div className="mt-3.5 space-y-2.5 p-3.5 rounded-xl bg-white/[0.01] border border-glassBorder">
-                          <div className="flex items-center justify-between text-xs">
-                            <span className="text-gray-400 font-medium">Password Strength:</span>
-                            <span className={`font-extrabold transition-colors ${
-                              resetStrength.score <= 2 ? 'text-red-400' : resetStrength.score <= 4 ? 'text-amber-400' : 'text-emerald-400'
-                            }`}>
-                              {resetStrength.feedback}
+                        <div className="mt-2 text-xs font-semibold">
+                          {resetStrength.score < 5 ? (
+                            <span className="text-amber-600">
+                              Missing: {getMissingRequirements(resetStrength.met).join(', ')}
                             </span>
-                          </div>
-                          
-                          <div className="flex gap-1.5 h-1">
-                            {[1, 2, 3, 4, 5].map((index) => (
-                              <div
-                                key={index}
-                                className={`flex-1 rounded-full transition-all duration-300 ${
-                                  index <= resetStrength.score
-                                    ? resetStrength.score <= 2
-                                      ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]'
-                                      : resetStrength.score <= 4
-                                        ? 'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]'
-                                        : 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]'
-                                    : 'bg-white/10'
-                                }`}
-                              />
-                            ))}
-                          </div>
-
-                          <div className="grid grid-cols-2 gap-x-3 gap-y-2 pt-1 text-[10px]">
-                            <div className="flex items-center space-x-1.5">
-                              {resetStrength.met.length ? (
-                                <Check className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
-                              ) : (
-                                <X className="w-3.5 h-3.5 text-red-500/60 flex-shrink-0" />
-                              )}
-                              <span className={resetStrength.met.length ? 'text-gray-300 font-medium' : 'text-gray-500'}>8+ Characters</span>
-                            </div>
-                            <div className="flex items-center space-x-1.5">
-                              {resetStrength.met.uppercase ? (
-                                <Check className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
-                              ) : (
-                                <X className="w-3.5 h-3.5 text-red-500/60 flex-shrink-0" />
-                              )}
-                              <span className={resetStrength.met.uppercase ? 'text-gray-300 font-medium' : 'text-gray-500'}>1 Uppercase (A-Z)</span>
-                            </div>
-                            <div className="flex items-center space-x-1.5">
-                              {resetStrength.met.lowercase ? (
-                                <Check className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
-                              ) : (
-                                <X className="w-3.5 h-3.5 text-red-500/60 flex-shrink-0" />
-                              )}
-                              <span className={resetStrength.met.lowercase ? 'text-gray-300 font-medium' : 'text-gray-500'}>1 Lowercase (a-z)</span>
-                            </div>
-                            <div className="flex items-center space-x-1.5">
-                              {resetStrength.met.number ? (
-                                <Check className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
-                              ) : (
-                                <X className="w-3.5 h-3.5 text-red-500/60 flex-shrink-0" />
-                              )}
-                              <span className={resetStrength.met.number ? 'text-gray-300 font-medium' : 'text-gray-500'}>1 Number (0-9)</span>
-                            </div>
-                            <div className="flex items-center space-x-1.5 col-span-2 border-t border-white/[0.03] pt-1.5 mt-0.5">
-                              {resetStrength.met.special ? (
-                                <Check className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
-                              ) : (
-                                <X className="w-3.5 h-3.5 text-red-500/60 flex-shrink-0" />
-                              )}
-                              <span className={resetStrength.met.special ? 'text-gray-300 font-medium' : 'text-gray-500'}>1 Special Character (e.g. @$!%*?&)</span>
-                            </div>
-                          </div>
+                          ) : (
+                            <span className="text-emerald-600">
+                              ✓ Strong password meets all requirements
+                            </span>
+                          )}
                         </div>
                       )}
                     </div>
@@ -663,14 +537,14 @@ const Login = () => {
                       <button
                         type="button"
                         onClick={() => setForgotStep(1)}
-                        className="glass-button-secondary py-2 px-4 text-xs"
+                        className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2 px-4 rounded-xl text-xs transition-all"
                       >
                         Resend
                       </button>
                       <button
                         type="submit"
                         disabled={loading}
-                        className="glass-button-primary py-2 px-5 text-xs"
+                        className="bg-gradient-to-r from-cyan-600 to-sky-600 hover:from-cyan-700 hover:to-sky-700 text-white font-bold py-2 px-5 rounded-xl text-xs shadow-md transition-all"
                       >
                         <span>{loading ? 'Resetting...' : 'Change Password'}</span>
                       </button>
@@ -681,7 +555,6 @@ const Login = () => {
             )}
           </AnimatePresence>
 
-
         </div>
 
         {/* Alternate link back to Landing directory */}
@@ -689,7 +562,7 @@ const Login = () => {
           <div className="text-center">
             <button
               onClick={() => navigate('/')}
-              className="text-xs text-gray-500 hover:text-gray-300 font-medium"
+              className="text-xs text-slate-500 hover:text-cyan-700 font-bold transition-colors"
             >
               &larr; Back to Campus Directory
             </button>
