@@ -74,13 +74,11 @@ const Footer = () => {
               </li>
               <li>
                 <Link to="/contact" className="text-xs text-slate-500 hover:text-cyan-700 transition-colors duration-200 flex items-center space-x-1">
-                  <Mail className="w-3 h-3" />
                   <span>Contact Us</span>
                 </Link>
               </li>
               <li>
                 <Link to="/donate" className="text-xs text-slate-500 hover:text-cyan-700 transition-colors duration-200 flex items-center space-x-1">
-                  <Heart className="w-3 h-3" />
                   <span>Donate Support</span>
                 </Link>
               </li>
