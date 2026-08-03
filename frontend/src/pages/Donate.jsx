@@ -224,7 +224,7 @@ const Donate = () => {
                   placeholder="Enter custom amount"
                   value={customAmount}
                   onChange={(e) => setCustomAmount(e.target.value)}
-                  className="w-full glass-input pl-8 text-sm"
+                  className="w-full glass-input pl-10 text-sm"
                 />
               </div>
             </div>
