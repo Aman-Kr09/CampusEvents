@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { School, Activity, Globe, Terminal, Briefcase, Mail, ExternalLink, ShieldAlert, Heart, Smartphone } from 'lucide-react';
+import { School, Activity, Globe, Terminal, Briefcase, Mail, ExternalLink, ShieldAlert, Heart } from 'lucide-react';
 import { useCollege } from '../context/CollegeContext';
 
 const Footer = () => {
@@ -13,7 +13,7 @@ const Footer = () => {
   }
 
   return (
-    <footer className="w-full glass-panel border-t border-glassBorder bg-opacity-40 backdrop-blur-lg mt-auto">
+    <footer className="w-full bg-white border-t border-[#D6EAF8] mt-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-6">
 
         {/* Main Grid Layout */}
@@ -22,17 +22,17 @@ const Footer = () => {
           {/* Column 1: Brand details */}
           <div className="space-y-4">
             <div className="flex items-center space-x-2.5">
-              <span className="text-xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400">
+              <span className="text-xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-cyan-700 via-sky-600 to-teal-600">
                 CampusEvents
               </span>
             </div>
-            <p className="text-xs text-gray-400 leading-relaxed max-w-sm">
-              The premier full-stack platform for campus events discovery, academic Q&A forums, placement statistics archives, and official administration announcements. strictly isolated by college.
+            <p className="text-xs text-slate-500 leading-relaxed max-w-sm">
+              The premier full-stack platform for campus events discovery, academic Q&A forums, placement statistics archives, and official administration announcements. Strictly isolated by college.
             </p>
             {selectedCollege && (
               <div className="flex items-center space-x-2 pt-1">
-                <span className="inline-block w-2 h-2 rounded-full bg-indigo-500 shadow-glow animate-pulse-slow"></span>
-                <span className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider">
+                <span className="inline-block w-2 h-2 rounded-full bg-cyan-600 shadow-glow animate-pulse-slow"></span>
+                <span className="text-[10px] text-cyan-800 font-bold uppercase tracking-wider bg-cyan-50 px-2 py-0.5 rounded-md border border-cyan-200">
                   Connected to {selectedCollege.name}
                 </span>
               </div>
@@ -41,25 +41,25 @@ const Footer = () => {
 
           {/* Column 2: Platform Links */}
           <div>
-            <h4 className="text-xs font-bold text-white uppercase tracking-widest mb-4">Platform</h4>
+            <h4 className="text-xs font-extrabold text-slate-900 uppercase tracking-widest mb-4">Platform</h4>
             <ul className="space-y-2.5">
               <li>
-                <Link to="/home" className="text-xs text-gray-400 hover:text-indigo-400 transition-colors duration-200 flex items-center space-x-1">
+                <Link to="/home" className="text-xs text-slate-500 hover:text-cyan-700 transition-colors duration-200 flex items-center space-x-1">
                   <span>Events Hub</span>
                 </Link>
               </li>
               <li>
-                <Link to="/home" className="text-xs text-gray-400 hover:text-indigo-400 transition-colors duration-200 flex items-center space-x-1">
+                <Link to="/home" className="text-xs text-slate-500 hover:text-cyan-700 transition-colors duration-200 flex items-center space-x-1">
                   <span>Student Q&A</span>
                 </Link>
               </li>
               <li>
-                <Link to="/home" className="text-xs text-gray-400 hover:text-indigo-400 transition-colors duration-200 flex items-center space-x-1">
+                <Link to="/home" className="text-xs text-slate-500 hover:text-cyan-700 transition-colors duration-200 flex items-center space-x-1">
                   <span>Placement Statistics</span>
                 </Link>
               </li>
               <li>
-                <Link to="/home" className="text-xs text-gray-400 hover:text-indigo-400 transition-colors duration-200 flex items-center space-x-1">
+                <Link to="/home" className="text-xs text-slate-500 hover:text-cyan-700 transition-colors duration-200 flex items-center space-x-1">
                   <span>Administration Board</span>
                 </Link>
               </li>
@@ -68,26 +68,26 @@ const Footer = () => {
 
           {/* Column 3: Resources */}
           <div>
-            <h4 className="text-xs font-bold text-white uppercase tracking-widest mb-4">Resources</h4>
+            <h4 className="text-xs font-extrabold text-slate-900 uppercase tracking-widest mb-4">Resources</h4>
             <ul className="space-y-2.5">
               <li>
-                <Link to="/profile" className="text-xs text-gray-400 hover:text-indigo-400 transition-colors duration-200">
+                <Link to="/profile" className="text-xs text-slate-500 hover:text-cyan-700 transition-colors duration-200">
                   Student Profile
                 </Link>
               </li>
               <li>
-                <Link to="/" className="text-xs text-gray-400 hover:text-indigo-400 transition-colors duration-200">
+                <Link to="/" className="text-xs text-slate-500 hover:text-cyan-700 transition-colors duration-200">
                   Campus Directory
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="text-xs text-gray-400 hover:text-indigo-400 transition-colors duration-200 flex items-center space-x-1">
+                <Link to="/contact" className="text-xs text-slate-500 hover:text-cyan-700 transition-colors duration-200 flex items-center space-x-1">
                   <Mail className="w-3 h-3" />
                   <span>Contact Us</span>
                 </Link>
               </li>
               <li>
-                <Link to="/donate" className="text-xs text-gray-400 hover:text-indigo-400 transition-colors duration-200 flex items-center space-x-1">
+                <Link to="/donate" className="text-xs text-slate-500 hover:text-cyan-700 transition-colors duration-200 flex items-center space-x-1">
                   <Heart className="w-3 h-3" />
                   <span>Donate Support</span>
                 </Link>
@@ -97,20 +97,20 @@ const Footer = () => {
 
           {/* Column 4: Newsletter/Actions */}
           <div className="space-y-4">
-            <h4 className="text-xs font-bold text-white uppercase tracking-widest">Connect Globally</h4>
-            <p className="text-xs text-gray-400 leading-relaxed">
+            <h4 className="text-xs font-extrabold text-slate-900 uppercase tracking-widest">Connect Globally</h4>
+            <p className="text-xs text-slate-500 leading-relaxed">
               Explore professional opportunities, academic achievements, and coordinate event management from a unified core dashboard.
             </p>
 
             {/* Social Icons Row */}
             <div className="flex space-x-3 pt-1">
-              <a href="https://github.com/Aman-Kr09" target="_blank" rel="noopener noreferrer" title="Project Repository" className="w-8 h-8 rounded-lg border border-glassBorder bg-white/[0.02] flex items-center justify-center text-gray-400 hover:text-white hover:border-white/20 hover:bg-white/5 transition-all duration-200">
+              <a href="https://github.com/Aman-Kr09" target="_blank" rel="noopener noreferrer" title="Project Repository" className="w-8 h-8 rounded-lg border border-[#D6EAF8] bg-slate-50 flex items-center justify-center text-slate-500 hover:text-cyan-700 hover:border-cyan-300 hover:bg-cyan-50 transition-all duration-200">
                 <Terminal className="w-4 h-4" />
               </a>
-              <a href="www.linkedin.com/in/aman-kumar-455192296" target="_blank" rel="noopener noreferrer" title="Professional Directory" className="w-8 h-8 rounded-lg border border-glassBorder bg-white/[0.02] flex items-center justify-center text-gray-400 hover:text-white hover:border-white/20 hover:bg-white/5 transition-all duration-200">
+              <a href="https://www.linkedin.com/in/aman-kumar-455192296" target="_blank" rel="noopener noreferrer" title="Professional Directory" className="w-8 h-8 rounded-lg border border-[#D6EAF8] bg-slate-50 flex items-center justify-center text-slate-500 hover:text-cyan-700 hover:border-cyan-300 hover:bg-cyan-50 transition-all duration-200">
                 <Briefcase className="w-4 h-4" />
               </a>
-              <a href="https://nitdelhi.ac.in/" target="_blank" rel="noopener noreferrer" title="University Portal" className="w-8 h-8 rounded-lg border border-glassBorder bg-white/[0.02] flex items-center justify-center text-gray-400 hover:text-white hover:border-white/20 hover:bg-white/5 transition-all duration-200">
+              <a href="https://nitdelhi.ac.in/" target="_blank" rel="noopener noreferrer" title="University Portal" className="w-8 h-8 rounded-lg border border-[#D6EAF8] bg-slate-50 flex items-center justify-center text-slate-500 hover:text-cyan-700 hover:border-cyan-300 hover:bg-cyan-50 transition-all duration-200">
                 <Globe className="w-4 h-4" />
               </a>
             </div>
@@ -118,18 +118,18 @@ const Footer = () => {
         </div>
 
         {/* Footer Bottom Area */}
-        <div className="border-t border-white/[0.05] pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-[11px] text-gray-500">
+        <div className="border-t border-slate-100 pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-[11px] text-slate-500">
             &copy; {new Date().getFullYear()} CampusEvents. All rights reserved. Empowering connected academic networks.
           </p>
 
           {/* Status Indicator */}
-          <div className="flex items-center space-x-2 bg-white/[0.02] px-3 py-1 rounded-full border border-glassBorder">
+          <div className="flex items-center space-x-2 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
             <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-600"></span>
             </span>
-            <span className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">
+            <span className="text-[10px] text-emerald-700 font-bold uppercase tracking-wider">
               All Systems Operational
             </span>
           </div>

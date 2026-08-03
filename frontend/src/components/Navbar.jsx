@@ -29,13 +29,13 @@ const Navbar = () => {
   }
 
   return (
-    <nav className="sticky top-0 z-50 w-full glass-panel border-b border-glassBorder bg-opacity-70 backdrop-blur-md">
+    <nav className="sticky top-0 z-50 w-full bg-white/95 border-b border-[#D6EAF8] backdrop-blur-md shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo & College Identifier */}
           <div className="flex items-center space-x-3">
             <Link to="/home" className="flex items-center space-x-2">
-              <span className="text-xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400">
+              <span className="text-xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-cyan-700 via-sky-600 to-teal-600">
                 CampusEvents
               </span>
             </Link>
@@ -43,7 +43,7 @@ const Navbar = () => {
               <span 
                 onClick={handleClearCollege}
                 title="Click to switch college"
-                className="hidden md:inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-950/60 text-indigo-300 border border-indigo-500/20 cursor-pointer hover:bg-indigo-900/60 hover:text-indigo-200 transition-all duration-200"
+                className="hidden md:inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-sky-50 text-cyan-800 border border-sky-200 cursor-pointer hover:bg-sky-100 hover:text-cyan-900 transition-all duration-200"
               >
                 {selectedCollege.name}
               </span>
@@ -55,13 +55,13 @@ const Navbar = () => {
             {user?.role !== 'SuperAdmin' && (
               <Link
                 to="/home"
-                className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center space-x-1.5 ${
+                className={`px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center space-x-1.5 ${
                   isActive('/home')
-                    ? 'text-white bg-white/10'
-                    : 'text-gray-400 hover:text-white hover:bg-white/5'
+                    ? 'text-cyan-800 bg-cyan-50/80 border border-cyan-200/60 shadow-xs'
+                    : 'text-slate-600 hover:text-cyan-700 hover:bg-slate-50'
                 }`}
               >
-                <Calendar className="w-4 h-4 text-indigo-400" />
+                <Calendar className="w-4 h-4 text-cyan-600" />
                 <span>Events Hub</span>
               </Link>
             )}
@@ -70,25 +70,25 @@ const Navbar = () => {
               <>
                 <Link
                   to="/campus-connect"
-                  className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center space-x-1.5 ${
+                  className={`px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center space-x-1.5 ${
                     isActive('/campus-connect')
-                      ? 'text-white bg-white/10'
-                      : 'text-gray-400 hover:text-white hover:bg-white/5'
+                      ? 'text-sky-800 bg-sky-50/80 border border-sky-200/60 shadow-xs'
+                      : 'text-slate-600 hover:text-sky-700 hover:bg-slate-50'
                   }`}
                 >
-                  <ShoppingBag className="w-4 h-4 text-cyan-400" />
+                  <ShoppingBag className="w-4 h-4 text-sky-600" />
                   <span>Campus Connect</span>
                 </Link>
 
                 <Link
                   to="/pyq"
-                  className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center space-x-1.5 ${
+                  className={`px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center space-x-1.5 ${
                     isActive('/pyq')
-                      ? 'text-white bg-white/10'
-                      : 'text-gray-400 hover:text-white hover:bg-white/5'
+                      ? 'text-teal-800 bg-teal-50/80 border border-teal-200/60 shadow-xs'
+                      : 'text-slate-600 hover:text-teal-700 hover:bg-slate-50'
                   }`}
                 >
-                  <BookOpen className="w-4 h-4 text-emerald-400" />
+                  <BookOpen className="w-4 h-4 text-teal-600" />
                   <span>PYQ Hub</span>
                 </Link>
               </>
@@ -97,13 +97,13 @@ const Navbar = () => {
             {user?.role === 'Student' && (
               <Link
                 to="/profile"
-                className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center space-x-1.5 ${
+                className={`px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center space-x-1.5 ${
                   isActive('/profile')
-                    ? 'text-white bg-white/10'
-                    : 'text-gray-400 hover:text-white hover:bg-white/5'
+                    ? 'text-indigo-800 bg-indigo-50/80 border border-indigo-200/60 shadow-xs'
+                    : 'text-slate-600 hover:text-indigo-700 hover:bg-slate-50'
                 }`}
               >
-                <User className="w-4 h-4 text-purple-400" />
+                <User className="w-4 h-4 text-indigo-600" />
                 <span>My Profile</span>
               </Link>
             )}
@@ -111,13 +111,13 @@ const Navbar = () => {
             {user?.role === 'Admin' && (
               <Link
                 to="/admin"
-                className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center space-x-1.5 ${
+                className={`px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center space-x-1.5 ${
                   isActive('/admin')
-                    ? 'text-white bg-white/10'
-                    : 'text-gray-400 hover:text-white hover:bg-white/5'
+                    ? 'text-cyan-800 bg-cyan-50/80 border border-cyan-200/60 shadow-xs'
+                    : 'text-slate-600 hover:text-cyan-700 hover:bg-slate-50'
                 }`}
               >
-                <BarChart3 className="w-4 h-4 text-cyan-400" />
+                <BarChart3 className="w-4 h-4 text-cyan-600" />
                 <span>Admin Panel</span>
               </Link>
             )}
@@ -125,13 +125,13 @@ const Navbar = () => {
             {user?.role === 'SuperAdmin' && (
               <Link
                 to="/superadmin"
-                className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center space-x-1.5 ${
+                className={`px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center space-x-1.5 ${
                   isActive('/superadmin')
-                    ? 'text-white bg-white/10'
-                    : 'text-gray-400 hover:text-white hover:bg-white/5'
+                    ? 'text-teal-800 bg-teal-50/80 border border-teal-200/60 shadow-xs'
+                    : 'text-slate-600 hover:text-teal-700 hover:bg-slate-50'
                 }`}
               >
-                <ShieldAlert className="w-4 h-4 text-pink-400" />
+                <ShieldAlert className="w-4 h-4 text-teal-600" />
                 <span>Super Admin</span>
               </Link>
             )}
@@ -140,20 +140,20 @@ const Navbar = () => {
           {/* User Details & Action */}
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2 text-right">
-              <span className="hidden sm:block text-xs font-semibold text-gray-400">
+              <span className="hidden sm:block text-xs font-semibold text-slate-500">
                 {user?.role === 'SuperAdmin' ? 'Super Admin' : user?.role === 'Admin' ? 'College Admin' : 'Student'}
               </span>
-              <span className="block text-sm font-bold text-white max-w-[120px] truncate">
+              <span className="block text-sm font-bold text-slate-900 max-w-[120px] truncate">
                 {user?.name}
               </span>
             </div>
             
             <button
               onClick={handleLogout}
-              className="p-2 text-gray-400 hover:text-white rounded-lg hover:bg-white/5 transition-all duration-200"
+              className="p-2 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition-all duration-200"
               title="Logout"
             >
-              <LogOut className="w-5 h-5 text-gray-400 hover:text-red-400" />
+              <LogOut className="w-5 h-5 text-slate-400 hover:text-rose-600" />
             </button>
           </div>
         </div>
