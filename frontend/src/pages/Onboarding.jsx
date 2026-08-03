@@ -2,33 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { motion } from 'framer-motion';
-import { Sparkles, Code, Cpu, LineChart, Shield, Trophy, Palette, Rocket, GraduationCap, Laptop, Music, Camera, PartyPopper, Lightbulb, Check, Swords, Waves, Brush, Wrench, Heart, Star, Gamepad2, BookOpen } from 'lucide-react';
 
-// Card definitions with icon mapping and design colors
+// Interest topics list
 const INTERESTS_LIST = [
-  { name: 'Coding', icon: Code, color: 'from-blue-500/20 to-indigo-500/20 border-blue-500/30 text-blue-400' },
-  { name: 'AI/ML', icon: Cpu, color: 'from-purple-500/20 to-pink-500/20 border-purple-500/30 text-purple-400' },
-  { name: 'Data Science', icon: LineChart, color: 'from-emerald-500/20 to-teal-500/20 border-emerald-500/30 text-emerald-400' },
-  { name: 'Robotics', icon: Laptop, color: 'from-rose-500/20 to-orange-500/20 border-rose-500/30 text-rose-400' },
-  { name: 'Sports', icon: Trophy, color: 'from-amber-500/20 to-yellow-500/20 border-amber-500/30 text-amber-400' },
-  { name: 'Design', icon: Palette, color: 'from-violet-500/20 to-fuchsia-500/20 border-violet-500/30 text-violet-400' },
-  { name: 'Startups', icon: Rocket, color: 'from-cyan-500/20 to-sky-500/20 border-cyan-500/30 text-cyan-400' },
-  { name: 'Research', icon: GraduationCap, color: 'from-indigo-500/20 to-violet-500/20 border-indigo-500/30 text-indigo-400' },
-  { name: 'Placements', icon: Shield, color: 'from-blue-500/20 to-teal-500/20 border-blue-500/30 text-blue-400' },
-  { name: 'Hackathons', icon: Code, color: 'from-pink-500/20 to-rose-500/20 border-pink-500/30 text-pink-400' },
-  { name: 'Music', icon: Music, color: 'from-lime-500/20 to-green-500/20 border-lime-500/30 text-lime-400' },
-  { name: 'Photography', icon: Camera, color: 'from-sky-500/20 to-cyan-500/20 border-sky-500/30 text-sky-400' },
-  { name: 'Cultural Events', icon: PartyPopper, color: 'from-fuchsia-500/20 to-pink-500/20 border-fuchsia-500/30 text-fuchsia-400' },
-  { name: 'Entrepreneurship', icon: Lightbulb, color: 'from-yellow-500/20 to-amber-500/20 border-yellow-500/30 text-yellow-400' },
-  { name: 'Competition', icon: Swords, color: 'from-red-500/20 to-rose-500/20 border-red-500/30 text-red-400' },
-  { name: 'Dancing', icon: Waves, color: 'from-pink-500/20 to-fuchsia-500/20 border-pink-500/30 text-pink-400' },
-  { name: 'Arts & Crafts', icon: Brush, color: 'from-orange-500/20 to-amber-500/20 border-orange-500/30 text-orange-400' },
-  { name: 'Drama & Theatre', icon: Star, color: 'from-purple-500/20 to-violet-500/20 border-purple-500/30 text-purple-400' },
-  { name: 'Workshop', icon: Wrench, color: 'from-slate-500/20 to-gray-500/20 border-slate-500/30 text-slate-400' },
-  { name: 'Social Work', icon: Heart, color: 'from-rose-500/20 to-pink-500/20 border-rose-500/30 text-rose-400' },
-  { name: 'Fest', icon: PartyPopper, color: 'from-indigo-500/20 to-cyan-500/20 border-indigo-500/30 text-indigo-400' },
-  { name: 'Gaming', icon: Gamepad2, color: 'from-green-500/20 to-emerald-500/20 border-green-500/30 text-green-400' },
-  { name: 'Literature', icon: BookOpen, color: 'from-teal-500/20 to-cyan-500/20 border-teal-500/30 text-teal-400' },
+  'Coding', 'AI/ML', 'Data Science', 'Robotics', 'Sports', 'Design',
+  'Startups', 'Research', 'Placements', 'Hackathons', 'Music',
+  'Photography', 'Cultural Events', 'Entrepreneurship', 'Competition',
+  'Dancing', 'Arts & Crafts', 'Drama & Theatre', 'Workshop', 'Social Work',
+  'Fest', 'Gaming', 'Literature'
 ];
 
 const Onboarding = () => {
@@ -55,14 +36,13 @@ const Onboarding = () => {
 
   const handleSubmit = async () => {
     if (selected.length === 0) {
-      alert('Please select at least one interest to build your AI recommendations!');
+      alert('Please select at least one interest!');
       return;
     }
 
     setSubmitting(true);
     try {
-      // Send onboarding data
-      const res = await completeOnboarding(selected, user.branch, user.year);
+      const res = await completeOnboarding(selected, user?.branch, user?.year);
       if (res.success) {
         navigate('/home');
       }
@@ -75,80 +55,62 @@ const Onboarding = () => {
   };
 
   return (
-    <div className="min-h-screen py-16 px-4 sm:px-6 lg:px-8 flex flex-col justify-center items-center relative overflow-hidden">
-      {/* Glow shapes */}
-      <div className="absolute top-10 left-10 w-96 h-96 bg-indigo-500/5 rounded-full blur-3xl -z-10 animate-pulse-slow"></div>
-      <div className="absolute bottom-10 right-10 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl -z-10 animate-pulse-slow"></div>
+    <div className="min-h-screen py-16 px-4 sm:px-6 lg:px-8 flex flex-col justify-center items-center relative overflow-hidden bg-[#F6FBFF]">
+      {/* Background decoration glows */}
+      <div className="absolute top-10 left-10 w-96 h-96 bg-sky-200/40 rounded-full blur-3xl -z-10 animate-pulse-slow"></div>
+      <div className="absolute bottom-10 right-10 w-96 h-96 bg-teal-200/30 rounded-full blur-3xl -z-10 animate-pulse-slow"></div>
 
-      <div className="max-w-4xl w-full space-y-10">
+      <div className="max-w-4xl w-full space-y-8">
         
         {/* Header */}
-        <div className="text-center space-y-3">
-          <div className="inline-flex items-center space-x-1.5 bg-indigo-950/40 border border-indigo-500/20 px-3 py-1.5 rounded-full text-xs font-semibold text-indigo-400 uppercase">
-            <Sparkles className="w-4 h-4" />
-            <span>AI Personalization Engine</span>
-          </div>
-          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white">
-            What are your <span className="gradient-text-indigo-cyan">interests?</span>
+        <div className="text-center space-y-2">
+          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900">
+            What are your <span className="text-cyan-700">interests?</span>
           </h1>
-          <p className="text-gray-400 max-w-lg mx-auto text-sm sm:text-base">
-            Select your favorite topics. CampusEvents Scikit-Learn recommendation system uses these interests to tailor your personalized events feed.
-          </p>
         </div>
 
         {/* Grid Container */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-          {INTERESTS_LIST.map((item) => {
-            const IconComponent = item.icon;
-            const isSelected = selected.includes(item.name);
+          {INTERESTS_LIST.map((name) => {
+            const isSelected = selected.includes(name);
             
             return (
               <motion.div
-                key={item.name}
+                key={name}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                onClick={() => toggleInterest(item.name)}
-                className={`cursor-pointer rounded-2xl p-5 border text-left flex flex-col justify-between h-36 transition-all duration-300 relative overflow-hidden group ${
+                onClick={() => toggleInterest(name)}
+                className={`cursor-pointer rounded-2xl p-5 border text-left flex flex-col justify-center h-28 transition-all duration-200 relative overflow-hidden ${
                   isSelected 
-                    ? `bg-gradient-to-br ${item.color} shadow-glow` 
-                    : 'bg-white/[0.02] border-glassBorder hover:bg-white/[0.05] hover:border-gray-500/30'
+                    ? 'bg-cyan-600 border-cyan-600 text-white shadow-md' 
+                    : 'bg-white border-[#D6EAF8] hover:border-cyan-400 hover:shadow-md text-slate-900'
                 }`}
               >
-                {/* Embedded indicator checked */}
+                {/* Embedded indicator checkmark */}
                 {isSelected && (
-                  <div className="absolute top-3 right-3 w-5 h-5 rounded-full bg-indigo-500 flex items-center justify-center text-white">
-                    <Check className="w-3.5 h-3.5" />
+                  <div className="absolute top-3 right-3 w-5 h-5 rounded-full bg-white text-cyan-700 flex items-center justify-center font-bold text-xs shadow-xs">
+                    ✓
                   </div>
                 )}
 
-                <div className={`p-2.5 rounded-xl w-11 h-11 flex items-center justify-center bg-white/[0.04] border border-white/[0.06] group-hover:scale-105 transition-transform duration-300 ${
-                  isSelected ? 'text-white bg-white/10' : 'text-gray-400'
-                }`}>
-                  <IconComponent className="w-6.5 h-6.5" />
-                </div>
-
-                <div className="space-y-0.5">
-                  <span className="block text-xs font-bold text-gray-500 uppercase tracking-wider">Interest</span>
-                  <span className={`block font-bold text-sm sm:text-base ${isSelected ? 'text-white' : 'text-gray-200'}`}>
-                    {item.name}
-                  </span>
-                </div>
+                <span className={`block font-extrabold text-base sm:text-lg leading-snug ${isSelected ? 'text-white' : 'text-slate-900'}`}>
+                  {name}
+                </span>
               </motion.div>
             );
           })}
         </div>
 
         {/* Submit action */}
-        <div className="text-center pt-6">
+        <div className="text-center pt-4 space-y-3">
           <button
             onClick={handleSubmit}
             disabled={submitting}
-            className="glass-button-primary px-10 py-3.5 font-bold flex items-center space-x-2 mx-auto disabled:opacity-50"
+            className="bg-gradient-to-r from-cyan-600 to-sky-600 hover:from-cyan-700 hover:to-sky-700 text-white px-10 py-3.5 rounded-xl font-bold flex items-center justify-center space-x-2 mx-auto disabled:opacity-50 shadow-md transition-all text-sm sm:text-base"
           >
-            <span>{submitting ? 'Calibrating Feed...' : 'Continue to Campus Hub'}</span>
-            {!submitting && <Check className="w-5 h-5" />}
+            <span>{submitting ? 'Saving Interests...' : 'Continue to Campus Events'}</span>
           </button>
-          <span className="block text-xs text-gray-600 mt-3 font-semibold uppercase tracking-widest">
+          <span className="block text-xs text-slate-600 font-bold uppercase tracking-widest">
             {selected.length} Selected
           </span>
         </div>
