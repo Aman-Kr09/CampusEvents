@@ -136,7 +136,7 @@ const Landing = () => {
           to="/donate"
           className="flex items-center space-x-1.5 text-xs text-gray-400 hover:text-white bg-white/[0.04] hover:bg-white/10 border border-glassBorder hover:border-white/20 px-3 py-2 rounded-xl transition-all duration-200 font-semibold"
         >
-          <Heart className="w-3.5 h-3.5 text-rose-400" />
+          <Heart className="w-3.5 h-3.5 text-cyan-400" />
           <span>Donate</span>
         </Link>
 
