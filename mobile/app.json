@@ -23,13 +23,15 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0b0f17"
       },
-      "permissions": ["android.permission.INTERNET"]
+      "permissions": [
+        "android.permission.INTERNET"
+      ]
     },
     "extra": {
       "eas": {
-        "projectId": ""
+        "projectId": "3b5b9c14-5eed-45ee-a239-bfb74078aa19"
       }
-    }
+    },
+    "owner": "heyiamaman09"
   }
 }
-
