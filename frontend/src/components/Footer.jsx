@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { School, Activity, Globe, Terminal, Briefcase, Mail, ExternalLink, ShieldAlert, Heart } from 'lucide-react';
+import { School, Activity, Globe, Terminal, Briefcase, Mail, ExternalLink, ShieldAlert, Heart, Smartphone } from 'lucide-react';
 import { useCollege } from '../context/CollegeContext';
 
 const Footer = () => {
@@ -85,6 +85,17 @@ const Footer = () => {
                   <Mail className="w-3 h-3" />
                   <span>Contact Us</span>
                 </Link>
+              </li>
+              <li>
+                <a
+                  href="https://expo.dev/artifacts/eas/amZEhB-oB98BNwR6dD_NC8IGarRDuTQlNLlvKonJ2SI.apk"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-emerald-400 hover:text-emerald-300 transition-colors duration-200 flex items-center space-x-1 font-semibold"
+                >
+                  <Smartphone className="w-3 h-3" />
+                  <span>Get Mobile App (.APK)</span>
+                </a>
               </li>
               <li>
                 <Link to="/donate" className="text-xs text-gray-400 hover:text-rose-400 transition-colors duration-200 flex items-center space-x-1">
