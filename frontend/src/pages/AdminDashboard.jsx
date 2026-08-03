@@ -388,7 +388,6 @@ const AdminDashboard = () => {
       {/* 1. Header Admin Intro */}
       <div>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">Campus Admin Console</h1>
-        <p className="text-slate-500 text-xs sm:text-sm mt-0.5">Moderate event proposals, recruitment statistics, bulletins, and students logs.</p>
       </div>
 
       {/* 2. Overview metrics widgets */}
@@ -460,18 +459,16 @@ const AdminDashboard = () => {
           {loading ? (
             <div className="py-12 text-center text-slate-500 font-medium">Loading panel workspace...</div>
           ) : (
-            <div className="glass-panel p-6 rounded-2xl shadow-sm min-h-[400px]">
+            <div className="bg-white border border-[#D6EAF8] p-6 rounded-2xl shadow-sm min-h-[400px]">
 
               {/* TAB 1: EVENT REVIEW QUEUE & ACTIVE EVENTS LIST */}
               {activeTab === 'events' && (
                 <div className="space-y-8">
-                  {/* Reviews proposals */}
-                  <div className="space-y-4">
-                    <h3 className="font-bold text-slate-900 text-base">Pending Student Submissions ({pendingEvents.length})</h3>
+                  {/* Reviews proposals — only show if pendingEvents exist */}
+                  {pendingEvents.length > 0 && (
+                    <div className="space-y-4">
+                      <h3 className="font-extrabold text-slate-900 text-base">Pending Student Submissions ({pendingEvents.length})</h3>
 
-                    {pendingEvents.length === 0 ? (
-                      <p className="text-xs text-slate-500">No event proposals pending review.</p>
-                    ) : (
                       <div className="space-y-3">
                         {pendingEvents.map(e => (
                           <div
@@ -479,10 +476,10 @@ const AdminDashboard = () => {
                             className="bg-white border border-[#D6EAF8] p-4 rounded-xl flex flex-col md:flex-row justify-between gap-4 shadow-xs"
                           >
                             <div className="space-y-1">
-                              <span className="text-[10px] font-bold text-cyan-700 uppercase">{e.category}</span>
+                              <span className="text-[10px] font-bold text-cyan-800 uppercase">{e.category}</span>
                               <h4 className="font-bold text-slate-900 text-sm">{e.name}</h4>
-                              <p className="text-xs text-slate-600">{e.description}</p>
-                              <div className="text-[10px] text-slate-500 pt-1">
+                              <p className="text-xs text-slate-700 font-medium">{e.description}</p>
+                              <div className="text-xs text-slate-500 font-semibold pt-1">
                                 Proposed by {e.createdBy?.name} &bull; {formatDate(e.date)} at {e.time} &bull; Room: {e.venue}
                               </div>
                             </div>
@@ -490,35 +487,35 @@ const AdminDashboard = () => {
                             <div className="flex items-center gap-2 self-end md:self-center">
                               <button
                                 onClick={() => handleReviewEvent(e._id, 'Rejected')}
-                                className="p-1.5 rounded-lg border border-red-200 bg-red-50 text-red-600 hover:bg-red-100 transition-all"
+                                className="px-3 py-1.5 rounded-lg border border-rose-200 bg-rose-50 text-rose-700 font-bold text-xs hover:bg-rose-100 transition-all"
                                 title="Reject Event"
                               >
-                                <X className="w-4 h-4" />
+                                Reject
                               </button>
                               <button
                                 onClick={() => handleReviewEvent(e._id, 'Approved')}
-                                className="p-1.5 rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 transition-all"
+                                className="px-3 py-1.5 rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-800 font-bold text-xs hover:bg-emerald-100 transition-all"
                                 title="Approve Event"
                               >
-                                <Check className="w-4 h-4" />
+                                Approve
                               </button>
                             </div>
                           </div>
                         ))}
                       </div>
-                    )}
-                  </div>
+                    </div>
+                  )}
 
                   {/* Active approved events */}
-                  <div className="space-y-4 border-t border-slate-100 pt-6">
-                    <h3 className="font-bold text-slate-900 text-base">Active Approved Events ({allEvents.length})</h3>
+                  <div className="space-y-4">
+                    <h3 className="font-extrabold text-slate-900 text-base">Active Approved Events ({allEvents.length})</h3>
                     {allEvents.length === 0 ? (
                       <p className="text-xs text-slate-500 font-medium">No approved events listed.</p>
                     ) : (
                       <div className="overflow-x-auto">
-                        <table className="w-full text-left text-xs text-slate-600 border-collapse">
+                        <table className="w-full text-left text-xs text-slate-700 border-collapse">
                           <thead>
-                            <tr className="border-b border-slate-200 text-slate-500 uppercase tracking-wider font-bold">
+                            <tr className="border-b border-slate-200 text-slate-700 uppercase tracking-wider font-extrabold">
                               <th className="py-2.5">Name</th>
                               <th className="py-2.5">Category</th>
                               <th className="py-2.5">Date</th>
@@ -529,13 +526,13 @@ const AdminDashboard = () => {
                           <tbody>
                             {allEvents.map(ev => (
                               <tr key={ev._id} className="border-b border-slate-100 hover:bg-slate-50/50">
-                                <td className="py-3 font-semibold text-slate-800">{ev.name}</td>
-                                <td className="py-3">{ev.category}</td>
-                                <td className="py-3">{formatDate(ev.date)}</td>
-                                <td className="py-3 text-center font-bold text-slate-800">{ev.registrations?.length || 0}</td>
+                                <td className="py-3 font-bold text-slate-900">{ev.name}</td>
+                                <td className="py-3 font-semibold text-slate-700">{ev.category}</td>
+                                <td className="py-3 font-semibold text-slate-600">{formatDate(ev.date)}</td>
+                                <td className="py-3 text-center font-bold text-slate-900">{ev.registrations?.length || 0}</td>
                                 <td className="py-3 text-right">
-                                  <button onClick={() => handleDeleteEvent(ev._id)} className="text-slate-400 hover:text-red-600 p-1">
-                                    <Trash2 className="w-4.5 h-4.5" />
+                                  <button onClick={() => handleDeleteEvent(ev._id)} className="px-2.5 py-1 text-xs font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg transition-all">
+                                    Delete
                                   </button>
                                 </td>
                               </tr>
@@ -556,38 +553,31 @@ const AdminDashboard = () => {
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
                       <div>
-                        <h3 className="font-bold text-white text-base">On-Campus Company Listings</h3>
-                        <p className="text-xs text-gray-500 mt-0.5">Manage companies visiting campus for direct recruitment drives.</p>
+                        <h3 className="font-extrabold text-slate-900 text-base">On-Campus Company Listings</h3>
                       </div>
                       <button
                         onClick={() => setShowPlacementModal(true)}
-                        className="glass-button-primary text-xs py-1.5 px-3 flex items-center space-x-1"
+                        className="bg-cyan-600 hover:bg-cyan-700 text-white font-extrabold text-xs py-2 px-4 rounded-xl shadow-xs transition-all cursor-pointer"
                       >
-                        <Plus className="w-4 h-4" />
-                        <span>Add Company</span>
+                        + Add Company
                       </button>
                     </div>
 
                     {/* Training & Placement Head details */}
-                    <div className="bg-white/[0.01] border border-glassBorder p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-glow/5">
-                      <div className="flex items-center space-x-3">
-                        <div className="p-2.5 bg-indigo-500/10 rounded-lg text-indigo-400">
-                          <Users className="w-4.5 h-4.5" />
-                        </div>
-                        <div>
-                          <span className="block text-[10px] text-gray-500 font-bold uppercase tracking-wider">Training & Placement Head</span>
-                          <span className="font-extrabold text-white text-sm">
-                            {isNITDelhi(user?.college) ? 'Harsh Sudhakar' : 'To Be Appointed'}
-                          </span>
-                        </div>
+                    <div className="bg-slate-50 border border-[#D6EAF8] p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+                      <div>
+                        <span className="block text-[10px] text-slate-500 font-extrabold uppercase tracking-wider">Training & Placement Head</span>
+                        <span className="font-extrabold text-slate-900 text-sm">
+                          {isNITDelhi(user?.college) ? 'Harsh Sudhakar' : 'To Be Appointed'}
+                        </span>
                       </div>
-                      <div className="text-[10px] text-gray-400 bg-white/[0.02] border border-glassBorder px-2.5 py-1 rounded-md self-start sm:self-center font-semibold">
+                      <div className="text-xs text-cyan-800 bg-cyan-50 border border-cyan-200 px-3 py-1 rounded-lg self-start sm:self-center font-bold">
                         T&P Cell Contact Point
                       </div>
                     </div>
 
                     {placementRecords.length === 0 ? (
-                      <p className="text-xs text-gray-500 text-center py-8">No company listings recorded yet.</p>
+                      <p className="text-xs text-slate-500 text-center py-8 font-medium">No company listings recorded yet.</p>
                     ) : (
                       <div className="grid gap-3">
                         {placementRecords.map(pr => {
@@ -596,65 +586,64 @@ const AdminDashboard = () => {
                           return (
                             <div
                               key={pr._id}
-                              className="bg-white/[0.01] border border-glassBorder p-4 rounded-xl flex flex-col gap-4"
+                              className="bg-white border border-[#D6EAF8] p-4 rounded-xl flex flex-col gap-4 shadow-xs"
                             >
                               {/* Year header + delete */}
                               <div className="flex items-center justify-between">
-                                <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-wider">Year {pr.year}</span>
-                                <button onClick={() => handleDeletePlacement(pr._id)} className="p-1.5 text-gray-500 hover:text-red-400 rounded-lg hover:bg-white/5">
-                                  <Trash2 className="w-4 h-4" />
+                                <span className="text-xs font-extrabold text-cyan-800 uppercase tracking-wider">Year {pr.year}</span>
+                                <button onClick={() => handleDeletePlacement(pr._id)} className="px-2.5 py-1 text-xs font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg transition-all">
+                                  Delete
                                 </button>
                               </div>
 
                               {/* Approved company cards */}
                               {approved.length > 0 && (
                                 <div className="space-y-2">
-                                  <span className="block text-[10px] text-gray-500 font-bold uppercase tracking-wider">Listed Companies</span>
+                                  <span className="block text-xs text-slate-700 font-extrabold uppercase tracking-wider">Listed Companies</span>
                                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                     {approved.map(c => (
-                                      <div key={c._id || c.name} className="bg-white/[0.02] border border-glassBorder rounded-lg p-3 flex flex-col gap-1.5 justify-between">
+                                      <div key={c._id || c.name} className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 flex flex-col gap-1.5 justify-between">
                                         <div>
                                           <div className="flex justify-between items-start">
-                                            <span className="font-bold text-white text-sm">{c.name}</span>
-                                            <span className="bg-purple-950/60 text-purple-300 border border-purple-500/20 px-2 py-0.5 rounded text-[10px] font-bold">
+                                            <span className="font-extrabold text-slate-900 text-sm">{c.name}</span>
+                                            <span className="bg-cyan-100 text-cyan-800 border border-cyan-200 px-2 py-0.5 rounded text-[11px] font-bold">
                                               {c.jobType || 'FTE'}
                                             </span>
                                           </div>
-                                          <div className="flex flex-wrap gap-2 text-[10px] mt-1.5">
-                                            <span className="bg-indigo-950/60 text-indigo-300 border border-indigo-500/20 px-2 py-0.5 rounded font-semibold">
+                                          <div className="flex flex-wrap gap-2 text-xs mt-1.5">
+                                            <span className="bg-slate-200 text-slate-800 border border-slate-300 px-2 py-0.5 rounded font-bold">
                                               CPA: {c.cpaRequired != null ? c.cpaRequired : '—'}
                                             </span>
-                                            <span className="bg-emerald-950/60 text-emerald-300 border border-emerald-500/20 px-2 py-0.5 rounded font-semibold">
+                                            <span className="bg-emerald-100 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded font-bold">
                                               PKG: {c.package != null ? (c.package.toLowerCase() === 'nil' ? 'nil' : `${c.package} LPA`) : '—'}
                                             </span>
                                             <span className={`px-2 py-0.5 rounded font-bold border ${c.type === 'Blocking'
-                                              ? 'bg-red-950/50 text-red-300 border-red-500/20'
-                                              : 'bg-cyan-950/50 text-cyan-300 border-cyan-500/20'
+                                              ? 'bg-rose-100 text-rose-800 border-rose-200'
+                                              : 'bg-amber-100 text-amber-800 border-amber-200'
                                               }`}>
                                               {c.type || 'Non-Blocking'}
                                             </span>
                                           </div>
                                           {c.branchesEligible && c.branchesEligible.trim().toLowerCase() !== 'nil' && (
-                                            <div className="text-[10px] text-gray-400 mt-1.5">
-                                              <span className="font-semibold text-gray-500">Branches:</span> {c.branchesEligible}
+                                            <div className="text-xs text-slate-700 font-semibold mt-1.5">
+                                              <span className="font-extrabold text-slate-800">Branches:</span> {c.branchesEligible}
                                             </div>
                                           )}
                                           {c.deadline && c.deadline.trim().toLowerCase() !== 'nil' && (
-                                            <div className="text-[10px] text-amber-400 mt-1">
-                                              <span className="font-semibold text-amber-500/80">Deadline:</span> {c.deadline}
+                                            <div className="text-xs text-amber-800 font-bold mt-1">
+                                              <span>Deadline:</span> {c.deadline}
                                             </div>
                                           )}
                                         </div>
                                         {c.googleFormLink && c.googleFormLink.trim().toLowerCase() !== 'nil' && (
-                                          <div className="mt-1 pt-1.5 border-t border-white/[0.03]">
+                                          <div className="mt-1 pt-1.5 border-t border-slate-200">
                                             <a
                                               href={c.googleFormLink.startsWith('http') ? c.googleFormLink : `https://${c.googleFormLink}`}
                                               target="_blank"
                                               rel="noopener noreferrer"
-                                              className="inline-flex items-center space-x-1 text-[10px] text-indigo-400 hover:text-indigo-300 font-semibold transition-colors"
+                                              className="inline-flex items-center text-xs text-cyan-800 hover:text-cyan-900 font-bold transition-colors"
                                             >
-                                              <Link2 className="w-3 h-3" />
-                                              <span>Google Form</span>
+                                              Google Form
                                             </a>
                                           </div>
                                         )}
@@ -664,62 +653,49 @@ const AdminDashboard = () => {
                                 </div>
                               )}
                               {approved.length === 0 && (
-                                <span className="text-[10px] text-gray-600 italic">No approved companies yet.</span>
+                                <span className="text-xs text-slate-500 italic font-medium">No approved companies yet.</span>
                               )}
 
                               {/* Pending suggestions */}
                               {pending.length > 0 && (
-                                <div className="space-y-2 bg-amber-950/10 border border-amber-500/10 p-3.5 rounded-xl">
-                                  <span className="block text-[10px] text-amber-400 font-bold uppercase tracking-wider mb-1">Pending Suggestions</span>
+                                <div className="space-y-2 bg-amber-50 border border-amber-200 p-3.5 rounded-xl">
+                                  <span className="block text-xs text-amber-900 font-extrabold uppercase tracking-wider mb-1">Pending Suggestions</span>
                                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                     {pending.map(c => (
-                                      <div key={c._id} className="flex items-center justify-between bg-white/[0.02] border border-glassBorder p-2.5 rounded-lg">
+                                      <div key={c._id} className="flex items-center justify-between bg-white border border-amber-200 p-2.5 rounded-lg">
                                         <div className="flex flex-col gap-0.5">
-                                          <span className="font-semibold text-white text-xs">{c.name}</span>
-                                          <div className="flex flex-wrap gap-1.5 text-[10px]">
-                                            <span className="text-indigo-300">CPA: {c.cpaRequired ?? '—'}</span>
-                                            <span className="text-emerald-300">PKG: {c.package != null ? (c.package.toLowerCase() === 'nil' ? 'nil' : `${c.package} LPA`) : '—'}</span>
-                                            <span className={c.type === 'Blocking' ? 'text-red-300' : 'text-cyan-300'}>{c.type || 'Non-Blocking'}</span>
-                                            <span className="text-purple-300 font-semibold">{c.jobType || 'FTE'}</span>
+                                          <span className="font-bold text-slate-900 text-xs">{c.name}</span>
+                                          <div className="flex flex-wrap gap-1.5 text-[11px] font-semibold">
+                                            <span className="text-cyan-800">CPA: {c.cpaRequired ?? '—'}</span>
+                                            <span className="text-emerald-800">PKG: {c.package != null ? (c.package.toLowerCase() === 'nil' ? 'nil' : `${c.package} LPA`) : '—'}</span>
+                                            <span className={c.type === 'Blocking' ? 'text-rose-700' : 'text-amber-700'}>{c.type || 'Non-Blocking'}</span>
+                                            <span className="text-slate-800 font-bold">{c.jobType || 'FTE'}</span>
                                           </div>
                                           {c.branchesEligible && c.branchesEligible.trim().toLowerCase() !== 'nil' && (
-                                            <div className="text-[10px] text-gray-400 mt-0.5">
-                                              <span className="text-gray-500">Branches:</span> {c.branchesEligible}
+                                            <div className="text-[11px] text-slate-600 mt-0.5">
+                                              <span className="font-bold">Branches:</span> {c.branchesEligible}
                                             </div>
                                           )}
                                           {c.deadline && c.deadline.trim().toLowerCase() !== 'nil' && (
-                                            <div className="text-[10px] text-amber-400 mt-0.5">
-                                              <span className="text-amber-500/80">Deadline:</span> {c.deadline}
-                                            </div>
-                                          )}
-                                          {c.googleFormLink && c.googleFormLink.trim().toLowerCase() !== 'nil' && (
-                                            <div className="mt-0.5">
-                                              <a
-                                                href={c.googleFormLink.startsWith('http') ? c.googleFormLink : `https://${c.googleFormLink}`}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="inline-flex items-center space-x-0.5 text-[9px] text-indigo-400 hover:text-indigo-300 font-semibold"
-                                              >
-                                                <Link2 className="w-2.5 h-2.5" />
-                                                <span>Google Form Link</span>
-                                              </a>
+                                            <div className="text-[11px] text-amber-800 font-bold mt-0.5">
+                                              <span>Deadline:</span> {c.deadline}
                                             </div>
                                           )}
                                         </div>
                                         <div className="flex items-center gap-1.5">
                                           <button
                                             onClick={() => handleReviewRecruiter(pr._id, c._id, 'Approved')}
-                                            className="p-1 text-emerald-400 hover:text-emerald-300 bg-emerald-950/40 border border-emerald-500/20 rounded-md transition-all hover:bg-emerald-900/40"
+                                            className="px-2 py-1 text-xs font-bold text-emerald-800 bg-emerald-100 hover:bg-emerald-200 border border-emerald-300 rounded-md transition-all"
                                             title="Approve"
                                           >
-                                            <Check className="w-3.5 h-3.5" />
+                                            Approve
                                           </button>
                                           <button
                                             onClick={() => handleReviewRecruiter(pr._id, c._id, 'Rejected')}
-                                            className="p-1 text-red-400 hover:text-red-300 bg-red-950/40 border border-red-500/20 rounded-md transition-all hover:bg-red-900/40"
+                                            className="px-2 py-1 text-xs font-bold text-rose-700 bg-rose-100 hover:bg-rose-200 border border-rose-300 rounded-md transition-all"
                                             title="Reject"
                                           >
-                                            <X className="w-3.5 h-3.5" />
+                                            Reject
                                           </button>
                                         </div>
                                       </div>
@@ -735,57 +711,53 @@ const AdminDashboard = () => {
                   </div>
 
                   {/* ─── OFF-CAMPUS SECTION ─────────────────────────────────── */}
-                  <div className="space-y-4 border-t border-glassBorder pt-6">
+                  <div className="space-y-4 border-t border-slate-200 pt-6">
                     <div className="flex justify-between items-center">
                       <div>
-                        <h3 className="font-bold text-white text-base">Off-Campus Job Listings</h3>
-                        <p className="text-xs text-gray-500 mt-0.5">Manage externally sourced job opportunities from multiple portals.</p>
+                        <h3 className="font-extrabold text-slate-900 text-base">Off-Campus Job Listings</h3>
                       </div>
                       <button
                         onClick={openAddOffCampus}
-                        className="glass-button-primary text-xs py-1.5 px-3 flex items-center space-x-1 bg-emerald-500/10 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20"
+                        className="bg-cyan-600 hover:bg-cyan-700 text-white font-extrabold text-xs py-2 px-4 rounded-xl shadow-xs transition-all cursor-pointer"
                       >
-                        <Plus className="w-4 h-4" />
-                        <span>Add Job</span>
+                        + Add Job
                       </button>
                     </div>
 
                     {offCampusJobs.length === 0 ? (
                       <div className="py-10 text-center">
-                        <Globe className="w-10 h-10 text-gray-700 mx-auto mb-2 opacity-50" />
-                        <p className="text-xs text-gray-500">No off-campus listings posted yet.</p>
+                        <p className="text-xs text-slate-500 font-medium">No off-campus listings posted yet.</p>
                       </div>
                     ) : (
                       <div className="grid gap-3">
                         {offCampusJobs.map(job => (
                           <div
                             key={job._id}
-                            className="bg-white/[0.01] border border-glassBorder p-4 rounded-xl flex flex-col sm:flex-row sm:items-start gap-4"
+                            className="bg-white border border-[#D6EAF8] p-4 rounded-xl flex flex-col sm:flex-row sm:items-start gap-4 shadow-sm"
                           >
                             <div className="flex-1 space-y-1.5">
                               <div className="flex flex-wrap items-center gap-2">
-                                <span className="font-bold text-white text-sm">{job.title}</span>
-                                <span className="text-gray-400 text-xs">@</span>
-                                <span className="font-semibold text-emerald-400 text-xs">{job.company}</span>
-                                <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
-                                  job.employmentType === 'Full-Time' ? 'bg-blue-950/50 text-blue-300 border-blue-500/20'
-                                  : job.employmentType === 'Internship' ? 'bg-purple-950/50 text-purple-300 border-purple-500/20'
-                                  : 'bg-teal-950/50 text-teal-300 border-teal-500/20'
-                                }`}>
+                                <span className="font-extrabold text-slate-900 text-sm">{job.title}</span>
+                                <span className="text-slate-400 text-xs">@</span>
+                                <span className="font-bold text-cyan-800 text-xs">{job.company}</span>
+                                <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${job.employmentType === 'Full-Time' ? 'bg-blue-100 text-blue-800 border-blue-200'
+                                    : job.employmentType === 'Internship' ? 'bg-purple-100 text-purple-800 border-purple-200'
+                                      : 'bg-teal-100 text-teal-800 border-teal-200'
+                                  }`}>
                                   {job.employmentType}
                                 </span>
                               </div>
-                              <div className="flex flex-wrap gap-3 text-[10px] text-gray-500">
-                                {job.location && <span>📍 {job.location}</span>}
-                                {job.experience && <span>⏱ {job.experience}</span>}
-                                {job.salary && <span className="text-emerald-400 font-semibold">💰 {job.salary}</span>}
-                                {job.source && <span>🌐 {job.source}</span>}
-                                {job.deadline && <span className="text-amber-400">⏳ {new Date(job.deadline).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>}
+                              <div className="flex flex-wrap gap-3 text-xs text-slate-700 font-semibold">
+                                {job.location && <span>Location: {job.location}</span>}
+                                {job.experience && <span>Exp: {job.experience}</span>}
+                                {job.salary && <span className="text-emerald-800 font-bold">Salary: {job.salary}</span>}
+                                {job.source && <span>Source: {job.source}</span>}
+                                {job.deadline && <span className="text-amber-800">Deadline: {new Date(job.deadline).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>}
                               </div>
                               {job.skills && job.skills.length > 0 && (
-                                <div className="flex flex-wrap gap-1">
+                                <div className="flex flex-wrap gap-1 pt-1">
                                   {job.skills.map((s, i) => (
-                                    <span key={i} className="text-[10px] bg-white/[0.03] border border-glassBorder text-gray-400 px-1.5 py-0.5 rounded">{s}</span>
+                                    <span key={i} className="text-xs bg-slate-100 border border-slate-200 text-slate-700 font-semibold px-2 py-0.5 rounded-md">{s}</span>
                                   ))}
                                 </div>
                               )}
@@ -795,24 +767,24 @@ const AdminDashboard = () => {
                                 href={job.applyUrl.startsWith('http') ? job.applyUrl : `https://${job.applyUrl}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="p-1.5 text-emerald-400 hover:text-emerald-300 bg-emerald-950/30 border border-emerald-500/20 rounded-lg transition-all"
+                                className="px-3 py-1 text-xs font-bold text-cyan-800 bg-cyan-50 hover:bg-cyan-100 border border-cyan-200 rounded-lg transition-all"
                                 title="Open Apply URL"
                               >
-                                <ExternalLink className="w-3.5 h-3.5" />
+                                Apply Link
                               </a>
                               <button
                                 onClick={() => openEditOffCampus(job)}
-                                className="p-1.5 text-indigo-400 hover:text-indigo-300 bg-indigo-950/30 border border-indigo-500/20 rounded-lg transition-all"
+                                className="px-3 py-1 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-lg transition-all"
                                 title="Edit"
                               >
-                                <Edit2 className="w-3.5 h-3.5" />
+                                Edit
                               </button>
                               <button
                                 onClick={() => handleDeleteOffCampus(job._id)}
-                                className="p-1.5 text-gray-500 hover:text-red-400 rounded-lg hover:bg-white/5 transition-all"
+                                className="px-3 py-1 text-xs font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg transition-all"
                                 title="Delete"
                               >
-                                <Trash2 className="w-3.5 h-3.5" />
+                                Delete
                               </button>
                             </div>
                           </div>
@@ -828,32 +800,31 @@ const AdminDashboard = () => {
               {activeTab === 'announcements' && (
                 <div className="space-y-6">
                   <div className="flex justify-between items-center pb-2">
-                    <h3 className="font-bold text-white text-base">Administrative Bulletins</h3>
+                    <h3 className="font-extrabold text-slate-900 text-base">Administrative Bulletins</h3>
                     <button
                       onClick={() => setShowAnnounceModal(true)}
-                      className="glass-button-primary text-xs py-1.5 px-3 flex items-center space-x-1"
+                      className="bg-cyan-600 hover:bg-cyan-700 text-white font-extrabold text-xs py-2 px-4 rounded-xl shadow-xs transition-all cursor-pointer"
                     >
-                      <Plus className="w-4 h-4" />
-                      <span>Compose Broadcast</span>
+                      + Compose Broadcast
                     </button>
                   </div>
 
                   {announcements.length === 0 ? (
-                    <p className="text-xs text-gray-500 text-center py-12">No bulletin notices published.</p>
+                    <p className="text-xs text-slate-500 text-center py-12 font-medium">No bulletin notices published.</p>
                   ) : (
                     <div className="grid gap-3">
                       {announcements.map(ann => (
                         <div
                           key={ann._id}
-                          className="bg-white/[0.01] border border-glassBorder p-4 rounded-xl flex items-start justify-between gap-4"
+                          className="bg-white border border-[#D6EAF8] p-5 rounded-2xl flex items-start justify-between gap-4 shadow-sm"
                         >
                           <div>
-                            <h4 className="font-bold text-white text-sm">{ann.title}</h4>
-                            <p className="text-xs text-gray-400 mt-1">{ann.content}</p>
-                            <span className="text-[10px] text-gray-500 block mt-2">Published {formatDate(ann.createdAt)}</span>
+                            <h4 className="font-extrabold text-slate-900 text-sm sm:text-base">{ann.title}</h4>
+                            <p className="text-xs sm:text-sm text-slate-700 font-medium mt-1 leading-relaxed">{ann.content}</p>
+                            <span className="text-xs text-slate-500 font-bold block mt-2">Published {formatDate(ann.createdAt)}</span>
                           </div>
-                          <button onClick={() => handleDeleteAnnouncement(ann._id)} className="p-1.5 text-gray-500 hover:text-red-400 shrink-0">
-                            <Trash2 className="w-4.5 h-4.5" />
+                          <button onClick={() => handleDeleteAnnouncement(ann._id)} className="px-3 py-1.5 text-xs font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-xl transition-all shrink-0">
+                            Delete
                           </button>
                         </div>
                       ))}
@@ -867,12 +838,12 @@ const AdminDashboard = () => {
                 <div className="space-y-8">
                   {/* Students Moderation table */}
                   <div className="space-y-4">
-                    <h3 className="font-bold text-white text-base">Students Registry Moderation</h3>
+                    <h3 className="font-extrabold text-slate-900 text-base">Students Registry Moderation</h3>
 
                     <div className="overflow-x-auto">
-                      <table className="w-full text-left text-xs text-gray-400 border-collapse">
+                      <table className="w-full text-left text-xs text-slate-700 border-collapse">
                         <thead>
-                          <tr className="border-b border-glassBorder text-gray-500 uppercase tracking-wider font-bold">
+                          <tr className="border-b border-slate-200 text-slate-700 uppercase tracking-wider font-extrabold">
                             <th className="py-2.5">Name</th>
                             <th className="py-2.5">Email</th>
                             <th className="py-2.5">Academic</th>
@@ -882,12 +853,12 @@ const AdminDashboard = () => {
                         </thead>
                         <tbody>
                           {students.map(st => (
-                            <tr key={st._id} className="border-b border-glassBorder/50 hover:bg-white/[0.01]">
-                              <td className="py-3 font-semibold text-white">{st.name}</td>
-                              <td className="py-3">{st.email}</td>
-                              <td className="py-3">{st.branch} &bull; Yr {st.year}</td>
+                            <tr key={st._id} className="border-b border-slate-100 hover:bg-slate-50/50">
+                              <td className="py-3 font-bold text-slate-900">{st.name}</td>
+                              <td className="py-3 font-medium text-slate-600">{st.email}</td>
+                              <td className="py-3 font-semibold text-slate-700">{st.branch} &bull; Yr {st.year}</td>
                               <td className="py-3">
-                                <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${st.status === 'Banned' ? 'bg-red-950 text-red-400 border border-red-500/10' : 'bg-emerald-950 text-emerald-400 border border-emerald-500/10'
+                                <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${st.status === 'Banned' ? 'bg-rose-100 text-rose-800 border border-rose-200' : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
                                   }`}>
                                   {st.status}
                                 </span>
@@ -895,9 +866,9 @@ const AdminDashboard = () => {
                               <td className="py-3 text-right">
                                 <button
                                   onClick={() => handleBanToggle(st._id, st.status)}
-                                  className={`text-[10px] font-bold px-2.5 py-1 rounded border transition-all ${st.status === 'Banned'
-                                    ? 'bg-emerald-950/40 border-emerald-500/20 text-emerald-400 hover:bg-emerald-900/40'
-                                    : 'bg-red-950/40 border-red-500/20 text-red-400 hover:bg-red-900/40'
+                                  className={`text-xs font-bold px-3 py-1 rounded-lg border transition-all ${st.status === 'Banned'
+                                    ? 'bg-emerald-50 border-emerald-200 text-emerald-800 hover:bg-emerald-100'
+                                    : 'bg-rose-50 border-rose-200 text-rose-700 hover:bg-rose-100'
                                     }`}
                                 >
                                   {st.status === 'Banned' ? 'Unban User' : 'Ban User'}
@@ -911,26 +882,26 @@ const AdminDashboard = () => {
                   </div>
 
                   {/* Discussions Moderation list */}
-                  <div className="space-y-4 border-t border-glassBorder pt-6">
-                    <h3 className="font-bold text-white text-base">Forum QA Threads Moderation</h3>
+                  <div className="space-y-4 border-t border-slate-200 pt-6">
+                    <h3 className="font-extrabold text-slate-900 text-base">Forum QA Threads Moderation</h3>
                     {questions.length === 0 ? (
-                      <p className="text-xs text-gray-500">No discussion threads active.</p>
+                      <p className="text-xs text-slate-500 font-medium">No discussion threads active.</p>
                     ) : (
                       <div className="grid gap-3">
                         {questions.map(q => (
                           <div
                             key={q._id}
-                            className="bg-white/[0.01] border border-glassBorder p-4 rounded-xl flex items-center justify-between"
+                            className="bg-white border border-[#D6EAF8] p-4 rounded-xl flex items-center justify-between shadow-xs"
                           >
                             <div>
-                              <h4 className="font-bold text-white text-xs sm:text-sm line-clamp-1">{q.title}</h4>
-                              <span className="text-[10px] text-gray-500 block mt-1">
+                              <h4 className="font-extrabold text-slate-900 text-xs sm:text-sm line-clamp-1">{q.title}</h4>
+                              <span className="text-xs text-slate-500 font-semibold block mt-1">
                                 Asked by {q.user?.name} &bull; Upvotes: {q.upvotes?.length || 0} &bull; Answers: {q.answersCount}
                               </span>
                             </div>
 
-                            <button onClick={() => handleDeleteQuestion(q._id)} className="p-1.5 text-gray-500 hover:text-red-400">
-                              <Trash2 className="w-4.5 h-4.5" />
+                            <button onClick={() => handleDeleteQuestion(q._id)} className="px-3 py-1 text-xs font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg transition-all">
+                              Delete
                             </button>
                           </div>
                         ))}
@@ -947,91 +918,91 @@ const AdminDashboard = () => {
       {/* COMPANY LISTING ADD MODAL */}
       <AnimatePresence>
         {showPlacementModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="glass-panel w-full max-w-md rounded-2xl overflow-hidden"
+              className="bg-white border border-[#D6EAF8] shadow-2xl w-full max-w-md rounded-3xl overflow-hidden"
             >
-              <div className="flex items-center justify-between px-6 py-4 border-b border-glassBorder bg-white/[0.01]">
-                <h3 className="font-bold text-white text-lg">Add Company Listing</h3>
-                <button onClick={() => setShowPlacementModal(false)} className="p-1 text-gray-400 hover:text-white">
-                  <X className="w-5.5 h-5.5" />
+              <div className="flex items-center justify-between px-6 py-4 border-b border-[#D6EAF8] bg-slate-50">
+                <h3 className="font-extrabold text-slate-900 text-lg">Add Company Listing</h3>
+                <button onClick={() => setShowPlacementModal(false)} className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200/50 transition-all">
+                  <X className="w-5 h-5" />
                 </button>
               </div>
 
               <form onSubmit={handleAddPlacement} className="p-6 space-y-4">
                 {/* Company Name */}
                 <div>
-                  <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Company Name</label>
+                  <label className="block text-xs font-extrabold text-slate-700 mb-1 uppercase tracking-wider">Company Name *</label>
                   <input
                     type="text"
                     required
                     placeholder="e.g. Google, Infosys, TCS"
                     value={placementForm.companyName}
                     onChange={(e) => setPlacementForm({ ...placementForm, companyName: e.target.value })}
-                    className="w-full glass-input"
+                    className="w-full bg-slate-50 border border-[#D6EAF8] text-slate-900 font-semibold text-xs rounded-xl px-3.5 py-2.5 placeholder-slate-400 focus:bg-white focus:border-cyan-600 focus:outline-none transition-all"
                   />
                 </div>
 
                 {/* Google Form Link */}
                 <div>
-                  <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Google Form Link</label>
+                  <label className="block text-xs font-extrabold text-slate-700 mb-1 uppercase tracking-wider">Google Form Link</label>
                   <input
                     type="url"
                     placeholder="e.g. https://forms.gle/xyz (or nil)"
                     value={placementForm.googleFormLink}
                     onChange={(e) => setPlacementForm({ ...placementForm, googleFormLink: e.target.value })}
-                    className="w-full glass-input"
+                    className="w-full bg-slate-50 border border-[#D6EAF8] text-slate-900 font-semibold text-xs rounded-xl px-3.5 py-2.5 placeholder-slate-400 focus:bg-white focus:border-cyan-600 focus:outline-none transition-all"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   {/* Deadline of Form */}
                   <div>
-                    <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Deadline of Form</label>
+                    <label className="block text-xs font-extrabold text-slate-700 mb-1 uppercase tracking-wider">Deadline of Form</label>
                     <input
                       type="text"
                       placeholder="e.g. June 15, 5 PM (or nil)"
                       value={placementForm.deadline}
                       onChange={(e) => setPlacementForm({ ...placementForm, deadline: e.target.value })}
-                      className="w-full glass-input"
+                      className="w-full bg-slate-50 border border-[#D6EAF8] text-slate-900 font-semibold text-xs rounded-xl px-3.5 py-2.5 placeholder-slate-400 focus:bg-white focus:border-cyan-600 focus:outline-none transition-all"
                     />
                   </div>
 
                   {/* Branches Eligible */}
                   <div>
-                    <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Branches Eligible</label>
+                    <label className="block text-xs font-extrabold text-slate-700 mb-1 uppercase tracking-wider">Branches Eligible</label>
                     <input
                       type="text"
                       placeholder="e.g. CSE, ECE, EEE (or nil)"
                       value={placementForm.branchesEligible}
                       onChange={(e) => setPlacementForm({ ...placementForm, branchesEligible: e.target.value })}
-                      className="w-full glass-input"
+                      className="w-full bg-slate-50 border border-[#D6EAF8] text-slate-900 font-semibold text-xs rounded-xl px-3.5 py-2.5 placeholder-slate-400 focus:bg-white focus:border-cyan-600 focus:outline-none transition-all"
                     />
                   </div>
 
                   {/* Academic Year */}
                   <div>
-                    <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Academic Year</label>
+                    <label className="block text-xs font-extrabold text-slate-700 mb-1 uppercase tracking-wider">Academic Year *</label>
                     <input
                       type="number"
                       required
                       placeholder="e.g. 2026"
                       value={placementForm.year}
                       onChange={(e) => setPlacementForm({ ...placementForm, year: e.target.value })}
-                      className="w-full glass-input"
+                      className="w-full bg-slate-50 border border-[#D6EAF8] text-slate-900 font-semibold text-xs rounded-xl px-3.5 py-2.5 placeholder-slate-400 focus:bg-white focus:border-cyan-600 focus:outline-none transition-all"
                     />
                   </div>
 
                   {/* Job Type */}
                   <div>
-                    <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Job Type</label>
+                    <label className="block text-xs font-extrabold text-slate-700 mb-1 uppercase tracking-wider">Job Type</label>
                     <select
                       value={placementForm.jobType}
                       onChange={(e) => setPlacementForm({ ...placementForm, jobType: e.target.value })}
-                      className="w-full glass-input"
+                      className="w-full bg-slate-50 border border-[#D6EAF8] text-slate-900 font-semibold text-xs rounded-xl px-3.5 py-2.5 focus:bg-white focus:border-cyan-600 focus:outline-none transition-all"
                     >
                       <option value="FTE">FTE</option>
                       <option value="Internship">INTERN</option>
@@ -1041,35 +1012,35 @@ const AdminDashboard = () => {
 
                   {/* CPA Required */}
                   <div>
-                    <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">CPA Required</label>
+                    <label className="block text-xs font-extrabold text-slate-700 mb-1 uppercase tracking-wider">CPA Required</label>
                     <input
                       type="text"
                       placeholder="e.g. 7.5 or nil"
                       value={placementForm.cpaRequired}
                       onChange={(e) => setPlacementForm({ ...placementForm, cpaRequired: e.target.value })}
-                      className="w-full glass-input"
+                      className="w-full bg-slate-50 border border-[#D6EAF8] text-slate-900 font-semibold text-xs rounded-xl px-3.5 py-2.5 placeholder-slate-400 focus:bg-white focus:border-cyan-600 focus:outline-none transition-all"
                     />
                   </div>
 
                   {/* Package */}
                   <div>
-                    <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Package</label>
+                    <label className="block text-xs font-extrabold text-slate-700 mb-1 uppercase tracking-wider">Package</label>
                     <input
                       type="text"
                       placeholder="e.g. 18.5 or nil"
                       value={placementForm.package}
                       onChange={(e) => setPlacementForm({ ...placementForm, package: e.target.value })}
-                      className="w-full glass-input"
+                      className="w-full bg-slate-50 border border-[#D6EAF8] text-slate-900 font-semibold text-xs rounded-xl px-3.5 py-2.5 placeholder-slate-400 focus:bg-white focus:border-cyan-600 focus:outline-none transition-all"
                     />
                   </div>
 
                   {/* Blocking / Non-Blocking */}
                   <div className="col-span-2">
-                    <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Placement Type</label>
+                    <label className="block text-xs font-extrabold text-slate-700 mb-1 uppercase tracking-wider">Placement Type</label>
                     <select
                       value={placementForm.type}
                       onChange={(e) => setPlacementForm({ ...placementForm, type: e.target.value })}
-                      className="w-full glass-input"
+                      className="w-full bg-slate-50 border border-[#D6EAF8] text-slate-900 font-semibold text-xs rounded-xl px-3.5 py-2.5 focus:bg-white focus:border-cyan-600 focus:outline-none transition-all"
                     >
                       <option value="Non-Blocking">Non-Blocking</option>
                       <option value="Blocking">Blocking</option>
@@ -1078,10 +1049,10 @@ const AdminDashboard = () => {
                 </div>
 
                 <div className="flex items-center justify-end space-x-3 pt-2">
-                  <button type="button" onClick={() => setShowPlacementModal(false)} className="glass-button-secondary py-2 px-4 text-xs">
+                  <button type="button" onClick={() => setShowPlacementModal(false)} className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-all">
                     Cancel
                   </button>
-                  <button type="submit" className="glass-button-primary py-2 px-6 text-xs">
+                  <button type="submit" className="px-6 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white font-extrabold text-xs shadow-md transition-all cursor-pointer">
                     Add Company
                   </button>
                 </div>
@@ -1094,50 +1065,50 @@ const AdminDashboard = () => {
       {/* ANNOUNCEMENT BROADCAST MODAL */}
       <AnimatePresence>
         {showAnnounceModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="glass-panel w-full max-w-md rounded-2xl overflow-hidden"
+              className="bg-white border border-[#D6EAF8] shadow-2xl w-full max-w-md rounded-3xl overflow-hidden"
             >
-              <div className="flex items-center justify-between px-6 py-4 border-b border-glassBorder">
-                <h3 className="font-bold text-white text-lg">Compose Administration Notice</h3>
-                <button onClick={() => setShowAnnounceModal(false)} className="p-1 text-gray-400 hover:text-white">
-                  <X className="w-5.5 h-5.5" />
+              <div className="flex items-center justify-between px-6 py-4 border-b border-[#D6EAF8] bg-slate-50">
+                <h3 className="font-extrabold text-slate-900 text-lg">Compose Administration Notice</h3>
+                <button onClick={() => setShowAnnounceModal(false)} className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200/50 transition-all">
+                  <X className="w-5 h-5" />
                 </button>
               </div>
 
               <form onSubmit={handleAddAnnouncement} className="p-6 space-y-4">
                 <div>
-                  <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Notice Title</label>
+                  <label className="block text-xs font-extrabold text-slate-700 mb-1 uppercase tracking-wider">Notice Title *</label>
                   <input
                     type="text"
                     required
                     placeholder="e.g. Fall semester registration dates"
                     value={announceForm.title}
                     onChange={(e) => setAnnounceForm({ ...announceForm, title: e.target.value })}
-                    className="w-full glass-input"
+                    className="w-full bg-slate-50 border border-[#D6EAF8] text-slate-900 font-semibold text-xs rounded-xl px-3.5 py-2.5 placeholder-slate-400 focus:bg-white focus:border-cyan-600 focus:outline-none transition-all"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Bulletin Text</label>
+                  <label className="block text-xs font-extrabold text-slate-700 mb-1 uppercase tracking-wider">Bulletin Text *</label>
                   <textarea
                     rows={4}
                     required
                     placeholder="Type detail message..."
                     value={announceForm.content}
                     onChange={(e) => setAnnounceForm({ ...announceForm, content: e.target.value })}
-                    className="w-full glass-input resize-none"
+                    className="w-full bg-slate-50 border border-[#D6EAF8] text-slate-900 font-semibold text-xs rounded-xl px-3.5 py-2.5 placeholder-slate-400 focus:bg-white focus:border-cyan-600 focus:outline-none transition-all resize-none"
                   ></textarea>
                 </div>
 
                 <div className="flex items-center justify-end space-x-3 pt-2">
-                  <button type="button" onClick={() => setShowAnnounceModal(false)} className="glass-button-secondary py-2 px-4 text-xs">
+                  <button type="button" onClick={() => setShowAnnounceModal(false)} className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-all">
                     Cancel
                   </button>
-                  <button type="submit" className="glass-button-primary py-2 px-6 text-xs">
+                  <button type="submit" className="px-6 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white font-extrabold text-xs shadow-md transition-all cursor-pointer">
                     Publish Bulletin
                   </button>
                 </div>
@@ -1150,22 +1121,19 @@ const AdminDashboard = () => {
       {/* OFF-CAMPUS JOB ADD / EDIT MODAL */}
       <AnimatePresence>
         {showOffCampusModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="glass-panel w-full max-w-lg rounded-2xl overflow-hidden max-h-[90vh] overflow-y-auto"
+              className="bg-white border border-[#D6EAF8] shadow-2xl w-full max-w-lg rounded-3xl overflow-hidden max-h-[90vh] overflow-y-auto"
             >
-              <div className="flex items-center justify-between px-6 py-4 border-b border-glassBorder bg-white/[0.01]">
-                <div className="flex items-center gap-2">
-                  <Globe className="w-5 h-5 text-emerald-400" />
-                  <h3 className="font-bold text-white text-lg">
-                    {offCampusEditId ? 'Edit Off-Campus Job' : 'Add Off-Campus Job'}
-                  </h3>
-                </div>
-                <button onClick={() => setShowOffCampusModal(false)} className="p-1 text-gray-400 hover:text-white">
-                  <X className="w-5.5 h-5.5" />
+              <div className="flex items-center justify-between px-6 py-4 border-b border-[#D6EAF8] bg-slate-50">
+                <h3 className="font-extrabold text-slate-900 text-lg">
+                  {offCampusEditId ? 'Edit Off-Campus Job' : 'Add Off-Campus Job'}
+                </h3>
+                <button onClick={() => setShowOffCampusModal(false)} className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200/50 transition-all">
+                  <X className="w-5 h-5" />
                 </button>
               </div>
 
@@ -1173,25 +1141,25 @@ const AdminDashboard = () => {
                 {/* Row 1: Title + Company */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Job Title *</label>
+                    <label className="block text-xs font-extrabold text-slate-700 mb-1 uppercase tracking-wider">Job Title *</label>
                     <input
                       type="text"
                       required
                       placeholder="e.g. SDE-1"
                       value={offCampusForm.title}
                       onChange={e => setOffCampusForm({ ...offCampusForm, title: e.target.value })}
-                      className="w-full glass-input"
+                      className="w-full bg-slate-50 border border-[#D6EAF8] text-slate-900 font-semibold text-xs rounded-xl px-3.5 py-2.5 placeholder-slate-400 focus:bg-white focus:border-cyan-600 focus:outline-none transition-all"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Company *</label>
+                    <label className="block text-xs font-extrabold text-slate-700 mb-1 uppercase tracking-wider">Company *</label>
                     <input
                       type="text"
                       required
                       placeholder="e.g. Google"
                       value={offCampusForm.company}
                       onChange={e => setOffCampusForm({ ...offCampusForm, company: e.target.value })}
-                      className="w-full glass-input"
+                      className="w-full bg-slate-50 border border-[#D6EAF8] text-slate-900 font-semibold text-xs rounded-xl px-3.5 py-2.5 placeholder-slate-400 focus:bg-white focus:border-cyan-600 focus:outline-none transition-all"
                     />
                   </div>
                 </div>
@@ -1199,21 +1167,21 @@ const AdminDashboard = () => {
                 {/* Row 2: Location + Employment Type */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Location</label>
+                    <label className="block text-xs font-extrabold text-slate-700 mb-1 uppercase tracking-wider">Location</label>
                     <input
                       type="text"
                       placeholder="e.g. Bangalore / Remote"
                       value={offCampusForm.location}
                       onChange={e => setOffCampusForm({ ...offCampusForm, location: e.target.value })}
-                      className="w-full glass-input"
+                      className="w-full bg-slate-50 border border-[#D6EAF8] text-slate-900 font-semibold text-xs rounded-xl px-3.5 py-2.5 placeholder-slate-400 focus:bg-white focus:border-cyan-600 focus:outline-none transition-all"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Employment Type</label>
+                    <label className="block text-xs font-extrabold text-slate-700 mb-1 uppercase tracking-wider">Employment Type</label>
                     <select
                       value={offCampusForm.employmentType}
                       onChange={e => setOffCampusForm({ ...offCampusForm, employmentType: e.target.value })}
-                      className="w-full glass-input"
+                      className="w-full bg-slate-50 border border-[#D6EAF8] text-slate-900 font-semibold text-xs rounded-xl px-3.5 py-2.5 focus:bg-white focus:border-cyan-600 focus:outline-none transition-all"
                     >
                       <option value="Full-Time">Full-Time</option>
                       <option value="Internship">Internship</option>
@@ -1227,116 +1195,92 @@ const AdminDashboard = () => {
                 {/* Row 3: Experience + Salary */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Experience</label>
+                    <label className="block text-xs font-extrabold text-slate-700 mb-1 uppercase tracking-wider">Experience</label>
                     <input
                       type="text"
                       placeholder="e.g. Fresher, 0-2 years"
                       value={offCampusForm.experience}
                       onChange={e => setOffCampusForm({ ...offCampusForm, experience: e.target.value })}
-                      className="w-full glass-input"
+                      className="w-full bg-slate-50 border border-[#D6EAF8] text-slate-900 font-semibold text-xs rounded-xl px-3.5 py-2.5 placeholder-slate-400 focus:bg-white focus:border-cyan-600 focus:outline-none transition-all"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Salary / Package</label>
+                    <label className="block text-xs font-extrabold text-slate-700 mb-1 uppercase tracking-wider">Salary / Package</label>
                     <input
                       type="text"
                       placeholder="e.g. 12-18 LPA"
                       value={offCampusForm.salary}
                       onChange={e => setOffCampusForm({ ...offCampusForm, salary: e.target.value })}
-                      className="w-full glass-input"
+                      className="w-full bg-slate-50 border border-[#D6EAF8] text-slate-900 font-semibold text-xs rounded-xl px-3.5 py-2.5 placeholder-slate-400 focus:bg-white focus:border-cyan-600 focus:outline-none transition-all"
                     />
                   </div>
                 </div>
 
                 {/* Apply URL */}
                 <div>
-                  <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Apply URL *</label>
+                  <label className="block text-xs font-extrabold text-slate-700 mb-1 uppercase tracking-wider">Apply URL *</label>
                   <input
                     type="url"
                     required
                     placeholder="https://..."
                     value={offCampusForm.applyUrl}
                     onChange={e => setOffCampusForm({ ...offCampusForm, applyUrl: e.target.value })}
-                    className="w-full glass-input"
+                    className="w-full bg-slate-50 border border-[#D6EAF8] text-slate-900 font-semibold text-xs rounded-xl px-3.5 py-2.5 placeholder-slate-400 focus:bg-white focus:border-cyan-600 focus:outline-none transition-all"
                   />
                 </div>
 
                 {/* Row 4: Source + Deadline */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Source Portal</label>
+                    <label className="block text-xs font-extrabold text-slate-700 mb-1 uppercase tracking-wider">Source Portal</label>
                     <input
                       type="text"
                       placeholder="e.g. LinkedIn, Naukri"
                       value={offCampusForm.source}
                       onChange={e => setOffCampusForm({ ...offCampusForm, source: e.target.value })}
-                      className="w-full glass-input"
+                      className="w-full bg-slate-50 border border-[#D6EAF8] text-slate-900 font-semibold text-xs rounded-xl px-3.5 py-2.5 placeholder-slate-400 focus:bg-white focus:border-cyan-600 focus:outline-none transition-all"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Application Deadline</label>
+                    <label className="block text-xs font-extrabold text-slate-700 mb-1 uppercase tracking-wider">Application Deadline</label>
                     <input
                       type="date"
                       value={offCampusForm.deadline}
                       onChange={e => setOffCampusForm({ ...offCampusForm, deadline: e.target.value })}
-                      className="w-full glass-input"
+                      className="w-full bg-slate-50 border border-[#D6EAF8] text-slate-900 font-semibold text-xs rounded-xl px-3.5 py-2.5 focus:bg-white focus:border-cyan-600 focus:outline-none transition-all"
                     />
                   </div>
                 </div>
 
                 {/* Skills (comma-separated) */}
                 <div>
-                  <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Skills (comma-separated)</label>
+                  <label className="block text-xs font-extrabold text-slate-700 mb-1 uppercase tracking-wider">Skills (comma-separated)</label>
                   <input
                     type="text"
                     placeholder="e.g. React, Node.js, Python"
                     value={offCampusForm.skills}
                     onChange={e => setOffCampusForm({ ...offCampusForm, skills: e.target.value })}
-                    className="w-full glass-input"
+                    className="w-full bg-slate-50 border border-[#D6EAF8] text-slate-900 font-semibold text-xs rounded-xl px-3.5 py-2.5 placeholder-slate-400 focus:bg-white focus:border-cyan-600 focus:outline-none transition-all"
                   />
-                </div>
-
-                {/* Row 5: Company Logo + Source Logo */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Company Logo URL</label>
-                    <input
-                      type="url"
-                      placeholder="https://...logo.png"
-                      value={offCampusForm.logo}
-                      onChange={e => setOffCampusForm({ ...offCampusForm, logo: e.target.value })}
-                      className="w-full glass-input"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Source Logo URL</label>
-                    <input
-                      type="url"
-                      placeholder="https://...favicon.png"
-                      value={offCampusForm.sourceLogo}
-                      onChange={e => setOffCampusForm({ ...offCampusForm, sourceLogo: e.target.value })}
-                      className="w-full glass-input"
-                    />
-                  </div>
                 </div>
 
                 {/* Description */}
                 <div>
-                  <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Job Description</label>
+                  <label className="block text-xs font-extrabold text-slate-700 mb-1 uppercase tracking-wider">Job Description</label>
                   <textarea
                     rows={3}
                     placeholder="Brief description of the role, responsibilities..."
                     value={offCampusForm.description}
                     onChange={e => setOffCampusForm({ ...offCampusForm, description: e.target.value })}
-                    className="w-full glass-input resize-none"
+                    className="w-full bg-slate-50 border border-[#D6EAF8] text-slate-900 font-semibold text-xs rounded-xl px-3.5 py-2.5 placeholder-slate-400 focus:bg-white focus:border-cyan-600 focus:outline-none transition-all resize-none"
                   />
                 </div>
 
                 <div className="flex items-center justify-end space-x-3 pt-2">
-                  <button type="button" onClick={() => setShowOffCampusModal(false)} className="glass-button-secondary py-2 px-4 text-xs">
+                  <button type="button" onClick={() => setShowOffCampusModal(false)} className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-all">
                     Cancel
                   </button>
-                  <button type="submit" className="glass-button-primary py-2 px-6 text-xs">
+                  <button type="submit" className="px-6 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white font-extrabold text-xs shadow-md transition-all cursor-pointer">
                     {offCampusEditId ? 'Save Changes' : 'Add Job Listing'}
                   </button>
                 </div>
