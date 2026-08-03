@@ -5,11 +5,17 @@
   "build": {
     "preview": {
       "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://campusevents-61un.onrender.com/api"
+      },
       "android": {
         "buildType": "apk"
       }
     },
     "production": {
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://campusevents-61un.onrender.com/api"
+      },
       "android": {
         "buildType": "app-bundle"
       }

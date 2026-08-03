@@ -3,23 +3,26 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 import Constants from 'expo-constants';
 
-const getHostIp = () => {
-  // Extract host IP when running via Expo Go on physical device
+const getBackendUrl = () => {
+  // 1. Check for environment variable defined via EXPO_PUBLIC_API_URL
+  if (process.env.EXPO_PUBLIC_API_URL) {
+    return process.env.EXPO_PUBLIC_API_URL;
+  }
+
+  // 2. Extract host IP when running via Expo Go on physical device (local dev)
   const hostUri = Constants.expoConfig?.hostUri || Constants.experienceUrl || '';
   if (hostUri) {
     const ip = hostUri.split(':')[0];
     if (ip && ip !== 'localhost' && ip !== '127.0.0.1') {
-      return ip;
+      return `http://${ip}:5000/api`;
     }
   }
-  if (Platform.OS === 'android') {
-    return '10.0.2.2';
-  }
-  return 'localhost';
+
+  // 3. Deployed live production Render backend for standalone APK
+  return 'https://campusevents-61un.onrender.com/api';
 };
 
-const hostIp = getHostIp();
-export const API_BASE_URL = `http://${hostIp}:5000/api`;
+export const API_BASE_URL = getBackendUrl();
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
