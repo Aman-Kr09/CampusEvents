@@ -24,7 +24,7 @@ export default {
         accentPink: '#14B8A6',
       },
       fontFamily: {
-        sans: ['Outfit', 'Inter', 'sans-serif'],
+        sans: ['Inter', 'DM Sans', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
         glow: '0 4px 20px rgba(8, 145, 178, 0.15)',
