@@ -111,43 +111,56 @@ const Landing = () => {
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-sky-200/40 rounded-full blur-3xl -z-10 animate-pulse-slow" />
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-teal-200/30 rounded-full blur-3xl -z-10 animate-pulse-slow" />
 
-      {/* ── Top Bar Action Buttons — Centered ── */}
-      <div className="w-full flex justify-center items-center space-x-2 sm:space-x-3 pt-2 sm:pt-4 z-10 flex-wrap gap-y-2">
-        <a
-          href="https://expo.dev/artifacts/eas/amZEhB-oB98BNwR6dD_NC8IGarRDuTQlNLlvKonJ2SI.apk"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center space-x-1.5 text-xs text-slate-700 hover:text-cyan-700 bg-white hover:bg-cyan-50/50 border border-[#D6EAF8] hover:border-cyan-300 px-3.5 py-2 rounded-xl transition-all duration-200 font-semibold shadow-xs"
-          title="Download CampusEvents Android App (.APK)"
-        >
-          <Smartphone className="w-3.5 h-3.5 text-cyan-600" />
-          <span>Get Android App</span>
-        </a>
+      {/* ── Top Navbar ── */}
+      <nav className="w-full flex items-center justify-between px-2 sm:px-4 py-3 bg-white/80 backdrop-blur-sm border border-[#D6EAF8] rounded-2xl shadow-sm z-10">
+        {/* Logo */}
+        <div className="flex items-center space-x-2">
+          <School className="w-5 h-5 text-cyan-600" />
+          <span className="text-lg font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-cyan-700 via-sky-600 to-teal-600">
+            CampusEvents
+          </span>
+        </div>
 
-        <Link
-          to="/contact"
-          className="flex items-center space-x-1.5 text-xs text-slate-700 hover:text-cyan-700 bg-white hover:bg-cyan-50/50 border border-[#D6EAF8] hover:border-cyan-300 px-3.5 py-2 rounded-xl transition-all duration-200 font-semibold shadow-xs"
-        >
-          <Mail className="w-3.5 h-3.5 text-cyan-600" />
-          <span>Contact Us</span>
-        </Link>
+        {/* Right Actions */}
+        <div className="flex items-center space-x-2">
+          <a
+            href="https://expo.dev/artifacts/eas/amZEhB-oB98BNwR6dD_NC8IGarRDuTQlNLlvKonJ2SI.apk"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center space-x-1.5 text-xs text-slate-700 hover:text-cyan-700 bg-white hover:bg-cyan-50 border border-[#D6EAF8] hover:border-cyan-300 px-3 py-1.5 rounded-lg transition-all duration-200 font-semibold"
+            title="Download Android App"
+          >
+            <Smartphone className="w-3.5 h-3.5 text-cyan-600" />
+            <span className="hidden sm:inline">Get Android App</span>
+            <span className="sm:hidden">App</span>
+          </a>
 
-        <Link
-          to="/donate"
-          className="flex items-center space-x-1.5 text-xs text-slate-700 hover:text-cyan-700 bg-white hover:bg-cyan-50/50 border border-[#D6EAF8] hover:border-cyan-300 px-3.5 py-2 rounded-xl transition-all duration-200 font-semibold shadow-xs"
-        >
-          <Heart className="w-3.5 h-3.5 text-cyan-600" />
-          <span>Donate</span>
-        </Link>
+          <Link
+            to="/contact"
+            className="hidden sm:flex items-center space-x-1.5 text-xs text-slate-700 hover:text-cyan-700 bg-white hover:bg-cyan-50 border border-[#D6EAF8] hover:border-cyan-300 px-3 py-1.5 rounded-lg transition-all duration-200 font-semibold"
+          >
+            <Mail className="w-3.5 h-3.5 text-cyan-600" />
+            <span>Contact</span>
+          </Link>
 
-        <button
-          onClick={() => { setIsAdminModalOpen(true); setAdminError(''); setAdminForm({ email: '', password: '' }); }}
-          className="flex items-center space-x-1.5 text-xs text-slate-700 hover:text-cyan-700 bg-white hover:bg-cyan-50/50 border border-[#D6EAF8] hover:border-cyan-300 px-3.5 py-2 rounded-xl transition-all duration-200 font-semibold shadow-xs"
-        >
-          <ShieldCheck className="w-3.5 h-3.5 text-cyan-600" />
-          <span>Admin Login</span>
-        </button>
-      </div>
+          <Link
+            to="/donate"
+            className="hidden sm:flex items-center space-x-1.5 text-xs text-slate-700 hover:text-cyan-700 bg-white hover:bg-cyan-50 border border-[#D6EAF8] hover:border-cyan-300 px-3 py-1.5 rounded-lg transition-all duration-200 font-semibold"
+          >
+            <Heart className="w-3.5 h-3.5 text-cyan-600" />
+            <span>Donate</span>
+          </Link>
+
+          <button
+            onClick={() => { setIsAdminModalOpen(true); setAdminError(''); setAdminForm({ email: '', password: '' }); }}
+            className="flex items-center space-x-1.5 text-xs text-slate-700 hover:text-cyan-700 bg-white hover:bg-cyan-50 border border-[#D6EAF8] hover:border-cyan-300 px-3 py-1.5 rounded-lg transition-all duration-200 font-semibold"
+            title="Admin Login"
+          >
+            <ShieldCheck className="w-3.5 h-3.5 text-cyan-600" />
+            <span className="hidden md:inline">Admin Login</span>
+          </button>
+        </div>
+      </nav>
 
       {/* ── Main Container ── */}
       <div className="max-w-4xl mx-auto w-full space-y-10 my-auto pt-8">
@@ -184,6 +197,7 @@ const Landing = () => {
           >
           </motion.p>
         </div>
+
 
         {/* Search + College List */}
         <motion.div
