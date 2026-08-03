@@ -19,6 +19,7 @@ const Landing = () => {
   const [search, setSearch] = useState('');
   const [isCollegeModalOpen, setIsCollegeModalOpen] = useState(false);
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   // Admin login form state
   const [adminForm, setAdminForm] = useState({ email: '', password: '' });
@@ -106,61 +107,87 @@ const Landing = () => {
   );
 
   return (
-    <div className="min-h-screen flex flex-col justify-between py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-[#F6FBFF]">
+    <div className="min-h-screen flex flex-col justify-between pt-3 pb-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-[#F6FBFF]">
       {/* Background Soft Ocean Breeze Orbs */}
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-sky-200/40 rounded-full blur-3xl -z-10 animate-pulse-slow" />
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-teal-200/30 rounded-full blur-3xl -z-10 animate-pulse-slow" />
 
       {/* ── Top Navbar ── */}
-      <nav className="w-full flex items-center justify-between px-2 sm:px-4 py-3 bg-white/80 backdrop-blur-sm border border-[#D6EAF8] rounded-2xl shadow-sm z-10">
-        {/* Logo */}
-        <div className="flex items-center space-x-2">
-          <School className="w-5 h-5 text-cyan-600" />
-          <span className="text-lg font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-cyan-700 via-sky-600 to-teal-600">
-            CampusEvents
-          </span>
-        </div>
+      <div className="relative w-full z-20">
+        <nav className="w-full flex items-center justify-between px-4 py-2.5 bg-white/90 backdrop-blur-sm border border-[#D6EAF8] rounded-2xl shadow-sm">
+          {/* Logo */}
+          <div className="flex items-center space-x-2">
+            <School className="w-5 h-5 text-cyan-600" />
+            <span className="text-base font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-cyan-700 via-sky-600 to-teal-600">
+              CampusEvents
+            </span>
+          </div>
 
-        {/* Right Actions */}
-        <div className="flex items-center space-x-2">
-          <a
-            href="https://expo.dev/artifacts/eas/amZEhB-oB98BNwR6dD_NC8IGarRDuTQlNLlvKonJ2SI.apk"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center space-x-1.5 text-xs text-slate-700 hover:text-cyan-700 bg-white hover:bg-cyan-50 border border-[#D6EAF8] hover:border-cyan-300 px-3 py-1.5 rounded-lg transition-all duration-200 font-semibold"
-            title="Download Android App"
-          >
-            <Smartphone className="w-3.5 h-3.5 text-cyan-600" />
-            <span className="hidden sm:inline">Get Android App</span>
-            <span className="sm:hidden">App</span>
-          </a>
-
-          <Link
-            to="/contact"
-            className="hidden sm:flex items-center space-x-1.5 text-xs text-slate-700 hover:text-cyan-700 bg-white hover:bg-cyan-50 border border-[#D6EAF8] hover:border-cyan-300 px-3 py-1.5 rounded-lg transition-all duration-200 font-semibold"
-          >
-            <Mail className="w-3.5 h-3.5 text-cyan-600" />
-            <span>Contact</span>
-          </Link>
-
-          <Link
-            to="/donate"
-            className="hidden sm:flex items-center space-x-1.5 text-xs text-slate-700 hover:text-cyan-700 bg-white hover:bg-cyan-50 border border-[#D6EAF8] hover:border-cyan-300 px-3 py-1.5 rounded-lg transition-all duration-200 font-semibold"
-          >
-            <Heart className="w-3.5 h-3.5 text-cyan-600" />
-            <span>Donate</span>
-          </Link>
-
+          {/* Hamburger */}
           <button
-            onClick={() => { setIsAdminModalOpen(true); setAdminError(''); setAdminForm({ email: '', password: '' }); }}
-            className="flex items-center space-x-1.5 text-xs text-slate-700 hover:text-cyan-700 bg-white hover:bg-cyan-50 border border-[#D6EAF8] hover:border-cyan-300 px-3 py-1.5 rounded-lg transition-all duration-200 font-semibold"
-            title="Admin Login"
+            onClick={() => setMenuOpen(o => !o)}
+            className="flex items-center justify-center w-8 h-8 rounded-lg border border-[#D6EAF8] bg-white hover:bg-cyan-50 hover:border-cyan-300 transition-all duration-200 text-slate-600"
+            aria-label="Toggle menu"
           >
-            <ShieldCheck className="w-3.5 h-3.5 text-cyan-600" />
-            <span className="hidden md:inline">Admin Login</span>
+            {menuOpen ? (
+              <X className="w-4 h-4" />
+            ) : (
+              <span className="flex flex-col gap-[4px] items-center justify-center">
+                <span className="block w-4 h-[1.5px] bg-slate-600 rounded" />
+                <span className="block w-4 h-[1.5px] bg-slate-600 rounded" />
+                <span className="block w-4 h-[1.5px] bg-slate-600 rounded" />
+              </span>
+            )}
           </button>
-        </div>
-      </nav>
+        </nav>
+
+        {/* Dropdown Menu */}
+        <AnimatePresence>
+          {menuOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -8, scale: 0.97 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -8, scale: 0.97 }}
+              transition={{ duration: 0.18 }}
+              className="absolute top-full right-0 mt-1.5 w-52 bg-white border border-[#D6EAF8] rounded-xl shadow-lg overflow-hidden z-50"
+            >
+              <a
+                href="https://expo.dev/artifacts/eas/amZEhB-oB98BNwR6dD_NC8IGarRDuTQlNLlvKonJ2SI.apk"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center space-x-3 px-4 py-3 text-sm text-slate-700 hover:bg-cyan-50 hover:text-cyan-700 transition-colors duration-150 font-medium border-b border-slate-100"
+              >
+                <Smartphone className="w-4 h-4 text-cyan-500" />
+                <span>Get Android App</span>
+              </a>
+              <Link
+                to="/contact"
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center space-x-3 px-4 py-3 text-sm text-slate-700 hover:bg-cyan-50 hover:text-cyan-700 transition-colors duration-150 font-medium border-b border-slate-100"
+              >
+                <Mail className="w-4 h-4 text-cyan-500" />
+                <span>Contact Us</span>
+              </Link>
+              <Link
+                to="/donate"
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center space-x-3 px-4 py-3 text-sm text-slate-700 hover:bg-cyan-50 hover:text-cyan-700 transition-colors duration-150 font-medium border-b border-slate-100"
+              >
+                <Heart className="w-4 h-4 text-cyan-500" />
+                <span>Donate</span>
+              </Link>
+              <button
+                onClick={() => { setMenuOpen(false); setIsAdminModalOpen(true); setAdminError(''); setAdminForm({ email: '', password: '' }); }}
+                className="w-full flex items-center space-x-3 px-4 py-3 text-sm text-slate-700 hover:bg-cyan-50 hover:text-cyan-700 transition-colors duration-150 font-medium"
+              >
+                <ShieldCheck className="w-4 h-4 text-cyan-500" />
+                <span>Admin Login</span>
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
 
       {/* ── Main Container ── */}
       <div className="max-w-4xl mx-auto w-full space-y-10 my-auto pt-8">
