@@ -387,47 +387,43 @@ const AdminDashboard = () => {
 
       {/* 1. Header Admin Intro */}
       <div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-white">Campus Admin Console</h1>
-        <p className="text-gray-400 text-xs sm:text-sm mt-0.5">Moderate event proposals, recruitment statistics, bulletins, and students logs.</p>
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">Campus Admin Console</h1>
+        <p className="text-slate-500 text-xs sm:text-sm mt-0.5">Moderate event proposals, recruitment statistics, bulletins, and students logs.</p>
       </div>
 
       {/* 2. Overview metrics widgets */}
       {loading ? (
-        <div className="text-xs text-gray-500">Retrieving stats...</div>
+        <div className="text-xs text-slate-500">Retrieving stats...</div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="glass-panel p-4 rounded-xl flex items-center justify-between">
+          <div className="glass-panel p-4 rounded-xl flex items-center justify-between shadow-sm">
             <div>
-              <span className="block text-[10px] text-gray-500 font-bold uppercase">Students Enrolled</span>
-              <span className="text-xl font-extrabold text-white">{overview.students}</span>
+              <span className="block text-[10px] text-slate-500 font-bold uppercase">Students Enrolled</span>
+              <span className="text-xl font-extrabold text-slate-900">{overview.students}</span>
             </div>
-            <Users className="w-8 h-8 text-indigo-400 opacity-60" />
           </div>
 
-          <div className="glass-panel p-4 rounded-xl flex items-center justify-between">
+          <div className="glass-panel p-4 rounded-xl flex items-center justify-between shadow-sm">
             <div>
-              <span className="block text-[10px] text-gray-500 font-bold uppercase">Active Events</span>
-              <span className="text-xl font-extrabold text-white">{overview.events}</span>
+              <span className="block text-[10px] text-slate-500 font-bold uppercase">Active Events</span>
+              <span className="text-xl font-extrabold text-slate-900">{overview.events}</span>
             </div>
-            <Calendar className="w-8 h-8 text-cyan-400 opacity-60" />
           </div>
 
-          <div className="glass-panel p-4 rounded-xl flex items-center justify-between border-amber-500/20">
+          <div className="glass-panel p-4 rounded-xl flex items-center justify-between shadow-sm">
             <div>
-              <span className="block text-[10px] text-gray-500 font-bold uppercase">Pending Review</span>
-              <span className={`text-xl font-extrabold ${overview.pending > 0 ? 'text-amber-400 animate-pulse' : 'text-white'}`}>
+              <span className="block text-[10px] text-slate-500 font-bold uppercase">Pending Review</span>
+              <span className={`text-xl font-extrabold ${overview.pending > 0 ? 'text-amber-600' : 'text-slate-900'}`}>
                 {overview.pending}
               </span>
             </div>
-            <AlertCircle className="w-8 h-8 text-amber-400 opacity-60" />
           </div>
 
-          <div className="glass-panel p-4 rounded-xl flex items-center justify-between">
+          <div className="glass-panel p-4 rounded-xl flex items-center justify-between shadow-sm">
             <div>
-              <span className="block text-[10px] text-gray-500 font-bold uppercase">Forum Threads</span>
-              <span className="text-xl font-extrabold text-white">{overview.questions}</span>
+              <span className="block text-[10px] text-slate-500 font-bold uppercase">Forum Threads</span>
+              <span className="text-xl font-extrabold text-slate-900">{overview.questions}</span>
             </div>
-            <HelpCircle className="w-8 h-8 text-purple-400 opacity-60" />
           </div>
         </div>
       )}
@@ -438,23 +434,21 @@ const AdminDashboard = () => {
         {/* Left Side Tab Navigation */}
         <div className="lg:col-span-1 space-y-2">
           {[
-            { id: 'events', label: 'Event Review Queue', icon: Calendar },
-            { id: 'placements', label: 'Placements Editor', icon: BarChart3 },
-            { id: 'announcements', label: 'Announcements Bulletin', icon: Megaphone },
-            { id: 'moderation', label: 'Community Moderation', icon: ShieldAlert }
+            { id: 'events', label: 'Event Review Queue' },
+            { id: 'placements', label: 'Placements Editor' },
+            { id: 'announcements', label: 'Announcements Bulletin' },
+            { id: 'moderation', label: 'Community Moderation' }
           ].map(tab => {
-            const Icon = tab.icon;
             const active = activeTab === tab.id;
             return (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`w-full flex items-center space-x-2.5 px-4 py-3 rounded-xl font-semibold text-sm transition-all duration-200 ${active
-                  ? 'bg-indigo-950/60 text-indigo-400 border border-indigo-500/20'
-                  : 'text-gray-400 hover:text-white hover:bg-white/5 border border-transparent'
+                className={`w-full text-left px-4 py-3 rounded-xl font-bold text-sm transition-all duration-200 ${active
+                  ? 'bg-cyan-600 text-white shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                   }`}
               >
-                <Icon className="w-4.5 h-4.5" />
                 <span>{tab.label}</span>
               </button>
             );
@@ -464,31 +458,31 @@ const AdminDashboard = () => {
         {/* Right Tab Content body */}
         <div className="lg:col-span-3">
           {loading ? (
-            <div className="py-12 text-center text-gray-500 font-medium">Loading panel workspace...</div>
+            <div className="py-12 text-center text-slate-500 font-medium">Loading panel workspace...</div>
           ) : (
-            <div className="glass-panel p-6 rounded-2xl border-glassBorder min-h-[400px]">
+            <div className="glass-panel p-6 rounded-2xl shadow-sm min-h-[400px]">
 
               {/* TAB 1: EVENT REVIEW QUEUE & ACTIVE EVENTS LIST */}
               {activeTab === 'events' && (
                 <div className="space-y-8">
                   {/* Reviews proposals */}
                   <div className="space-y-4">
-                    <h3 className="font-bold text-white text-base">Pending Student Submissions ({pendingEvents.length})</h3>
+                    <h3 className="font-bold text-slate-900 text-base">Pending Student Submissions ({pendingEvents.length})</h3>
 
                     {pendingEvents.length === 0 ? (
-                      <p className="text-xs text-gray-500">No event proposals pending review.</p>
+                      <p className="text-xs text-slate-500">No event proposals pending review.</p>
                     ) : (
                       <div className="space-y-3">
                         {pendingEvents.map(e => (
                           <div
                             key={e._id}
-                            className="bg-white/[0.01] border border-glassBorder p-4 rounded-xl flex flex-col md:flex-row justify-between gap-4"
+                            className="bg-white border border-[#D6EAF8] p-4 rounded-xl flex flex-col md:flex-row justify-between gap-4 shadow-xs"
                           >
                             <div className="space-y-1">
-                              <span className="text-[10px] font-bold text-indigo-400 uppercase">{e.category}</span>
-                              <h4 className="font-bold text-white text-sm">{e.name}</h4>
-                              <p className="text-xs text-gray-400">{e.description}</p>
-                              <div className="text-[10px] text-gray-500 pt-1">
+                              <span className="text-[10px] font-bold text-cyan-700 uppercase">{e.category}</span>
+                              <h4 className="font-bold text-slate-900 text-sm">{e.name}</h4>
+                              <p className="text-xs text-slate-600">{e.description}</p>
+                              <div className="text-[10px] text-slate-500 pt-1">
                                 Proposed by {e.createdBy?.name} &bull; {formatDate(e.date)} at {e.time} &bull; Room: {e.venue}
                               </div>
                             </div>
@@ -496,14 +490,14 @@ const AdminDashboard = () => {
                             <div className="flex items-center gap-2 self-end md:self-center">
                               <button
                                 onClick={() => handleReviewEvent(e._id, 'Rejected')}
-                                className="p-1.5 rounded-lg border border-red-500/20 bg-red-950/20 text-red-400 hover:bg-red-900/20 transition-all"
+                                className="p-1.5 rounded-lg border border-red-200 bg-red-50 text-red-600 hover:bg-red-100 transition-all"
                                 title="Reject Event"
                               >
                                 <X className="w-4 h-4" />
                               </button>
                               <button
                                 onClick={() => handleReviewEvent(e._id, 'Approved')}
-                                className="p-1.5 rounded-lg border border-emerald-500/20 bg-emerald-950/20 text-emerald-400 hover:bg-emerald-900/20 transition-all"
+                                className="p-1.5 rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 transition-all"
                                 title="Approve Event"
                               >
                                 <Check className="w-4 h-4" />
@@ -516,15 +510,15 @@ const AdminDashboard = () => {
                   </div>
 
                   {/* Active approved events */}
-                  <div className="space-y-4 border-t border-glassBorder pt-6">
-                    <h3 className="font-bold text-white text-base">Active Approved Events ({allEvents.length})</h3>
+                  <div className="space-y-4 border-t border-slate-100 pt-6">
+                    <h3 className="font-bold text-slate-900 text-base">Active Approved Events ({allEvents.length})</h3>
                     {allEvents.length === 0 ? (
-                      <p className="text-xs text-gray-500 font-medium">No approved events listed.</p>
+                      <p className="text-xs text-slate-500 font-medium">No approved events listed.</p>
                     ) : (
                       <div className="overflow-x-auto">
-                        <table className="w-full text-left text-xs text-gray-400 border-collapse">
+                        <table className="w-full text-left text-xs text-slate-600 border-collapse">
                           <thead>
-                            <tr className="border-b border-glassBorder text-gray-500 uppercase tracking-wider font-bold">
+                            <tr className="border-b border-slate-200 text-slate-500 uppercase tracking-wider font-bold">
                               <th className="py-2.5">Name</th>
                               <th className="py-2.5">Category</th>
                               <th className="py-2.5">Date</th>
@@ -534,13 +528,13 @@ const AdminDashboard = () => {
                           </thead>
                           <tbody>
                             {allEvents.map(ev => (
-                              <tr key={ev._id} className="border-b border-glassBorder/50 hover:bg-white/[0.01]">
-                                <td className="py-3 font-semibold text-white">{ev.name}</td>
+                              <tr key={ev._id} className="border-b border-slate-100 hover:bg-slate-50/50">
+                                <td className="py-3 font-semibold text-slate-800">{ev.name}</td>
                                 <td className="py-3">{ev.category}</td>
                                 <td className="py-3">{formatDate(ev.date)}</td>
-                                <td className="py-3 text-center font-bold text-white">{ev.registrations?.length || 0}</td>
+                                <td className="py-3 text-center font-bold text-slate-800">{ev.registrations?.length || 0}</td>
                                 <td className="py-3 text-right">
-                                  <button onClick={() => handleDeleteEvent(ev._id)} className="text-gray-500 hover:text-red-400 p-1">
+                                  <button onClick={() => handleDeleteEvent(ev._id)} className="text-slate-400 hover:text-red-600 p-1">
                                     <Trash2 className="w-4.5 h-4.5" />
                                   </button>
                                 </td>

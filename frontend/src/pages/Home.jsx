@@ -561,16 +561,16 @@ const Home = () => {
       </AnimatePresence>
 
       {/* 1. Dashboard Controls Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-glassBorder pb-6 mb-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#D6EAF8] pb-6 mb-8">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white">Campus Board</h1>
-          <p className="text-gray-400 text-xs sm:text-sm mt-0.5">Explore college analytics, updates, and recommended events.</p>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">Campus Board</h1>
+          <p className="text-slate-500 text-xs sm:text-sm mt-0.5">Explore college analytics, updates, and recommended events.</p>
         </div>
 
         {/* Action controls */}
         <div className="flex items-center gap-3">
           <div className="relative max-w-xs flex-1">
-            <Search className="absolute left-3 top-2.5 w-4.5 h-4.5 text-gray-500" />
+            <Search className="absolute left-3 top-2.5 w-4.5 h-4.5 text-slate-400" />
             <input
               type="text"
               placeholder={
@@ -587,47 +587,36 @@ const Home = () => {
           {activeTab === 'events' && (
             <button
               onClick={() => setIsEventModalOpen(true)}
-              className="glass-button-primary text-xs py-2 px-4 flex items-center space-x-1.5 whitespace-nowrap"
+              className="glass-button-primary text-xs py-2 px-4 whitespace-nowrap font-bold"
             >
-              <Plus className="w-4.5 h-4.5" />
-              <span>Submit Event</span>
+              Submit Event
             </button>
           )}
 
           {activeTab === 'qa' && (
             <button
               onClick={() => setIsQAOpen(true)}
-              className="glass-button-primary text-xs py-2 px-4 flex items-center space-x-1.5 whitespace-nowrap"
+              className="glass-button-primary text-xs py-2 px-4 whitespace-nowrap font-bold"
             >
-              <Plus className="w-4.5 h-4.5" />
-              <span>Ask Question</span>
+              Ask Question
             </button>
           )}
         </div>
       </div>
 
       {/* Tabs Navigation */}
-      <div className="flex space-x-2 border-b border-glassBorder pb-4 mb-8 overflow-x-auto scrollbar-thin">
+      <div className="flex space-x-2 border-b border-[#D6EAF8] pb-4 mb-8 overflow-x-auto">
         {tabs.map((tab) => {
-          const Icon = tab.icon;
           const isActive = activeTab === tab.id;
           return (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center space-x-2 px-5 py-3 rounded-xl font-bold text-sm transition-all duration-200 relative whitespace-nowrap ${isActive
-                ? 'text-white shadow-glow border border-white/10'
-                : 'text-gray-400 hover:text-white hover:bg-white/5 border border-transparent'
+              className={`px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 whitespace-nowrap ${isActive
+                ? 'bg-cyan-600 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                 }`}
             >
-              {isActive && (
-                <motion.div
-                  layoutId="activeTabGlow"
-                  className={`absolute inset-0 rounded-xl ${tab.bg} -z-10`}
-                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                />
-              )}
-              <Icon className={`w-4.5 h-4.5 ${isActive ? tab.color : 'text-gray-400'}`} />
               <span>{tab.label}</span>
             </button>
           );
@@ -748,9 +737,8 @@ const Home = () => {
               {recommended.length > 0 && (
                 <div className="space-y-4">
                   <div className="flex items-center space-x-2">
-                    <Sparkles className="w-5 h-5 text-indigo-400 animate-pulse-slow" />
-                    <h2 className="text-lg sm:text-xl font-bold text-white">Recommended For You</h2>
-                    <span className="text-xs bg-indigo-950/60 text-indigo-400 px-2 py-0.5 rounded border border-indigo-500/20 font-semibold tracking-wide uppercase">AI Personalized</span>
+                    <h2 className="text-lg sm:text-xl font-bold text-slate-900">Recommended For You</h2>
+                    <span className="text-xs bg-cyan-50 text-cyan-700 px-2 py-0.5 rounded border border-cyan-200 font-semibold tracking-wide uppercase">AI Personalized</span>
                   </div>
 
                   {/* Horizontal Scroll Cards */}
@@ -763,31 +751,29 @@ const Home = () => {
                       return (
                         <div
                           key={event._id}
-                          className="glass-panel p-5 rounded-2xl w-[280px] sm:w-[320px] shrink-0 border-glassBorder flex flex-col justify-between h-[200px] hover:border-indigo-500/30 transition-all duration-200"
+                          className="glass-panel p-5 rounded-2xl w-[280px] sm:w-[320px] shrink-0 flex flex-col justify-between h-[200px] hover:border-cyan-400 transition-all duration-200 shadow-sm"
                         >
                           <div onClick={() => { recordView(event._id); setSelectedEventDetails(event); }} className="cursor-pointer">
                             <div className="flex justify-between items-start">
-                              <span className="text-[10px] font-bold tracking-wider text-indigo-400 uppercase bg-indigo-950/40 px-2.5 py-1 rounded-md border border-indigo-500/10">
+                              <span className="text-[10px] font-bold tracking-wider text-cyan-700 uppercase bg-cyan-50 px-2.5 py-1 rounded-md border border-cyan-200">
                                 {event.category}
                               </span>
-                              <span className="text-[10px] text-gray-500 flex items-center space-x-1">
-                                <Clock className="w-3 h-3" />
+                              <span className="text-[10px] text-slate-400 flex items-center space-x-1">
                                 <span>{event.time}</span>
                               </span>
                             </div>
 
-                            <h3 className="text-sm font-bold text-white mt-3 line-clamp-2 hover:text-indigo-400 cursor-pointer transition-colors">
+                            <h3 className="text-sm font-bold text-slate-800 mt-3 line-clamp-2 hover:text-cyan-700 cursor-pointer transition-colors">
                               {event.name}
                             </h3>
 
-                            <div className="flex items-center text-xs text-gray-500 mt-2 space-x-1">
-                              <MapPin className="w-3.5 h-3.5" />
+                            <div className="flex items-center text-xs text-slate-500 mt-2 space-x-1">
                               <span className="truncate">{event.venue}</span>
                             </div>
                           </div>
 
-                          <div className="flex items-center justify-between border-t border-glassBorder pt-3.5 mt-2">
-                            <span className="text-xs text-gray-400 font-semibold">
+                          <div className="flex items-center justify-between border-t border-slate-100 pt-3.5 mt-2">
+                            <span className="text-xs text-slate-500 font-semibold">
                               {formatDate(event.date)}
                             </span>
 
@@ -795,17 +781,17 @@ const Home = () => {
                               <button
                                 onClick={() => handleLike(event._id)}
                                 className={`p-1.5 rounded-lg border transition-all ${isLiked
-                                  ? 'bg-rose-950/40 border-rose-500/20 text-rose-400'
-                                  : 'bg-white/[0.02] border-glassBorder text-gray-500 hover:text-white'
+                                  ? 'bg-rose-50 border-rose-200 text-rose-600'
+                                  : 'bg-slate-50 border-slate-200 text-slate-400 hover:text-slate-700'
                                   }`}
                               >
-                                <Heart className={`w-4 h-4 ${isLiked ? 'fill-rose-400' : ''}`} />
+                                <Heart className={`w-4 h-4 ${isLiked ? 'fill-rose-500' : ''}`} />
                               </button>
 
                               <button
                                 onClick={() => handleRegister(event._id)}
                                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${isRegistered
-                                  ? 'bg-emerald-950 text-emerald-400 border border-emerald-500/20'
+                                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                                   : 'glass-button-primary'
                                   }`}
                               >
@@ -825,15 +811,14 @@ const Home = () => {
                 {/* LEFT COLUMN: EVENT FEED */}
                 <div className="lg:col-span-2 space-y-6">
                   <div className="flex justify-between items-center">
-                    <h2 className="text-lg sm:text-xl font-bold text-white flex items-center space-x-2">
-                      <Calendar className="w-5 h-5 text-indigo-400" />
-                      <span>Campus Event Feed</span>
+                    <h2 className="text-lg sm:text-xl font-bold text-slate-900">
+                      Campus Event Feed
                     </h2>
-                    <span className="text-xs text-gray-500">{events.length} Events Listed</span>
+                    <span className="text-xs text-slate-500">{events.length} Events Listed</span>
                   </div>
 
                   {events.length === 0 ? (
-                    <div className="glass-panel p-12 text-center rounded-2xl text-gray-500">
+                    <div className="glass-panel p-12 text-center rounded-2xl text-slate-500">
                       No events approved yet. Be the first to submit an event!
                     </div>
                   ) : (
@@ -846,10 +831,10 @@ const Home = () => {
                         return (
                           <div
                             key={event._id}
-                            className="glass-panel rounded-2xl overflow-hidden border-glassBorder flex flex-col justify-between hover:border-indigo-500/20 transition-all duration-300 group"
+                            className="glass-panel rounded-2xl overflow-hidden flex flex-col justify-between hover:border-cyan-300 transition-all duration-300 group shadow-sm"
                           >
                             {/* Event Banner */}
-                            <div className="h-32 bg-indigo-950/20 relative overflow-hidden">
+                            <div className="h-32 bg-slate-100 relative overflow-hidden">
                               {event.banner ? (
                                 <img
                                   src={event.banner}
@@ -857,11 +842,11 @@ const Home = () => {
                                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                 />
                               ) : (
-                                <div className="w-full h-full bg-gradient-to-br from-indigo-950/40 to-purple-950/40 flex items-center justify-center">
-                                  <Calendar className="w-10 h-10 text-indigo-500/40" />
+                                <div className="w-full h-full bg-slate-100 flex items-center justify-center">
+                                  <Calendar className="w-10 h-10 text-slate-300" />
                                 </div>
                               )}
-                              <span className="absolute top-3 left-3 text-[10px] font-bold bg-darkCard/90 border border-glassBorder px-2.5 py-1 rounded-md text-indigo-400 uppercase">
+                              <span className="absolute top-3 left-3 text-[10px] font-bold bg-white/90 border border-slate-200 px-2.5 py-1 rounded-md text-cyan-700 uppercase">
                                 {event.category}
                               </span>
                             </div>
@@ -872,29 +857,27 @@ const Home = () => {
                               onClick={() => { recordView(event._id); setSelectedEventDetails(event); }}
                             >
                               <div>
-                                <h3 className="font-bold text-white group-hover:text-indigo-400 transition-colors line-clamp-1">
+                                <h3 className="font-bold text-slate-800 group-hover:text-cyan-700 transition-colors line-clamp-1">
                                   {event.name}
                                 </h3>
-                                <p className="text-xs text-gray-500 mt-2 line-clamp-2 leading-relaxed">
+                                <p className="text-xs text-slate-500 mt-2 line-clamp-2 leading-relaxed">
                                   {event.description}
                                 </p>
                               </div>
 
                               <div className="mt-4 space-y-2">
-                                <div className="flex items-center text-xs text-gray-500 space-x-2">
-                                  <MapPin className="w-3.5 h-3.5 text-gray-600" />
+                                <div className="flex items-center text-xs text-slate-500 space-x-2">
                                   <span className="truncate">{event.venue}</span>
                                 </div>
-                                <div className="flex items-center text-xs text-gray-500 space-x-2">
-                                  <Clock className="w-3.5 h-3.5 text-gray-600" />
+                                <div className="flex items-center text-xs text-slate-500 space-x-2">
                                   <span>{event.time}</span>
                                 </div>
                               </div>
                             </div>
 
                             {/* Event Footer */}
-                            <div className="p-4 border-t border-glassBorder bg-white/[0.01] flex items-center justify-between">
-                              <span className="text-xs font-bold text-gray-400">
+                            <div className="p-4 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between">
+                              <span className="text-xs font-bold text-slate-500">
                                 {formatDate(event.date)}
                               </span>
 
@@ -902,17 +885,17 @@ const Home = () => {
                                 <button
                                   onClick={() => handleLike(event._id)}
                                   className={`p-1.5 rounded-lg border transition-all ${isLiked
-                                    ? 'bg-rose-950/40 border-rose-500/20 text-rose-400'
-                                    : 'bg-white/[0.02] border-glassBorder text-gray-500 hover:text-white'
+                                    ? 'bg-rose-50 border-rose-200 text-rose-600'
+                                    : 'bg-white border-slate-200 text-slate-400 hover:text-slate-700'
                                     }`}
                                 >
-                                  <Heart className={`w-4 h-4 ${isLiked ? 'fill-rose-400' : ''}`} />
+                                  <Heart className={`w-4 h-4 ${isLiked ? 'fill-rose-500' : ''}`} />
                                 </button>
 
                                 <button
                                   onClick={() => handleRegister(event._id)}
                                   className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${isRegistered
-                                    ? 'bg-emerald-950 text-emerald-400 border border-emerald-500/20'
+                                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                                     : 'glass-button-primary'
                                     }`}
                                 >
@@ -929,9 +912,8 @@ const Home = () => {
 
                 {/* RIGHT COLUMN: TIMELINE OF UPCOMING EVENTS */}
                 <div className="space-y-4">
-                  <h3 className="font-bold text-white flex items-center space-x-2 text-sm sm:text-base uppercase tracking-wider text-gray-400">
-                    <Clock className="w-4.5 h-4.5 text-cyan-400" />
-                    <span>Timeline of Upcoming Events</span>
+                  <h3 className="font-bold text-slate-900 text-sm sm:text-base uppercase tracking-wider">
+                    Timeline of Upcoming Events
                   </h3>
 
                   {timeline.length === 0 ? (
@@ -976,14 +958,13 @@ const Home = () => {
           {activeTab === 'qa' && (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* LEFT COLUMN: COMMUNITY QUESTIONS */}
-              <div className="lg:col-span-2 glass-panel p-6 sm:p-8 rounded-2xl space-y-6">
-                <div className="flex items-center justify-between border-b border-glassBorder pb-4">
+              <div className="lg:col-span-2 glass-panel p-6 sm:p-8 rounded-2xl space-y-6 shadow-sm">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-4">
                   <div>
-                    <h2 className="text-lg sm:text-xl font-bold text-white flex items-center space-x-2">
-                      <HelpCircle className="w-5.5 h-5.5 text-indigo-400" />
-                      <span>Student Q&A Board</span>
+                    <h2 className="text-lg sm:text-xl font-bold text-slate-900">
+                      Student Q&A Board
                     </h2>
-                    <p className="text-xs text-gray-500 mt-1">Engage with peer students and get support on academics.</p>
+                    <p className="text-xs text-slate-500 mt-1">Engage with peer students and get support on academics.</p>
                   </div>
 
                   <button
@@ -995,24 +976,24 @@ const Home = () => {
                 </div>
 
                 {questions.length === 0 ? (
-                  <p className="text-gray-500 py-12 text-center font-semibold">No questions posted yet. Launch the first thread!</p>
+                  <p className="text-slate-500 py-12 text-center font-semibold">No questions posted yet. Launch the first thread!</p>
                 ) : (
                   <div className="space-y-4">
                     {questions.map((q) => (
                       <div
                         key={q._id}
-                        className="p-5 bg-white/[0.01] border border-glassBorder rounded-2xl flex flex-col sm:flex-row justify-between items-start gap-4 hover:border-indigo-500/10 hover:bg-white/[0.03] transition-all duration-200"
+                        className="p-5 bg-white border border-[#D6EAF8] rounded-2xl flex flex-col sm:flex-row justify-between items-start gap-4 hover:border-cyan-400 transition-all duration-200 shadow-xs"
                       >
                         <div className="flex-1 space-y-2 cursor-pointer" onClick={() => viewQuestionDetails(q)}>
-                          <h3 className="font-bold text-white hover:text-indigo-400 transition-colors text-sm sm:text-base leading-snug">
+                          <h3 className="font-bold text-slate-800 hover:text-cyan-700 transition-colors text-sm sm:text-base leading-snug">
                             {q.title}
                           </h3>
-                          <p className="text-xs sm:text-sm text-gray-400 line-clamp-2 leading-relaxed">
+                          <p className="text-xs sm:text-sm text-slate-600 line-clamp-2 leading-relaxed">
                             {q.content}
                           </p>
 
-                          <div className="flex flex-wrap items-center gap-3 text-[10px] sm:text-xs text-gray-500 pt-1">
-                            <span className="font-bold text-gray-400">{q.user?.name}</span>
+                          <div className="flex flex-wrap items-center gap-3 text-[10px] sm:text-xs text-slate-500 pt-1">
+                            <span className="font-bold text-slate-700">{q.user?.name}</span>
                             <span>{q.user?.branch} (Year {q.user?.year})</span>
                             <span>&bull;</span>
                             <span>{new Date(q.createdAt).toLocaleDateString()}</span>
@@ -1023,8 +1004,8 @@ const Home = () => {
                           <button
                             onClick={() => handleUpvoteQuestion(q._id)}
                             className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold transition-all ${q.upvotes.includes(user._id)
-                              ? 'bg-indigo-950/60 border-indigo-500/20 text-indigo-400'
-                              : 'bg-white/[0.02] border-glassBorder text-gray-400 hover:text-white'
+                              ? 'bg-cyan-50 border-cyan-200 text-cyan-800'
+                              : 'bg-slate-50 border-slate-200 text-slate-600 hover:text-slate-900'
                               }`}
                           >
                             <ThumbsUp className="w-3.5 h-3.5" />
@@ -1033,7 +1014,7 @@ const Home = () => {
 
                           <button
                             onClick={() => viewQuestionDetails(q)}
-                            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg border border-glassBorder bg-white/[0.02] hover:bg-white/[0.04] text-xs font-bold text-gray-400 hover:text-white transition-all"
+                            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-xs font-bold text-slate-600 transition-all"
                           >
                             <MessageSquare className="w-3.5 h-3.5" />
                             <span>{q.answersCount} Answers</span>
@@ -1046,14 +1027,13 @@ const Home = () => {
               </div>
 
               {/* RIGHT COLUMN: TRENDING DISCUSSIONS */}
-              <div className="glass-panel p-6 rounded-2xl space-y-4 h-fit">
-                <h3 className="font-bold text-white flex items-center space-x-2 text-sm sm:text-base">
-                  <TrendingUp className="w-5 h-5 text-purple-400" />
-                  <span>Trending Discussions</span>
+              <div className="glass-panel p-6 rounded-2xl space-y-4 h-fit shadow-sm">
+                <h3 className="font-bold text-slate-900 text-sm sm:text-base">
+                  Trending Discussions
                 </h3>
 
                 {questions.length === 0 ? (
-                  <p className="text-xs text-gray-500 text-center py-6">No discussions active yet.</p>
+                  <p className="text-xs text-slate-500 text-center py-6">No discussions active yet.</p>
                 ) : (
                   <div className="space-y-3">
                     {[...questions]
@@ -1063,15 +1043,15 @@ const Home = () => {
                         <div
                           key={q._id}
                           onClick={() => viewQuestionDetails(q)}
-                          className="flex items-start justify-between gap-3 p-3 bg-white/[0.01] border border-glassBorder hover:border-purple-500/20 hover:bg-white/[0.03] rounded-xl cursor-pointer transition-all"
+                          className="flex items-start justify-between gap-3 p-3 bg-white border border-[#D6EAF8] hover:border-cyan-400 rounded-xl cursor-pointer transition-all shadow-xs"
                         >
                           <div>
-                            <p className="text-xs font-bold text-white line-clamp-2">{q.title}</p>
-                            <span className="text-[10px] text-gray-500 block mt-1.5">
+                            <p className="text-xs font-bold text-slate-800 line-clamp-2">{q.title}</p>
+                            <span className="text-[10px] text-slate-500 block mt-1.5">
                               {q.answersCount} answers &bull; Asked by {q.user?.name}
                             </span>
                           </div>
-                          <span className="flex items-center space-x-1 text-[10px] font-bold text-purple-400 bg-purple-950/20 px-2 py-0.5 rounded border border-purple-500/10 whitespace-nowrap">
+                          <span className="flex items-center space-x-1 text-[10px] font-bold text-cyan-800 bg-cyan-50 px-2 py-0.5 rounded border border-cyan-200 whitespace-nowrap">
                             <ThumbsUp className="w-3 h-3" />
                             <span>{q.upvotes.length}</span>
                           </span>
@@ -1091,56 +1071,46 @@ const Home = () => {
               <div className="flex space-x-2">
                 <button
                   onClick={() => setPlacementSubTab('oncampus')}
-                  className={`flex items-center space-x-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 border ${
+                  className={`px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 ${
                     placementSubTab === 'oncampus'
-                      ? 'bg-indigo-500/10 border-indigo-500/30 text-indigo-400'
-                      : 'bg-transparent border-glassBorder text-gray-400 hover:text-white hover:bg-white/5'
+                      ? 'bg-cyan-600 text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50 border border-slate-200'
                   }`}
                 >
-                  <Award className="w-4 h-4" />
                   <span>On-Campus</span>
                 </button>
 
                 <button
                   onClick={() => setPlacementSubTab('offcampus')}
-                  className={`flex items-center space-x-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 border ${
+                  className={`px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 ${
                     placementSubTab === 'offcampus'
-                      ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
-                      : 'bg-transparent border-glassBorder text-gray-400 hover:text-white hover:bg-white/5'
+                      ? 'bg-cyan-600 text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50 border border-slate-200'
                   }`}
                 >
-                  <Globe className="w-4 h-4" />
                   <span>Off-Campus</span>
                 </button>
               </div>
 
               {/* ─── ON-CAMPUS PANEL ─────────────────────────────────────────── */}
               {placementSubTab === 'oncampus' && (
-                <div className="glass-panel p-6 sm:p-8 rounded-2xl space-y-6">
+                <div className="glass-panel p-6 sm:p-8 rounded-2xl space-y-6 shadow-sm">
                   {/* Section heading */}
-                  <div className="flex items-center space-x-3 border-b border-glassBorder pb-4">
-                    <div className="p-2 bg-indigo-500/10 rounded-lg">
-                      <Award className="w-5 h-5 text-indigo-400" />
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-white text-lg">On-Campus Opportunities</h3>
-                    </div>
+                  <div className="border-b border-slate-100 pb-4">
+                    <h3 className="font-bold text-slate-900 text-lg">On-Campus Opportunities</h3>
                   </div>
 
                   {/* Training & Placement Head details */}
-                  <div className="bg-white/[0.01] border border-glassBorder p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-glow/5">
+                  <div className="bg-slate-50 border border-[#D6EAF8] p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div className="flex items-center space-x-3">
-                      <div className="p-2.5 bg-indigo-500/10 rounded-lg text-indigo-400">
-                        <Users className="w-4.5 h-4.5" />
-                      </div>
                       <div>
-                        <span className="block text-[10px] text-gray-500 font-bold uppercase tracking-wider">Training & Placement Head</span>
-                        <span className="font-extrabold text-white text-sm">
+                        <span className="block text-[10px] text-slate-500 font-bold uppercase tracking-wider">Training & Placement Head</span>
+                        <span className="font-extrabold text-slate-800 text-sm">
                           {isNITDelhi(selectedCollege) || isNITDelhi(user?.college) ? 'Harsh Sudhakar' : 'To Be Appointed'}
                         </span>
                       </div>
                     </div>
-                    <div className="text-[10px] text-gray-400 bg-white/[0.02] border border-glassBorder px-2.5 py-1 rounded-md self-start sm:self-center font-semibold">
+                    <div className="text-[10px] text-slate-600 bg-white border border-slate-200 px-2.5 py-1 rounded-md self-start sm:self-center font-semibold">
                       T&P Cell Contact Point
                     </div>
                   </div>

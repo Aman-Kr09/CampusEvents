@@ -30,13 +30,13 @@ const EXAM_TYPE_COLORS = {
 };
 
 const SemBadge = ({ sem }) => (
-  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-    <Layers className="w-2.5 h-2.5" /> Sem {sem}
+  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-cyan-50 text-cyan-700 border border-cyan-200">
+    Sem {sem}
   </span>
 );
 
 const ExamBadge = ({ type }) => (
-  <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border ${EXAM_TYPE_COLORS[type] || 'bg-gray-500/20 text-gray-300 border-gray-500/30'}`}>
+  <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border ${EXAM_TYPE_COLORS[type] || 'bg-slate-100 text-slate-700 border-slate-200'}`}>
     {type}
   </span>
 );
@@ -57,14 +57,11 @@ const PYQCard = ({ pyq, index, userId, onPreview, onBookmark, onDelete, onDownlo
       animate="visible"
       exit="exit"
       layout
-      className="relative group flex flex-col gap-3 p-5 rounded-2xl border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06] backdrop-blur-sm hover:border-indigo-500/30 transition-all duration-300 overflow-hidden"
+      className="relative group flex flex-col gap-3 p-5 rounded-2xl border border-[#D6EAF8] bg-white hover:border-cyan-400 shadow-sm transition-all duration-300 overflow-hidden"
     >
-      {/* Subtle gradient glow on hover */}
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-2xl bg-gradient-to-br from-indigo-600/5 via-transparent to-purple-600/5" />
-
       {/* File-type icon strip */}
       <div className="flex items-start justify-between gap-2">
-        <div className={`p-2.5 rounded-xl ${isPDF ? 'bg-red-500/10 text-red-400' : 'bg-purple-500/10 text-purple-400'}`}>
+        <div className={`p-2.5 rounded-xl ${isPDF ? 'bg-red-50 text-red-600' : 'bg-purple-50 text-purple-600'}`}>
           {isPDF ? <FileText className="w-5 h-5" /> : <Image className="w-5 h-5" />}
         </div>
         <div className="flex items-center gap-1.5 flex-wrap justify-end">
@@ -75,29 +72,19 @@ const PYQCard = ({ pyq, index, userId, onPreview, onBookmark, onDelete, onDownlo
 
       {/* Subject info */}
       <div>
-        <h3 className="text-sm font-bold text-white leading-snug line-clamp-2">{pyq.subjectName}</h3>
-        <p className="text-xs text-indigo-400 font-mono mt-0.5">{pyq.courseCode}</p>
+        <h3 className="text-sm font-bold text-slate-900 leading-snug line-clamp-2">{pyq.subjectName}</h3>
+        <p className="text-xs text-cyan-700 font-mono mt-0.5">{pyq.courseCode}</p>
       </div>
 
       {/* Meta row */}
-      <div className="flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-gray-400">
-        <span className="flex items-center gap-1">
-          <Tag className="w-3 h-3 text-cyan-500" />
-          {pyq.department}
-        </span>
-        <span className="flex items-center gap-1">
-          <Calendar className="w-3 h-3 text-emerald-500" />
-          {pyq.academicYear}
-        </span>
-        <span className="flex items-center gap-1">
-          <GraduationCap className="w-3 h-3 text-amber-500" />
-          {pyq.uploadedBy?.name || 'Unknown'}
-        </span>
+      <div className="flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-slate-500">
+        <span>{pyq.department}</span>
+        <span>&bull; {pyq.academicYear}</span>
+        <span>&bull; {pyq.uploadedBy?.name || 'Unknown'}</span>
       </div>
 
       {/* Upload date */}
-      <p className="text-[10px] text-gray-600 flex items-center gap-1">
-        <Clock className="w-3 h-3" />
+      <p className="text-[10px] text-slate-400 flex items-center gap-1">
         {new Date(pyq.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
       </p>
 
@@ -105,14 +92,14 @@ const PYQCard = ({ pyq, index, userId, onPreview, onBookmark, onDelete, onDownlo
       <div className="flex items-center gap-2 mt-auto pt-1">
         <button
           onClick={() => onPreview(pyq)}
-          className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 text-xs font-semibold border border-indigo-500/20 transition-all duration-200"
+          className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-cyan-50 hover:bg-cyan-100 text-cyan-800 text-xs font-semibold border border-cyan-200 transition-all duration-200"
           title="Preview"
         >
           <Eye className="w-3.5 h-3.5" /> Preview
         </button>
         <button
           onClick={() => onDownload(pyq)}
-          className="flex items-center justify-center p-2 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/40 text-emerald-300 border border-emerald-500/20 transition-all duration-200"
+          className="flex items-center justify-center p-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 transition-all duration-200"
           title="Download"
         >
           <Download className="w-3.5 h-3.5" />
@@ -120,8 +107,8 @@ const PYQCard = ({ pyq, index, userId, onPreview, onBookmark, onDelete, onDownlo
         <button
           onClick={() => onBookmark(pyq._id)}
           className={`flex items-center justify-center p-2 rounded-xl border transition-all duration-200 ${isBookmarked
-            ? 'bg-amber-500/20 text-amber-400 border-amber-500/30'
-            : 'bg-white/5 text-gray-400 border-white/10 hover:bg-amber-500/10 hover:text-amber-400'
+            ? 'bg-amber-50 text-amber-700 border-amber-300'
+            : 'bg-slate-50 text-slate-500 border-slate-200 hover:bg-amber-50 hover:text-amber-700'
             }`}
           title={isBookmarked ? 'Remove bookmark' : 'Bookmark'}
         >
@@ -130,7 +117,7 @@ const PYQCard = ({ pyq, index, userId, onPreview, onBookmark, onDelete, onDownlo
         {isUploader && (
           <button
             onClick={() => onDelete(pyq._id)}
-            className="flex items-center justify-center p-2 rounded-xl bg-red-600/10 hover:bg-red-600/30 text-red-400 border border-red-500/20 transition-all duration-200"
+            className="flex items-center justify-center p-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 transition-all duration-200"
             title="Delete"
           >
             <Trash2 className="w-3.5 h-3.5" />
@@ -593,42 +580,33 @@ export default function PYQ() {
   };
 
   return (
-    <div className="min-h-screen bg-[#080812] text-white">
-      {/* ── Background decoration ── */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-40 -left-40 w-96 h-96 rounded-full bg-indigo-600/10 blur-3xl" />
-        <div className="absolute top-1/3 -right-40 w-80 h-80 rounded-full bg-purple-600/8 blur-3xl" />
-        <div className="absolute bottom-0 left-1/3 w-72 h-72 rounded-full bg-cyan-600/6 blur-3xl" />
-      </div>
-
+    <div className="min-h-screen bg-[#F6FBFF] text-slate-900">
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
 
         {/* ── Page Header ─────────────────────────────────────────────────── */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400">
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
               PYQ Repository
             </h1>
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-sm text-slate-500 mt-1">
               Previous Year Question Papers · {user?.college?.name || 'Your College'}
             </p>
           </div>
           <div className="flex items-center gap-2.5">
             <button
               onClick={() => { setShowBM(b => !b); }}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border transition-all duration-200 ${showBookmarks
-                ? 'bg-amber-500/20 text-amber-300 border-amber-500/30'
-                : 'bg-white/5 text-gray-400 border-white/10 hover:text-amber-300 hover:border-amber-500/30'
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border transition-all duration-200 ${showBookmarks
+                ? 'bg-amber-50 text-amber-800 border-amber-300'
+                : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
                 }`}
             >
-              <BookMarked className="w-4 h-4" />
-              <span className="hidden sm:inline">{showBookmarks ? 'All PYQs' : 'Bookmarks'}</span>
+              <span>{showBookmarks ? 'All PYQs' : 'Bookmarks'}</span>
             </button>
             <button
               onClick={() => setShowUpload(true)}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-sm font-bold shadow-lg shadow-indigo-900/30 transition-all duration-300"
+              className="glass-button-primary text-sm py-2 px-4 font-bold"
             >
-              <Plus className="w-4 h-4" />
               Upload PYQ
             </button>
           </div>
@@ -636,41 +614,34 @@ export default function PYQ() {
 
         {/* ── Semester Tabs ───────────────────────────────────────────────── */}
         {!showBookmarks && (
-          <div className="relative flex items-center gap-1 p-1 rounded-2xl bg-white/[0.03] border border-white/[0.06] overflow-x-auto scrollbar-hide">
+          <div className="relative flex items-center gap-1 p-1 rounded-2xl bg-white border border-[#D6EAF8] shadow-xs overflow-x-auto">
             {SEMESTERS.map(s => (
               <button
                 key={s}
                 onClick={() => { setActiveSem(s); setActiveDept('All'); }}
-                className={`relative flex-shrink-0 flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${activeSem === s
-                  ? 'text-white'
-                  : 'text-gray-500 hover:text-gray-300'
+                className={`relative flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${activeSem === s
+                  ? 'bg-cyan-600 text-white shadow-xs font-bold'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                   }`}
               >
-                {activeSem === s && (
-                  <motion.div
-                    layoutId="sem-tab-bg"
-                    className="absolute inset-0 rounded-xl bg-gradient-to-br from-indigo-600/50 to-purple-600/50 border border-indigo-500/30"
-                    transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                  />
-                )}
-                <span className="relative">Semester {s}</span>
+                <span>Semester {s}</span>
               </button>
             ))}
           </div>
         )}
 
         {/* ── Branch Filters ──────────────────────────────────────────────── */}
-        <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-1">
-          <span className="flex-shrink-0 flex items-center gap-1.5 text-xs text-gray-500 font-semibold">
-            <SlidersHorizontal className="w-3.5 h-3.5" /> Branch:
+        <div className="flex items-center gap-2 overflow-x-auto pb-1">
+          <span className="flex-shrink-0 text-xs text-slate-500 font-semibold">
+            Branch:
           </span>
           {['All', ...departments].map(d => (
             <button
               key={d}
               onClick={() => setActiveDept(d)}
               className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-200 ${activeDept === d
-                ? 'bg-indigo-600/30 text-indigo-200 border-indigo-500/50'
-                : 'bg-white/5 text-gray-400 border-white/10 hover:border-indigo-500/30 hover:text-white'
+                ? 'bg-cyan-600 text-white border-cyan-600'
+                : 'bg-white text-slate-600 border-slate-200 hover:bg-cyan-50'
                 }`}
             >
               {d}
@@ -682,13 +653,13 @@ export default function PYQ() {
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           {/* Search */}
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
             <input
               type="text"
               placeholder="Search by subject or course code…"
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/10 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/20 transition-all"
+              className="w-full glass-input text-sm pl-9"
             />
           </div>
 
@@ -697,12 +668,11 @@ export default function PYQ() {
             <select
               value={yearFilter}
               onChange={e => setYearFilter(e.target.value)}
-              className="appearance-none pl-3 pr-8 py-2.5 rounded-xl bg-[#0d0d1a] border border-white/10 text-sm text-white focus:outline-none focus:border-indigo-500/50 transition-all min-w-[130px]"
+              className="glass-input text-sm pr-8 min-w-[130px]"
             >
               <option value="">All Years</option>
               {academicYears.map(y => <option key={y} value={y}>{y}</option>)}
             </select>
-            <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-500 pointer-events-none" />
           </div>
 
           {/* Exam type filter */}
@@ -710,18 +680,17 @@ export default function PYQ() {
             <select
               value={examFilter}
               onChange={e => setExamFilter(e.target.value)}
-              className="appearance-none pl-3 pr-8 py-2.5 rounded-xl bg-[#0d0d1a] border border-white/10 text-sm text-white focus:outline-none focus:border-indigo-500/50 transition-all min-w-[140px]"
+              className="glass-input text-sm pr-8 min-w-[140px]"
             >
               <option value="">All Exam Types</option>
               {EXAM_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
             </select>
-            <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-500 pointer-events-none" />
           </div>
         </div>
 
         {/* ── Results header ──────────────────────────────────────────────── */}
         <div className="flex items-center justify-between">
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-slate-500">
             {showBookmarks
               ? `${displayedPyqs.length} bookmarked question paper${displayedPyqs.length !== 1 ? 's' : ''}`
               : `${displayedPyqs.length} result${displayedPyqs.length !== 1 ? 's' : ''} for Semester ${activeSem}${activeDept !== 'All' ? ` · ${activeDept}` : ''}`
@@ -730,9 +699,9 @@ export default function PYQ() {
           {(search || yearFilter || examFilter || activeDept !== 'All') && (
             <button
               onClick={() => { setSearch(''); setYearFilter(''); setExamFilter(''); setActiveDept('All'); }}
-              className="flex items-center gap-1.5 text-xs text-indigo-400 hover:text-indigo-300 transition-colors"
+              className="flex items-center gap-1 text-xs text-cyan-700 hover:text-cyan-800 transition-colors font-semibold"
             >
-              <X className="w-3.5 h-3.5" /> Clear filters
+              Clear filters
             </button>
           )}
         </div>

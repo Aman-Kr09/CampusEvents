@@ -333,16 +333,12 @@ export default function CampusConnect() {
       </AnimatePresence>
 
       {/* Hero Section */}
-      <div className="relative rounded-3xl p-8 border border-white/10 bg-gradient-to-r from-indigo-950/40 via-purple-950/30 to-cyan-950/40 backdrop-blur-xl overflow-hidden shadow-2xl">
-        <div className="absolute top-0 right-0 -mt-12 -mr-12 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+      <div className="rounded-2xl p-6 border border-[#D6EAF8] bg-white shadow-sm overflow-hidden">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-              Campus <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400">Connect</span>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+              Campus Connect
             </h1>
-            <p className="text-gray-300 text-sm sm:text-base mt-2 max-w-2xl leading-relaxed">
-              Buy & sell used student essentials, or coordinate cab shares and travel with fellow verified classmates effortlessly.
-            </p>
           </div>
 
           {/* Action Buttons */}
@@ -350,42 +346,42 @@ export default function CampusConnect() {
             {activeTab === 'marketplace' ? (
               <button
                 onClick={() => setShowPostMarketModal(true)}
-                className="glass-button-primary flex items-center gap-2 font-semibold text-sm px-5 py-3 rounded-xl shadow-lg hover:shadow-indigo-500/25 transition-all"
+                className="glass-button-primary font-semibold text-sm px-5 py-2.5 rounded-xl shadow-xs"
               >
-                <Plus className="w-5 h-5" /> Sell / Giveaway Item
+                Sell / Giveaway Item
               </button>
             ) : (
               <button
                 onClick={() => setShowCreateRideModal(true)}
-                className="glass-button-primary flex items-center gap-2 font-semibold text-sm px-5 py-3 rounded-xl shadow-lg hover:shadow-indigo-500/25 transition-all"
+                className="glass-button-primary font-semibold text-sm px-5 py-2.5 rounded-xl shadow-xs"
               >
-                <Car className="w-5 h-5" /> Offer / Post Ride
+                Offer / Post Ride
               </button>
             )}
           </div>
         </div>
 
         {/* Tab Switcher */}
-        <div className="mt-8 flex items-center gap-3 border-b border-white/10 pb-4">
+        <div className="mt-6 flex items-center gap-2 border-t border-slate-100 pt-4">
           <button
             onClick={() => setActiveTab('marketplace')}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 ${
+            className={`px-5 py-2 rounded-xl font-bold text-sm transition-all duration-200 ${
               activeTab === 'marketplace'
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30'
-                : 'text-gray-400 hover:text-white hover:bg-white/5'
+                ? 'bg-cyan-600 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
             }`}
           >
-            <ShoppingBag className="w-4 h-4" /> 🛍️ Campus Marketplace
+            Campus Marketplace
           </button>
           <button
             onClick={() => setActiveTab('rides')}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 ${
+            className={`px-5 py-2 rounded-xl font-bold text-sm transition-all duration-200 ${
               activeTab === 'rides'
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30'
-                : 'text-gray-400 hover:text-white hover:bg-white/5'
+                ? 'bg-cyan-600 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
             }`}
           >
-            <Car className="w-4 h-4" /> 🚕 Ride Sharing
+            Ride Sharing
           </button>
         </div>
       </div>
