@@ -470,7 +470,7 @@ const CampusAssistant = () => {
               </motion.div>
             ) : (
               <motion.div key="bot" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.2 }}>
-                <Sparkles className="w-5 h-5 text-white" />
+                <Bot className="w-6 h-6 text-white" />
               </motion.div>
             )}
           </AnimatePresence>
@@ -485,7 +485,7 @@ const CampusAssistant = () => {
             className="absolute right-16 top-1/2 -translate-y-1/2 whitespace-nowrap text-xs font-semibold text-white px-3 py-1.5 rounded-full pointer-events-none"
             style={{ background: 'rgba(99,102,241,0.9)', backdropFilter: 'blur(8px)', boxShadow: '0 4px 12px rgba(99,102,241,0.4)' }}
           >
-            Campus AI ✨
+            Campus AI
           </motion.div>
         )}
       </motion.div>

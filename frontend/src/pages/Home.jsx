@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api, useAuth } from '../context/AuthContext';
 import useSocket from '../hooks/useSocket';
@@ -1446,7 +1446,6 @@ const Home = () => {
                         disabled={generatingTags}
                         className="text-xs text-cyan-700 hover:text-cyan-800 font-bold flex items-center space-x-1 border border-cyan-200 bg-cyan-50 px-2 py-0.5 rounded"
                       >
-                        <Sparkles className="w-3.5 h-3.5" />
                         <span>{generatingTags ? 'Extracting...' : 'AI Generate Tags'}</span>
                       </button>
                     </div>
