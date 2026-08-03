@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
+import {
   Building, Users, Shield, Plus, Check, X, Trash2, ShieldAlert, BarChart3, Mail, Lock, User, Globe, FileText
 } from 'lucide-react';
 
@@ -105,11 +105,10 @@ const SuperAdminDashboard = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 bg-[#F6FBFF] text-slate-900 min-h-screen">
-      
+
       {/* 1. Header */}
       <div>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">Super Admin Dashboard</h1>
-        <p className="text-slate-500 font-semibold text-xs sm:text-sm mt-0.5">Control global platform scaling, approve new universities, and manage system accounts.</p>
       </div>
 
       {/* Auto-created admin credentials alert */}
@@ -145,45 +144,33 @@ const SuperAdminDashboard = () => {
         <div className="text-xs text-slate-500 font-semibold">Calculating global metrics...</div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-white border border-[#D6EAF8] p-4 rounded-2xl flex items-center justify-between shadow-xs">
-            <div>
-              <span className="block text-xs text-slate-500 font-extrabold uppercase">Total Colleges</span>
-              <span className="text-2xl font-extrabold text-slate-900">{analytics.colleges.total}</span>
-            </div>
-            <Building className="w-8 h-8 text-cyan-600" />
+          <div className="bg-white border border-[#D6EAF8] p-4.5 rounded-2xl shadow-xs">
+            <span className="block text-xs text-slate-500 font-extrabold uppercase">Total Colleges</span>
+            <span className="text-2xl font-extrabold text-slate-900 mt-1 block">{analytics.colleges.total}</span>
           </div>
 
-          <div className="bg-white border border-[#D6EAF8] p-4 rounded-2xl flex items-center justify-between shadow-xs">
-            <div>
-              <span className="block text-xs text-slate-500 font-extrabold uppercase">Active Users</span>
-              <span className="text-2xl font-extrabold text-slate-900">{analytics.users.total}</span>
-            </div>
-            <Users className="w-8 h-8 text-cyan-600" />
+          <div className="bg-white border border-[#D6EAF8] p-4.5 rounded-2xl shadow-xs">
+            <span className="block text-xs text-slate-500 font-extrabold uppercase">Active Users</span>
+            <span className="text-2xl font-extrabold text-slate-900 mt-1 block">{analytics.users.total}</span>
           </div>
 
-          <div className="bg-white border border-[#D6EAF8] p-4 rounded-2xl flex items-center justify-between shadow-xs">
-            <div>
-              <span className="block text-xs text-slate-500 font-extrabold uppercase">Pending Approvals</span>
-              <span className={`text-2xl font-extrabold ${analytics.colleges.pending > 0 ? 'text-amber-600' : 'text-slate-900'}`}>
-                {analytics.colleges.pending}
-              </span>
-            </div>
-            <ShieldAlert className="w-8 h-8 text-amber-500" />
+          <div className="bg-white border border-[#D6EAF8] p-4.5 rounded-2xl shadow-xs">
+            <span className="block text-xs text-slate-500 font-extrabold uppercase">Pending Approvals</span>
+            <span className={`text-2xl font-extrabold mt-1 block ${analytics.colleges.pending > 0 ? 'text-amber-600' : 'text-slate-900'}`}>
+              {analytics.colleges.pending}
+            </span>
           </div>
 
-          <div className="bg-white border border-[#D6EAF8] p-4 rounded-2xl flex items-center justify-between shadow-xs">
-            <div>
-              <span className="block text-xs text-slate-500 font-extrabold uppercase">System Events</span>
-              <span className="text-2xl font-extrabold text-slate-900">{analytics.events.total}</span>
-            </div>
-            <Shield className="w-8 h-8 text-cyan-600" />
+          <div className="bg-white border border-[#D6EAF8] p-4.5 rounded-2xl shadow-xs">
+            <span className="block text-xs text-slate-500 font-extrabold uppercase">System Events</span>
+            <span className="text-2xl font-extrabold text-slate-900 mt-1 block">{analytics.events.total}</span>
           </div>
         </div>
       )}
 
       {/* 3. Panel split */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        
+
         {/* Navigation column */}
         <div className="lg:col-span-1 space-y-2">
           {[
@@ -196,11 +183,10 @@ const SuperAdminDashboard = () => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`w-full flex items-center justify-between px-4 py-3 rounded-xl font-bold text-sm transition-all duration-200 ${
-                  active 
-                    ? 'bg-cyan-600 text-white shadow-xs' 
+                className={`w-full flex items-center justify-between px-4 py-3 rounded-xl font-bold text-sm transition-all duration-200 ${active
+                    ? 'bg-cyan-600 text-white shadow-xs'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50 border border-transparent'
-                }`}
+                  }`}
               >
                 <span>{tab.label}</span>
                 {tab.count > 0 && (
@@ -219,18 +205,18 @@ const SuperAdminDashboard = () => {
             <div className="py-12 text-center text-slate-500 font-semibold">Loading console workspace...</div>
           ) : (
             <div className="bg-white border border-[#D6EAF8] p-6 rounded-2xl shadow-sm min-h-[400px]">
-              
+
               {/* TAB 1: ONBOARDING REQUESTS */}
               {activeTab === 'requests' && (
                 <div className="space-y-6">
                   <h3 className="font-extrabold text-slate-900 text-base">New College Onboarding Proposals ({pendingRequests.length})</h3>
-                  
+
                   {pendingRequests.length === 0 ? (
                     <p className="text-xs text-slate-500 font-medium">No college onboarding requests pending review.</p>
                   ) : (
                     <div className="space-y-4">
                       {pendingRequests.map(c => (
-                        <div 
+                        <div
                           key={c._id}
                           className="bg-white border border-[#D6EAF8] p-4 rounded-xl flex flex-col md:flex-row justify-between gap-4 shadow-xs"
                         >
@@ -285,11 +271,10 @@ const SuperAdminDashboard = () => {
 
                   <form onSubmit={handleCreateAdmin} className="space-y-4">
                     {adminMsg && (
-                      <div className={`p-3.5 border rounded-xl text-xs font-bold ${
-                        adminMsg.type === 'success' 
-                          ? 'bg-emerald-50 text-emerald-800 border-emerald-200' 
+                      <div className={`p-3.5 border rounded-xl text-xs font-bold ${adminMsg.type === 'success'
+                          ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
                           : 'bg-rose-50 text-rose-700 border-rose-200'
-                      }`}>
+                        }`}>
                         <span>{adminMsg.text}</span>
                       </div>
                     )}
@@ -378,13 +363,12 @@ const SuperAdminDashboard = () => {
                             <td className="py-3 font-bold text-slate-900">{col.name}</td>
                             <td className="py-3 font-semibold text-slate-600">{col.state}</td>
                             <td className="py-3">
-                              <span className={`px-2.5 py-0.5 rounded text-[10px] font-bold uppercase ${
-                                col.status === 'Approved' 
-                                  ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' 
+                              <span className={`px-2.5 py-0.5 rounded text-[10px] font-bold uppercase ${col.status === 'Approved'
+                                  ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
                                   : col.status === 'Suspended'
                                     ? 'bg-rose-100 text-rose-800 border border-rose-200'
                                     : 'bg-amber-100 text-amber-800 border border-amber-200'
-                              }`}>
+                                }`}>
                                 {col.status}
                               </span>
                             </td>
@@ -392,11 +376,10 @@ const SuperAdminDashboard = () => {
                               {col.status !== 'Pending' && (
                                 <button
                                   onClick={() => handleUpdateStatus(col._id, col.status === 'Approved' ? 'Suspended' : 'Approved')}
-                                  className={`text-xs font-bold px-3 py-1 rounded-lg border transition-all ${
-                                    col.status === 'Approved'
+                                  className={`text-xs font-bold px-3 py-1 rounded-lg border transition-all ${col.status === 'Approved'
                                       ? 'bg-rose-50 border-rose-200 text-rose-700 hover:bg-rose-100'
                                       : 'bg-emerald-50 border-emerald-200 text-emerald-800 hover:bg-emerald-100'
-                                  }`}
+                                    }`}
                                 >
                                   {col.status === 'Approved' ? 'Suspend' : 'Unsuspend'}
                                 </button>

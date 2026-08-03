@@ -134,12 +134,16 @@ const Navbar = () => {
           {/* User Details & Action */}
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2 text-right">
-              <span className="hidden sm:block text-xs font-semibold text-slate-500">
-                {user?.role === 'SuperAdmin' ? 'Super Admin' : user?.role === 'Admin' ? 'College Admin' : 'Student'}
-              </span>
-              <span className="block text-sm font-bold text-slate-900 max-w-[120px] truncate">
-                {user?.name}
-              </span>
+              {user?.role !== 'SuperAdmin' && (
+                <>
+                  <span className="hidden sm:block text-xs font-semibold text-slate-500">
+                    {user?.role === 'Admin' ? 'College Admin' : 'Student'}
+                  </span>
+                  <span className="block text-sm font-bold text-slate-900 max-w-[120px] truncate">
+                    {user?.name}
+                  </span>
+                </>
+              )}
             </div>
             
             <button
