@@ -87,9 +87,9 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/donate" className="text-xs text-gray-400 hover:text-rose-400 transition-colors duration-200 flex items-center space-x-1">
-                  <Heart className="w-3 h-3 text-rose-400" />
-                  <span className="font-semibold text-rose-300">Donate Support</span>
+                <Link to="/donate" className="text-xs text-gray-400 hover:text-indigo-400 transition-colors duration-200 flex items-center space-x-1">
+                  <Heart className="w-3 h-3" />
+                  <span>Donate Support</span>
                 </Link>
               </li>
             </ul>
