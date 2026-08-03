@@ -122,10 +122,9 @@ const SuperAdminLogin = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full glass-button-primary py-3 flex items-center justify-center space-x-2 mt-2"
+              className="w-full glass-button-primary py-3 flex items-center justify-center space-x-2 mt-2 font-bold"
             >
               <span>{loading ? 'Verifying Identity...' : 'Access Console'}</span>
-              {!loading && <ArrowRight className="w-4 h-4" />}
             </button>
           </form>
 

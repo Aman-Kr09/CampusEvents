@@ -335,7 +335,6 @@ const Login = () => {
                   className="w-full bg-gradient-to-r from-cyan-600 to-sky-600 hover:from-cyan-700 hover:to-sky-700 text-white font-bold py-3 rounded-xl flex items-center justify-center space-x-2 mt-2 shadow-md transition-all text-sm"
                 >
                   <span>{loading ? 'Authenticating...' : 'Sign In'}</span>
-                  {!loading && <ArrowRight className="w-4 h-4" />}
                 </button>
               </motion.form>
             )}
