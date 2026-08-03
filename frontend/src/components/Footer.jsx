@@ -29,14 +29,6 @@ const Footer = () => {
             <p className="text-xs text-slate-500 leading-relaxed max-w-sm">
               The premier full-stack platform for campus events discovery, academic Q&A forums, placement statistics archives, and official administration announcements. Strictly isolated by college.
             </p>
-            {selectedCollege && (
-              <div className="flex items-center space-x-2 pt-1">
-                <span className="inline-block w-2 h-2 rounded-full bg-cyan-600 shadow-glow animate-pulse-slow"></span>
-                <span className="text-[10px] text-cyan-800 font-bold uppercase tracking-wider bg-cyan-50 px-2 py-0.5 rounded-md border border-cyan-200">
-                  Connected to {selectedCollege.name}
-                </span>
-              </div>
-            )}
           </div>
 
           {/* Column 2: Platform Links */}
@@ -118,21 +110,10 @@ const Footer = () => {
         </div>
 
         {/* Footer Bottom Area */}
-        <div className="border-t border-slate-100 pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="border-t border-slate-100 pt-6 flex items-center justify-between">
           <p className="text-[11px] text-slate-500">
             &copy; {new Date().getFullYear()} CampusEvents. All rights reserved. Empowering connected academic networks.
           </p>
-
-          {/* Status Indicator */}
-          <div className="flex items-center space-x-2 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-600"></span>
-            </span>
-            <span className="text-[10px] text-emerald-700 font-bold uppercase tracking-wider">
-              All Systems Operational
-            </span>
-          </div>
         </div>
       </div>
     </footer>
