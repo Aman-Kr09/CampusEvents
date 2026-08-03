@@ -182,40 +182,6 @@ const Landing = () => {
           >
             Discover events, ask academic questions, view placement logs, and engage with students from your college.
           </motion.p>
-
-          {/* Mobile App Download Banner */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.25 }}
-            className="inline-flex flex-col sm:flex-row items-center justify-between gap-3 bg-gradient-to-r from-indigo-950/80 via-purple-950/60 to-emerald-950/80 border border-emerald-500/30 rounded-2xl p-4 max-w-xl mx-auto text-left shadow-lg"
-          >
-            <div className="flex items-center space-x-3">
-              <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 shrink-0">
-                <Smartphone className="w-6 h-6" />
-              </div>
-              <div>
-                <h3 className="text-sm font-bold text-white flex items-center gap-1.5 flex-wrap">
-                  <span>CampusEvents Android App</span>
-                  <span className="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full uppercase tracking-wider font-semibold">
-                    v1.0 APK
-                  </span>
-                </h3>
-                <p className="text-xs text-gray-400 mt-0.5">
-                  Download & install directly on your Android phone to stay connected anywhere.
-                </p>
-              </div>
-            </div>
-            <a
-              href="https://expo.dev/artifacts/eas/amZEhB-oB98BNwR6dD_NC8IGarRDuTQlNLlvKonJ2SI.apk"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center space-x-1.5 text-xs text-white bg-emerald-600 hover:bg-emerald-500 px-4 py-2.5 rounded-xl font-bold transition-all duration-200 whitespace-nowrap shadow-md hover:shadow-emerald-500/25 shrink-0"
-            >
-              <Download className="w-4 h-4" />
-              <span>Download APK</span>
-            </a>
-          </motion.div>
         </div>
 
         {/* Search + College List */}
