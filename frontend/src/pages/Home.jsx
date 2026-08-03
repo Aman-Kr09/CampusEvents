@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+﻿import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api, useAuth } from '../context/AuthContext';
 import useSocket from '../hooks/useSocket';
@@ -564,7 +564,6 @@ const Home = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#D6EAF8] pb-6 mb-8">
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">Campus Board</h1>
-          <p className="text-slate-500 text-xs sm:text-sm mt-0.5">Explore college analytics, updates, and recommended events.</p>
         </div>
 
         {/* Action controls */}
@@ -958,7 +957,6 @@ const Home = () => {
                     <h2 className="text-lg sm:text-xl font-bold text-slate-900">
                       Student Q&A Board
                     </h2>
-                    <p className="text-xs text-slate-500 mt-1">Engage with peer students and get support on academics.</p>
                   </div>
 
                   <button
@@ -1065,22 +1063,20 @@ const Home = () => {
               <div className="flex space-x-2">
                 <button
                   onClick={() => setPlacementSubTab('oncampus')}
-                  className={`px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 ${
-                    placementSubTab === 'oncampus'
-                      ? 'bg-cyan-600 text-white shadow-xs'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50 border border-slate-200'
-                  }`}
+                  className={`px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 ${placementSubTab === 'oncampus'
+                    ? 'bg-cyan-600 text-white shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50 border border-slate-200'
+                    }`}
                 >
                   <span>On-Campus</span>
                 </button>
 
                 <button
                   onClick={() => setPlacementSubTab('offcampus')}
-                  className={`px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 ${
-                    placementSubTab === 'offcampus'
-                      ? 'bg-cyan-600 text-white shadow-xs'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50 border border-slate-200'
-                  }`}
+                  className={`px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 ${placementSubTab === 'offcampus'
+                    ? 'bg-cyan-600 text-white shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50 border border-slate-200'
+                    }`}
                 >
                   <span>Off-Campus</span>
                 </button>
@@ -1217,11 +1213,10 @@ const Home = () => {
                                     salary: c.package || 'N/A'
                                   });
                                 }}
-                                className={`px-2.5 py-1 rounded text-[10px] font-bold border transition-all ${
-                                  user?.appliedJobs?.some(j => j.jobId === `oncampus_${c._id || c.name}`)
-                                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                                    : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
-                                }`}
+                                className={`px-2.5 py-1 rounded text-[10px] font-bold border transition-all ${user?.appliedJobs?.some(j => j.jobId === `oncampus_${c._id || c.name}`)
+                                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                                  : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                                  }`}
                               >
                                 {user?.appliedJobs?.some(j => j.jobId === `oncampus_${c._id || c.name}`) ? '✓ Applied' : 'Mark Applied'}
                               </button>
@@ -1263,7 +1258,7 @@ const Home = () => {
                           <div className="flex items-start justify-between gap-2 mb-3">
                             <div className="flex items-center gap-3 min-w-0 flex-1">
                               {job.logo && (
-                                <img src={job.logo} alt={job.company} className="w-10 h-10 rounded-xl object-contain bg-white border border-slate-200 p-1 shrink-0" onError={e => { e.target.style.display='none'; }} />
+                                <img src={job.logo} alt={job.company} className="w-10 h-10 rounded-xl object-contain bg-white border border-slate-200 p-1 shrink-0" onError={e => { e.target.style.display = 'none'; }} />
                               )}
                               <div className="min-w-0">
                                 <h4 className="font-bold text-slate-900 text-sm leading-snug truncate group-hover:text-cyan-700 transition-colors">{job.title}</h4>
@@ -1273,12 +1268,11 @@ const Home = () => {
 
                             {/* Right badges column */}
                             <div className="flex flex-col items-end gap-1.5 shrink-0">
-                              <span className={`px-2 py-0.5 rounded text-[10px] font-bold border whitespace-nowrap ${
-                                job.employmentType === 'Full-Time' ? 'bg-blue-50 text-blue-700 border-blue-200'
+                              <span className={`px-2 py-0.5 rounded text-[10px] font-bold border whitespace-nowrap ${job.employmentType === 'Full-Time' ? 'bg-blue-50 text-blue-700 border-blue-200'
                                 : job.employmentType === 'Internship' ? 'bg-purple-50 text-purple-700 border-purple-200'
-                                : job.employmentType === 'Contract' ? 'bg-orange-50 text-orange-700 border-orange-200'
-                                : 'bg-teal-50 text-teal-700 border-teal-200'
-                              }`}>
+                                  : job.employmentType === 'Contract' ? 'bg-orange-50 text-orange-700 border-orange-200'
+                                    : 'bg-teal-50 text-teal-700 border-teal-200'
+                                }`}>
                                 {job.employmentType}
                               </span>
                             </div>
@@ -1344,11 +1338,10 @@ const Home = () => {
                                   salary: job.salary || ''
                                 });
                               }}
-                              className={`px-2.5 py-1.5 rounded-lg text-xs font-bold border transition-all ${
-                                user?.appliedJobs?.some(j => String(j.jobId) === String(job._id))
-                                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                                  : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
-                              }`}
+                              className={`px-2.5 py-1.5 rounded-lg text-xs font-bold border transition-all ${user?.appliedJobs?.some(j => String(j.jobId) === String(job._id))
+                                ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                                : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                                }`}
                             >
                               {user?.appliedJobs?.some(j => String(j.jobId) === String(job._id)) ? '✓ Applied' : 'Mark Applied'}
                             </button>
@@ -1370,11 +1363,10 @@ const Home = () => {
                 <h3 className="font-bold text-slate-900 text-lg">
                   College Announcements
                 </h3>
-                <p className="text-slate-500 text-xs sm:text-sm mt-0.5">Official broadcasts and notices from campus administration.</p>
               </div>
 
               {announcements.length === 0 ? (
-                <p className="text-xs text-slate-500 text-center py-12">No recent announcements from administration.</p>
+                <p className="text-xs text-slate-500 text-center py-12">No recent announcements.</p>
               ) : (
                 <div className="space-y-4">
                   {announcements.map((ann) => (
