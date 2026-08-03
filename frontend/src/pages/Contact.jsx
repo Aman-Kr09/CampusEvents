@@ -229,15 +229,7 @@ const Contact = () => {
 
         {/* ── Header ── */}
         <div className="text-center space-y-4">
-          <motion.div
-            initial={{ opacity: 0, y: -16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="inline-flex items-center space-x-2 bg-indigo-950/40 text-indigo-400 border border-indigo-500/20 px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase"
-          >
-            <MessageSquare className="w-3.5 h-3.5" />
-            <span>Get In Touch</span>
-          </motion.div>
+
 
           <motion.h1
             initial={{ opacity: 0, scale: 0.95 }}
@@ -517,17 +509,6 @@ const Contact = () => {
               </div>
             </div>
 
-            {/* Status Badge */}
-            <div className="glass-panel rounded-2xl p-4 border border-emerald-500/15 flex items-center space-x-3">
-              <span className="relative flex h-2.5 w-2.5 flex-shrink-0">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
-              </span>
-              <div>
-                <p className="text-xs font-bold text-emerald-400 uppercase tracking-wider">All Systems Operational</p>
-                <p className="text-[10px] text-gray-500">Platform running smoothly · Last checked just now</p>
-              </div>
-            </div>
           </motion.div>
         </div>
 
