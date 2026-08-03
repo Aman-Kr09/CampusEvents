@@ -4,7 +4,14 @@ import { useAuth } from '../context/AuthContext';
 import { useCollege } from '../context/CollegeContext';
 import { api } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, ShieldAlert, Key, Sparkles } from 'lucide-react';
+
+const BRANCHES = ['CSE', 'ECE', 'EE', 'ME', 'CE', 'IT', 'AI/DS', 'Other'];
+
+const INTERESTS_LIST = [
+  'Coding', 'AI/ML', 'Data Science', 'Robotics', 'Sports', 'Design',
+  'Startups', 'Research', 'Placements', 'Hackathons', 'Music',
+  'Photography', 'Cultural Events', 'Entrepreneurship'
+];
 
 const checkPasswordStrength = (password) => {
   if (!password) return { score: 0, feedback: '', met: {} };
@@ -67,8 +74,9 @@ const Login = () => {
     name: '',
     email: '',
     password: '',
-    branch: '',
+    branch: 'CSE',
     year: '1',
+    interests: [],
     otp: '',
     newPassword: ''
   });
@@ -84,7 +92,18 @@ const Login = () => {
   }, [selectedCollege, tab, navigate]);
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const fieldName = e.target.name === 'resetOtp' ? 'otp' : e.target.name;
+    setForm(prev => ({ ...prev, [fieldName]: e.target.value }));
+  };
+
+  const handleInterestToggle = (interest) => {
+    const currentInterests = form.interests || [];
+    const active = currentInterests.includes(interest);
+    if (active) {
+      setForm(prev => ({ ...prev, interests: currentInterests.filter(i => i !== interest) }));
+    } else {
+      setForm(prev => ({ ...prev, interests: [...currentInterests, interest] }));
+    }
   };
 
   const handleLoginSubmit = async (e) => {
@@ -141,8 +160,8 @@ const Login = () => {
         form.email,
         form.password,
         selectedCollege._id,
-        form.branch,
-        parseInt(form.year)
+        form.branch || 'CSE',
+        parseInt(form.year || '1')
       );
       if (res.success) {
         setJustAuthed(true);
@@ -174,6 +193,7 @@ const Login = () => {
       if (res.data.success) {
         setInfoMessage(res.data.message || 'OTP sent! Please check your email.');
         setForgotStep(2);
+        setForm(prev => ({ ...prev, otp: '', newPassword: '' }));
       }
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to request OTP');
@@ -213,7 +233,7 @@ const Login = () => {
         setInfoMessage('Password reset successful! You can now log in.');
         setTab('login');
         setForgotStep(1);
-        setForm({ ...form, password: '', otp: '', newPassword: '' });
+        setForm(prev => ({ ...prev, password: '', otp: '', newPassword: '' }));
       }
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to reset password');
@@ -310,7 +330,7 @@ const Login = () => {
                     <label className="block text-xs font-extrabold text-slate-500 uppercase">Password</label>
                     <button
                       type="button"
-                      onClick={() => { setTab('forgot'); setError(''); setInfoMessage(''); }}
+                      onClick={() => { setTab('forgot'); setError(''); setInfoMessage(''); setForgotStep(1); }}
                       className="text-xs text-cyan-600 hover:text-cyan-800 font-bold"
                     >
                       Forgot?
@@ -423,7 +443,7 @@ const Login = () => {
                   <label className="block text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">Select Interest Tags <span className="text-slate-400 font-normal lowercase">(for AI feed)</span></label>
                   <div className="flex flex-wrap gap-1.5 pt-1">
                     {INTERESTS_LIST.map(interest => {
-                      const active = form.interests.includes(interest);
+                      const active = (form.interests || []).includes(interest);
                       return (
                         <span
                           key={interest}
@@ -500,7 +520,8 @@ const Login = () => {
                       <label className="block text-xs font-extrabold text-slate-500 mb-1.5 uppercase">OTP Verification Code</label>
                       <input
                         type="text"
-                        name="otp"
+                        name="resetOtp"
+                        autoComplete="one-time-code"
                         required
                         placeholder="Enter 6-digit code"
                         value={form.otp}
@@ -514,6 +535,7 @@ const Login = () => {
                       <input
                         type="password"
                         name="newPassword"
+                        autoComplete="new-password"
                         required
                         placeholder="At least 8 characters"
                         value={form.newPassword}
