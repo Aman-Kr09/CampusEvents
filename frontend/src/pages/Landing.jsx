@@ -111,8 +111,8 @@ const Landing = () => {
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-sky-200/40 rounded-full blur-3xl -z-10 animate-pulse-slow" />
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-teal-200/30 rounded-full blur-3xl -z-10 animate-pulse-slow" />
 
-      {/* ── Top Bar Action Buttons — top right ── */}
-      <div className="absolute top-4 right-4 sm:top-6 sm:right-6 z-10 flex items-center space-x-2 sm:space-x-3">
+      {/* ── Top Bar Action Buttons — Centered ── */}
+      <div className="w-full flex justify-center items-center space-x-2 sm:space-x-3 pt-2 sm:pt-4 z-10 flex-wrap gap-y-2">
         <a
           href="https://expo.dev/artifacts/eas/amZEhB-oB98BNwR6dD_NC8IGarRDuTQlNLlvKonJ2SI.apk"
           target="_blank"
