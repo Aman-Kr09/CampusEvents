@@ -122,22 +122,34 @@ const Landing = () => {
             </span>
           </div>
 
-          {/* Hamburger */}
-          <button
-            onClick={() => setMenuOpen(o => !o)}
-            className="flex items-center justify-center w-8 h-8 rounded-lg border border-[#D6EAF8] bg-white hover:bg-cyan-50 hover:border-cyan-300 transition-all duration-200 text-slate-600"
-            aria-label="Toggle menu"
-          >
-            {menuOpen ? (
-              <X className="w-4 h-4" />
-            ) : (
-              <span className="flex flex-col gap-[4px] items-center justify-center">
-                <span className="block w-4 h-[1.5px] bg-slate-600 rounded" />
-                <span className="block w-4 h-[1.5px] bg-slate-600 rounded" />
-                <span className="block w-4 h-[1.5px] bg-slate-600 rounded" />
-              </span>
-            )}
-          </button>
+          {/* Right side: Android App button + Hamburger */}
+          <div className="flex items-center space-x-2">
+            <a
+              href="https://expo.dev/artifacts/eas/amZEhB-oB98BNwR6dD_NC8IGarRDuTQlNLlvKonJ2SI.apk"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs text-slate-700 hover:text-cyan-700 bg-white hover:bg-cyan-50 border border-[#D6EAF8] hover:border-cyan-300 px-3 py-1.5 rounded-lg transition-all duration-200 font-semibold"
+            >
+              Get Android App
+            </a>
+
+            {/* Hamburger */}
+            <button
+              onClick={() => setMenuOpen(o => !o)}
+              className="flex items-center justify-center w-8 h-8 rounded-lg border border-[#D6EAF8] bg-white hover:bg-cyan-50 hover:border-cyan-300 transition-all duration-200 text-slate-600"
+              aria-label="Toggle menu"
+            >
+              {menuOpen ? (
+                <X className="w-4 h-4" />
+              ) : (
+                <span className="flex flex-col gap-[4px] items-center justify-center">
+                  <span className="block w-4 h-[1.5px] bg-slate-600 rounded" />
+                  <span className="block w-4 h-[1.5px] bg-slate-600 rounded" />
+                  <span className="block w-4 h-[1.5px] bg-slate-600 rounded" />
+                </span>
+              )}
+            </button>
+          </div>
         </nav>
 
         {/* Dropdown Menu */}
@@ -148,45 +160,33 @@ const Landing = () => {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -8, scale: 0.97 }}
               transition={{ duration: 0.18 }}
-              className="absolute top-full right-0 mt-1.5 w-52 bg-white border border-[#D6EAF8] rounded-xl shadow-lg overflow-hidden z-50"
+              className="absolute top-full right-0 mt-1.5 w-44 bg-white border border-[#D6EAF8] rounded-xl shadow-lg overflow-hidden z-50"
             >
-              <a
-                href="https://expo.dev/artifacts/eas/amZEhB-oB98BNwR6dD_NC8IGarRDuTQlNLlvKonJ2SI.apk"
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => setMenuOpen(false)}
-                className="flex items-center space-x-3 px-4 py-3 text-sm text-slate-700 hover:bg-cyan-50 hover:text-cyan-700 transition-colors duration-150 font-medium border-b border-slate-100"
-              >
-                <Smartphone className="w-4 h-4 text-cyan-500" />
-                <span>Get Android App</span>
-              </a>
               <Link
                 to="/contact"
                 onClick={() => setMenuOpen(false)}
-                className="flex items-center space-x-3 px-4 py-3 text-sm text-slate-700 hover:bg-cyan-50 hover:text-cyan-700 transition-colors duration-150 font-medium border-b border-slate-100"
+                className="block px-4 py-3 text-sm text-slate-700 hover:bg-cyan-50 hover:text-cyan-700 transition-colors duration-150 font-medium border-b border-slate-100"
               >
-                <Mail className="w-4 h-4 text-cyan-500" />
-                <span>Contact Us</span>
+                Contact Us
               </Link>
               <Link
                 to="/donate"
                 onClick={() => setMenuOpen(false)}
-                className="flex items-center space-x-3 px-4 py-3 text-sm text-slate-700 hover:bg-cyan-50 hover:text-cyan-700 transition-colors duration-150 font-medium border-b border-slate-100"
+                className="block px-4 py-3 text-sm text-slate-700 hover:bg-cyan-50 hover:text-cyan-700 transition-colors duration-150 font-medium border-b border-slate-100"
               >
-                <Heart className="w-4 h-4 text-cyan-500" />
-                <span>Donate</span>
+                Donate
               </Link>
               <button
                 onClick={() => { setMenuOpen(false); setIsAdminModalOpen(true); setAdminError(''); setAdminForm({ email: '', password: '' }); }}
-                className="w-full flex items-center space-x-3 px-4 py-3 text-sm text-slate-700 hover:bg-cyan-50 hover:text-cyan-700 transition-colors duration-150 font-medium"
+                className="w-full text-left px-4 py-3 text-sm text-slate-700 hover:bg-cyan-50 hover:text-cyan-700 transition-colors duration-150 font-medium"
               >
-                <ShieldCheck className="w-4 h-4 text-cyan-500" />
-                <span>Admin Login</span>
+                Admin Login
               </button>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
+
 
       {/* ── Main Container ── */}
       <div className="max-w-4xl mx-auto w-full space-y-10 my-auto pt-8">
@@ -199,7 +199,6 @@ const Landing = () => {
             transition={{ duration: 0.6 }}
             className="inline-flex items-center space-x-2 text-cyan-800 bg-cyan-50/90 px-3.5 py-1.5 rounded-full border border-cyan-200 text-xs font-bold tracking-wider uppercase shadow-xs"
           >
-            <School className="w-4 h-4 text-cyan-600" />
             <span>Welcome to CampusEvents</span>
           </motion.div>
 
