@@ -182,7 +182,6 @@ const Landing = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-lg text-slate-600 max-w-xl mx-auto font-medium"
           >
-            Discover events, ask academic questions, view placement logs, and engage with students from your college.
           </motion.p>
         </div>
 
@@ -372,8 +371,8 @@ const Landing = () => {
               <form onSubmit={handleRequestSubmit} className="p-6 space-y-4">
                 {message && (
                   <div className={`p-3.5 rounded-xl border text-sm flex items-center space-x-2 font-medium ${message.type === 'success'
-                      ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
-                      : 'bg-rose-50 text-rose-800 border-rose-200'
+                    ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                    : 'bg-rose-50 text-rose-800 border-rose-200'
                     }`}>
                     {message.type === 'success' && <CheckCircle2 className="w-4 h-4 text-emerald-600" />}
                     <span>{message.text}</span>
