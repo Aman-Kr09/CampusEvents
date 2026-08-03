@@ -271,14 +271,12 @@ const Login = () => {
 
           {/* Feedback states */}
           {error && (
-            <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl text-xs font-semibold flex items-center space-x-2">
-              <ShieldAlert className="w-4 h-4 flex-shrink-0 text-rose-600" />
+            <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl text-xs font-semibold">
               <span>{error}</span>
             </div>
           )}
           {infoMessage && (
-            <div className="p-3 bg-cyan-50 border border-cyan-200 text-cyan-800 rounded-xl text-xs font-semibold flex items-center space-x-2">
-              <Sparkles className="w-4 h-4 flex-shrink-0 text-cyan-600" />
+            <div className="p-3 bg-cyan-50 border border-cyan-200 text-cyan-800 rounded-xl text-xs font-semibold">
               <span>{infoMessage}</span>
             </div>
           )}
@@ -348,87 +346,98 @@ const Login = () => {
                 onSubmit={handleSignupSubmit}
                 className="space-y-4"
               >
+                {/* Branch selection */}
                 <div>
-                  <label className="block text-xs font-extrabold text-slate-500 mb-1.5 uppercase">Full Name</label>
-                  <input
-                    type="text"
-                    name="name"
-                    required
-                    placeholder="Your Name"
-                    value={form.name}
+                  <label className="block text-[10px] font-extrabold text-slate-500 mb-1.5 uppercase tracking-wider">Select College Branch</label>
+                  <select
+                    name="branch"
+                    value={form.branch}
                     onChange={handleChange}
                     className="w-full bg-slate-50 border border-[#D6EAF8] rounded-xl text-slate-900 text-sm px-4 py-2.5 outline-none focus:bg-white focus:border-cyan-600 focus:ring-4 focus:ring-cyan-500/10 transition-all font-medium"
-                  />
+                  >
+                    {BRANCHES.map(b => (
+                      <option key={b} value={b}>{b}</option>
+                    ))}
+                  </select>
                 </div>
 
+                {/* Year Selection */}
                 <div>
-                  <label className="block text-xs font-extrabold text-slate-500 mb-1.5 uppercase">Email Address</label>
-                  <input
-                    type="email"
-                    name="email"
-                    required
-                    placeholder="student@college.edu"
-                    value={form.email}
+                  <label className="block text-[10px] font-extrabold text-slate-500 mb-1.5 uppercase tracking-wider">Academic Year</label>
+                  <select
+                    name="year"
+                    value={form.year}
                     onChange={handleChange}
                     className="w-full bg-slate-50 border border-[#D6EAF8] rounded-xl text-slate-900 text-sm px-4 py-2.5 outline-none focus:bg-white focus:border-cyan-600 focus:ring-4 focus:ring-cyan-500/10 transition-all font-medium"
-                  />
+                  >
+                    {[1, 2, 3, 4].map(y => (
+                      <option key={y} value={y}>Year {y}</option>
+                    ))}
+                  </select>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                {/* Dynamic fields */}
+                <div className="grid grid-cols-1 gap-3">
                   <div>
-                    <label className="block text-xs font-extrabold text-slate-500 mb-1.5 uppercase">Academic Branch</label>
+                    <label className="block text-[10px] font-extrabold text-slate-500 mb-1.5 uppercase tracking-wider">Full Student Name</label>
                     <input
                       type="text"
-                      name="branch"
+                      name="name"
                       required
-                      placeholder="e.g. CSE"
-                      value={form.branch}
+                      placeholder="e.g. John Doe"
+                      value={form.name}
                       onChange={handleChange}
                       className="w-full bg-slate-50 border border-[#D6EAF8] rounded-xl text-slate-900 text-sm px-4 py-2.5 outline-none focus:bg-white focus:border-cyan-600 focus:ring-4 focus:ring-cyan-500/10 transition-all font-medium"
                     />
                   </div>
+
                   <div>
-                    <label className="block text-xs font-extrabold text-slate-500 mb-1.5 uppercase">Current Year</label>
-                    <select
-                      name="year"
-                      value={form.year}
+                    <label className="block text-[10px] font-extrabold text-slate-500 mb-1.5 uppercase tracking-wider">College Email ID</label>
+                    <input
+                      type="email"
+                      name="email"
+                      required
+                      placeholder="e.g. john@student.edu"
+                      value={form.email}
                       onChange={handleChange}
                       className="w-full bg-slate-50 border border-[#D6EAF8] rounded-xl text-slate-900 text-sm px-4 py-2.5 outline-none focus:bg-white focus:border-cyan-600 focus:ring-4 focus:ring-cyan-500/10 transition-all font-medium"
-                    >
-                      <option value="1">1st Year</option>
-                      <option value="2">2nd Year</option>
-                      <option value="3">3rd Year</option>
-                      <option value="4">4th Year</option>
-                    </select>
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-extrabold text-slate-500 mb-1.5 uppercase tracking-wider">Create Account Password</label>
+                    <input
+                      type="password"
+                      name="password"
+                      required
+                      placeholder="••••••••"
+                      value={form.password}
+                      onChange={handleChange}
+                      className="w-full bg-slate-50 border border-[#D6EAF8] rounded-xl text-slate-900 text-sm px-4 py-2.5 outline-none focus:bg-white focus:border-cyan-600 focus:ring-4 focus:ring-cyan-500/10 transition-all font-medium"
+                    />
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-extrabold text-slate-500 mb-1.5 uppercase">Password</label>
-                  <input
-                    type="password"
-                    name="password"
-                    required
-                    placeholder="At least 8 characters"
-                    value={form.password}
-                    onChange={handleChange}
-                    className="w-full bg-slate-50 border border-[#D6EAF8] rounded-xl text-slate-900 text-sm px-4 py-2.5 outline-none focus:bg-white focus:border-cyan-600 focus:ring-4 focus:ring-cyan-500/10 transition-all font-medium"
-                  />
-
-                  {/* One Line Password Requirement Summary */}
-                  {form.password && (
-                    <div className="mt-2 text-xs font-semibold">
-                      {strength.score < 5 ? (
-                        <span className="text-amber-600">
-                          Missing: {getMissingRequirements(strength.met).join(', ')}
+                {/* Interest tag multi-selector */}
+                <div className="space-y-1.5">
+                  <label className="block text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">Select Interest Tags <span className="text-slate-400 font-normal lowercase">(for AI feed)</span></label>
+                  <div className="flex flex-wrap gap-1.5 pt-1">
+                    {INTERESTS_LIST.map(interest => {
+                      const active = form.interests.includes(interest);
+                      return (
+                        <span
+                          key={interest}
+                          onClick={() => handleInterestToggle(interest)}
+                          className={`text-xs px-2.5 py-1 rounded-full border cursor-pointer select-none transition-all font-semibold ${active
+                            ? 'bg-cyan-600 text-white border-cyan-600 shadow-xs'
+                            : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                            }`}
+                        >
+                          {interest}
                         </span>
-                      ) : (
-                        <span className="text-emerald-600">
-                          ✓ Strong password meets all requirements
-                        </span>
-                      )}
-                    </div>
-                  )}
+                      );
+                    })}
+                  </div>
                 </div>
 
                 <button
@@ -437,7 +446,6 @@ const Login = () => {
                   className="w-full bg-gradient-to-r from-cyan-600 to-sky-600 hover:from-cyan-700 hover:to-sky-700 text-white font-bold py-3 rounded-xl flex items-center justify-center space-x-2 mt-2 shadow-md transition-all text-sm"
                 >
                   <span>{loading ? 'Creating Profile...' : 'Sign Up'}</span>
-                  {!loading && <ArrowRight className="w-4 h-4" />}
                 </button>
               </motion.form>
             )}
@@ -450,16 +458,12 @@ const Login = () => {
                 exit={{ opacity: 0, scale: 0.95 }}
                 className="space-y-4"
               >
-                <div className="flex items-center space-x-2 pb-2 border-b border-[#D6EAF8]">
-                  <Key className="w-5 h-5 text-cyan-600" />
+                <div className="pb-2 border-b border-[#D6EAF8]">
                   <h3 className="font-extrabold text-slate-900 text-sm">Reset Account Password</h3>
                 </div>
 
                 {forgotStep === 1 ? (
                   <form onSubmit={handleRequestOTP} className="space-y-4">
-                    <p className="text-xs text-slate-500 leading-relaxed">
-                      Enter your registered campus email address. We will generate and send a 6-digit One Time Password (OTP) validation key to reset your credential.
-                    </p>
                     <div>
                       <label className="block text-xs font-extrabold text-slate-500 mb-1.5 uppercase">Campus Email</label>
                       <input
