@@ -113,7 +113,7 @@ const Landing = () => {
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-teal-200/30 rounded-full blur-3xl -z-10 animate-pulse-slow" />
 
       {/* ── Top Navbar ── */}
-      <div className="relative max-w-7xl mx-auto w-full z-20">
+      <div className="relative max-w-8xl mx-auto w-full z-20">
         <nav className="w-full flex items-center justify-between px-4 py-2.5">
           {/* Logo */}
           <div className="flex items-center space-x-2">
