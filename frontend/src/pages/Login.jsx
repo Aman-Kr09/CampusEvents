@@ -438,28 +438,6 @@ const Login = () => {
                   </div>
                 </div>
 
-                {/* Interest tag multi-selector */}
-                <div className="space-y-1.5">
-                  <label className="block text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">Select Interest Tags <span className="text-slate-400 font-normal lowercase">(for AI feed)</span></label>
-                  <div className="flex flex-wrap gap-1.5 pt-1">
-                    {INTERESTS_LIST.map(interest => {
-                      const active = (form.interests || []).includes(interest);
-                      return (
-                        <span
-                          key={interest}
-                          onClick={() => handleInterestToggle(interest)}
-                          className={`text-xs px-2.5 py-1 rounded-full border cursor-pointer select-none transition-all font-semibold ${active
-                            ? 'bg-cyan-600 text-white border-cyan-600 shadow-xs'
-                            : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
-                            }`}
-                        >
-                          {interest}
-                        </span>
-                      );
-                    })}
-                  </div>
-                </div>
-
                 <button
                   type="submit"
                   disabled={loading}
