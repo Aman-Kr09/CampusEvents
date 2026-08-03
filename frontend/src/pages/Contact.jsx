@@ -459,48 +459,6 @@ const Contact = () => {
               ))}
             </div>
 
-            {/* Social / Developer Links */}
-            <div className="bg-white rounded-2xl p-6 border border-slate-200 space-y-4 shadow-sm">
-              <h3 className="text-sm font-bold text-slate-700 uppercase tracking-widest">Find Us Online</h3>
-              <div className="space-y-3">
-                <a
-                  href="https://github.com/Aman-Kr09"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center space-x-3 p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 hover:border-slate-300 transition-all duration-200 group"
-                >
-                  <Terminal className="w-4 h-4 text-slate-400 group-hover:text-slate-700 transition-colors" />
-                  <div>
-                    <p className="text-xs font-semibold text-slate-700 group-hover:text-indigo-600 transition-colors">GitHub Repository</p>
-                    <p className="text-[10px] text-slate-400">Aman-Kr09 / CampusEvents</p>
-                  </div>
-                </a>
-                <a
-                  href="https://www.linkedin.com/in/aman-kumar-455192296"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center space-x-3 p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-blue-50 hover:border-blue-200 transition-all duration-200 group"
-                >
-                  <Briefcase className="w-4 h-4 text-slate-400 group-hover:text-blue-600 transition-colors" />
-                  <div>
-                    <p className="text-xs font-semibold text-slate-700 group-hover:text-blue-600 transition-colors">LinkedIn Profile</p>
-                    <p className="text-[10px] text-slate-400">Aman Kumar · Developer</p>
-                  </div>
-                </a>
-                <a
-                  href="https://nitdelhi.ac.in/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center space-x-3 p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-indigo-50 hover:border-indigo-200 transition-all duration-200 group"
-                >
-                  <Globe className="w-4 h-4 text-slate-400 group-hover:text-indigo-600 transition-colors" />
-                  <div>
-                    <p className="text-xs font-semibold text-slate-700 group-hover:text-indigo-600 transition-colors">NIT Delhi</p>
-                    <p className="text-[10px] text-slate-400">nitdelhi.ac.in</p>
-                  </div>
-                </a>
-              </div>
-            </div>
 
           </motion.div>
         </div>
