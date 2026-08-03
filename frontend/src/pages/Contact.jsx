@@ -52,9 +52,9 @@ const infoCards = [
     icon: MapPin,
     title: 'Location',
     value: 'NIT Delhi',
-    sub: 'NIT Delhi Campus, Delhi, India',
+    sub: 'Delhi, India',
     color: 'purple',
-    href: 'https://www.google.com/maps/search/National+Institute+of+Technology+New+Delhi/@28.5883858,76.893559,9z/data=!3m1!4b1?entry=ttu&g_ep=EgoyMDI2MDYxMy4wIKXMDSoASAFQAw%3D%3D No. FA7, Zone P1, GT Karnal Road, New Delhi - 110036, Delhi NCR, India',
+    href: 'https://www.google.com/maps/search/National+Institute+of+Technology+New+Delhi',
   },
   {
     icon: Clock,
@@ -68,32 +68,32 @@ const infoCards = [
 
 const colorMap = {
   indigo: {
-    bg: 'bg-indigo-950/50',
-    border: 'border-indigo-500/20',
-    text: 'text-indigo-400',
-    hover: 'hover:border-indigo-500/50 hover:bg-indigo-950/80',
-    glow: 'hover:shadow-[0_0_20px_rgba(99,102,241,0.2)]',
+    bg: 'bg-indigo-50',
+    border: 'border-indigo-200',
+    text: 'text-indigo-600',
+    hover: 'hover:border-indigo-400 hover:bg-indigo-50/80',
+    glow: '',
   },
   emerald: {
-    bg: 'bg-emerald-950/50',
-    border: 'border-emerald-500/20',
-    text: 'text-emerald-400',
-    hover: 'hover:border-emerald-500/50 hover:bg-emerald-950/80',
-    glow: 'hover:shadow-[0_0_20px_rgba(52,211,153,0.2)]',
+    bg: 'bg-emerald-50',
+    border: 'border-emerald-200',
+    text: 'text-emerald-600',
+    hover: 'hover:border-emerald-400 hover:bg-emerald-50/80',
+    glow: '',
   },
   purple: {
-    bg: 'bg-purple-950/50',
-    border: 'border-purple-500/20',
-    text: 'text-purple-400',
-    hover: 'hover:border-purple-500/50 hover:bg-purple-950/80',
-    glow: 'hover:shadow-[0_0_20px_rgba(168,85,247,0.2)]',
+    bg: 'bg-purple-50',
+    border: 'border-purple-200',
+    text: 'text-purple-600',
+    hover: 'hover:border-purple-400 hover:bg-purple-50/80',
+    glow: '',
   },
   cyan: {
-    bg: 'bg-cyan-950/50',
-    border: 'border-cyan-500/20',
-    text: 'text-cyan-400',
-    hover: 'hover:border-cyan-500/50 hover:bg-cyan-950/80',
-    glow: 'hover:shadow-[0_0_20px_rgba(34,211,238,0.2)]',
+    bg: 'bg-cyan-50',
+    border: 'border-cyan-200',
+    text: 'text-cyan-600',
+    hover: 'hover:border-cyan-400 hover:bg-cyan-50/80',
+    glow: '',
   },
 };
 
@@ -104,20 +104,20 @@ const FAQItem = ({ q, a, index }) => {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.07 }}
-      className="border border-glassBorder rounded-xl overflow-hidden glass-panel"
+      className="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-sm"
     >
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-white/[0.02] transition-colors duration-200 group"
+        className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-slate-50 transition-colors duration-200 group"
         aria-expanded={open}
       >
-        <span className="text-sm font-semibold text-white/90 group-hover:text-white transition-colors pr-4">{q}</span>
+        <span className="text-sm font-semibold text-slate-800 group-hover:text-cyan-700 transition-colors pr-4">{q}</span>
         <motion.div
           animate={{ rotate: open ? 180 : 0 }}
           transition={{ duration: 0.25 }}
           className="flex-shrink-0"
         >
-          <ChevronDown className="w-4 h-4 text-gray-500 group-hover:text-indigo-400 transition-colors" />
+          <ChevronDown className="w-4 h-4 text-slate-400 group-hover:text-cyan-600 transition-colors" />
         </motion.div>
       </button>
       <AnimatePresence initial={false}>
@@ -130,8 +130,8 @@ const FAQItem = ({ q, a, index }) => {
             transition={{ duration: 0.3, ease: 'easeInOut' }}
             className="overflow-hidden"
           >
-            <div className="px-5 pb-4 border-t border-glassBorder">
-              <p className="text-sm text-gray-400 leading-relaxed pt-3">{a}</p>
+            <div className="px-5 pb-4 border-t border-slate-100">
+              <p className="text-sm text-slate-600 leading-relaxed pt-3">{a}</p>
             </div>
           </motion.div>
         )}
@@ -154,7 +154,6 @@ const Contact = () => {
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
-  // Auto-hide status banner after 5 seconds
   const showStatus = (type) => {
     setStatus(type);
     if (hideTimer.current) clearTimeout(hideTimer.current);
@@ -168,7 +167,6 @@ const Contact = () => {
     setErrorDetail('');
 
     try {
-      // 1. Try sending via backend contact API (uses SMTP / Gmail Relay / BullMQ)
       try {
         const res = await api.post('/contact', form);
         if (res.data.success) {
@@ -180,7 +178,6 @@ const Contact = () => {
         console.warn('Backend contact API failed, attempting EmailJS fallback:', apiErr.message);
       }
 
-      // 2. Fallback to client-side EmailJS if configured
       if (EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID && EMAILJS_PUBLIC_KEY) {
         try {
           await emailjs.send(
@@ -206,7 +203,6 @@ const Contact = () => {
         }
       }
 
-      // If both failed or EmailJS wasn't set, show error banner
       setErrorDetail('Could not send email. Please email us directly at u5813051@gmail.com');
       showStatus('error');
     } catch (globalErr) {
@@ -219,23 +215,20 @@ const Contact = () => {
   };
 
   return (
-    <div className="min-h-screen py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-      {/* Background Orbs */}
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-indigo-500/8 rounded-full blur-3xl -z-10 animate-pulse-slow pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-purple-500/8 rounded-full blur-3xl -z-10 animate-pulse-slow pointer-events-none" />
-      <div className="absolute top-1/2 right-0 w-64 h-64 bg-cyan-500/5 rounded-full blur-3xl -z-10 pointer-events-none" />
+    <div className="min-h-screen py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-[#F6FBFF]">
+      {/* Subtle background blobs */}
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-100/60 rounded-full blur-3xl -z-10 pointer-events-none" />
+      <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-indigo-100/60 rounded-full blur-3xl -z-10 pointer-events-none" />
 
       <div className="max-w-6xl mx-auto space-y-16">
 
         {/* ── Header ── */}
         <div className="text-center space-y-4">
-
-
           <motion.h1
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-4xl sm:text-5xl font-extrabold tracking-tight"
+            className="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-900"
           >
             We'd Love to{' '}
             <span className="gradient-text-indigo-cyan">Hear From You</span>
@@ -245,7 +238,7 @@ const Contact = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-gray-400 max-w-xl mx-auto text-base leading-relaxed"
+            className="text-slate-500 max-w-xl mx-auto text-base leading-relaxed"
           >
             Have a question, feedback, or want to onboard your institution? Drop us a message and our team will get back to you promptly.
           </motion.p>
@@ -263,14 +256,14 @@ const Contact = () => {
             const Icon = card.icon;
             const content = (
               <div
-                className={`glass-panel rounded-xl p-5 border ${c.border} ${c.hover} ${c.glow} transition-all duration-300 group ${card.href ? 'cursor-pointer' : ''}`}
+                className={`bg-white rounded-xl p-5 border ${c.border} ${c.hover} transition-all duration-300 group shadow-sm ${card.href ? 'cursor-pointer' : ''}`}
               >
                 <div className={`w-10 h-10 rounded-lg ${c.bg} border ${c.border} flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300`}>
                   <Icon className={`w-5 h-5 ${c.text}`} />
                 </div>
-                <p className="text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-1">{card.title}</p>
-                <p className="text-sm font-bold text-white leading-snug">{card.value}</p>
-                <p className="text-xs text-gray-500 mt-0.5">{card.sub}</p>
+                <p className="text-[10px] text-slate-400 uppercase tracking-widest font-bold mb-1">{card.title}</p>
+                <p className="text-sm font-bold text-slate-800 leading-snug">{card.value}</p>
+                <p className="text-xs text-slate-500 mt-0.5">{card.sub}</p>
               </div>
             );
             return card.href ? (
@@ -306,16 +299,16 @@ const Contact = () => {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.35 }}
-            className="lg:col-span-3 glass-panel rounded-2xl overflow-hidden"
+            className="lg:col-span-3 bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-200"
           >
             {/* Form Header */}
-            <div className="px-6 py-5 border-b border-glassBorder bg-white/[0.01] flex items-center space-x-3">
-              <div className="w-9 h-9 rounded-xl bg-indigo-950/60 border border-indigo-500/20 flex items-center justify-center">
-                <Send className="w-4 h-4 text-indigo-400" />
+            <div className="px-6 py-5 border-b border-slate-100 bg-slate-50/60 flex items-center space-x-3">
+              <div className="w-9 h-9 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-center">
+                <Send className="w-4 h-4 text-indigo-600" />
               </div>
               <div>
-                <h2 className="text-sm font-bold text-white">Send a Message</h2>
-                <p className="text-[10px] text-gray-500">We'll respond within 24 hours</p>
+                <h2 className="text-sm font-bold text-slate-800">Send a Message</h2>
+                <p className="text-[10px] text-slate-400">We'll respond within 24 hours</p>
               </div>
             </div>
 
@@ -327,7 +320,7 @@ const Contact = () => {
                     initial={{ opacity: 0, y: -6, height: 0 }}
                     animate={{ opacity: 1, y: 0, height: 'auto' }}
                     exit={{ opacity: 0, height: 0 }}
-                    className="flex items-center space-x-2.5 bg-emerald-950/40 border border-emerald-500/20 text-emerald-300 rounded-xl px-4 py-3 text-sm"
+                    className="flex items-center space-x-2.5 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl px-4 py-3 text-sm"
                   >
                     <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
                     <span>✅ Your message has been sent! We'll respond within 24 hours.</span>
@@ -339,14 +332,14 @@ const Contact = () => {
                     initial={{ opacity: 0, y: -6, height: 0 }}
                     animate={{ opacity: 1, y: 0, height: 'auto' }}
                     exit={{ opacity: 0, height: 0 }}
-                    className="flex flex-col space-y-1 bg-red-950/40 border border-red-500/20 text-red-300 rounded-xl px-4 py-3 text-sm"
+                    className="flex flex-col space-y-1 bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm"
                   >
                     <div className="flex items-center space-x-2.5">
                       <AlertCircle className="w-4 h-4 flex-shrink-0" />
                       <span>⚠️ Failed to send. Please email us directly at amankumar19930000@gmail.com</span>
                     </div>
                     {errorDetail && (
-                      <p className="text-[11px] text-red-400/70 pl-6 font-mono break-all">{errorDetail}</p>
+                      <p className="text-[11px] text-red-400 pl-6 font-mono break-all">{errorDetail}</p>
                     )}
                   </motion.div>
                 )}
@@ -354,8 +347,8 @@ const Contact = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">
-                    Full Name <span className="text-indigo-400">*</span>
+                  <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">
+                    Full Name <span className="text-indigo-500">*</span>
                   </label>
                   <input
                     id="contact-name"
@@ -369,8 +362,8 @@ const Contact = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">
-                    Email Address <span className="text-indigo-400">*</span>
+                  <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">
+                    Email Address <span className="text-indigo-500">*</span>
                   </label>
                   <input
                     id="contact-email"
@@ -386,8 +379,8 @@ const Contact = () => {
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">
-                  Subject <span className="text-indigo-400">*</span>
+                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">
+                  Subject <span className="text-indigo-500">*</span>
                 </label>
                 <input
                   id="contact-subject"
@@ -402,8 +395,8 @@ const Contact = () => {
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">
-                  Message <span className="text-indigo-400">*</span>
+                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">
+                  Message <span className="text-indigo-500">*</span>
                 </label>
                 <textarea
                   id="contact-message"
@@ -449,61 +442,61 @@ const Contact = () => {
             className="lg:col-span-2 space-y-6"
           >
             {/* Why Contact Us */}
-            <div className="glass-panel rounded-2xl p-6 border border-glassBorder space-y-4">
-              <h3 className="text-sm font-bold text-white uppercase tracking-widest">Why Reach Out?</h3>
+            <div className="bg-white rounded-2xl p-6 border border-slate-200 space-y-4 shadow-sm">
+              <h3 className="text-sm font-bold text-slate-700 uppercase tracking-widest">Why Reach Out?</h3>
               {[
-                { icon: Zap, text: 'Fast onboarding for new institutions', color: 'text-yellow-400' },
-                { icon: Shield, text: 'Smooth Operation of Events', color: 'text-indigo-400' },
-                { icon: Users, text: 'Dedicated account manager for colleges', color: 'text-purple-400' },
-                { icon: Globe, text: 'Custom integrations & feature requests', color: 'text-cyan-400' },
+                { icon: Zap, text: 'Fast onboarding for new institutions', color: 'text-yellow-500' },
+                { icon: Shield, text: 'Smooth Operation of Events', color: 'text-indigo-500' },
+                { icon: Users, text: 'Dedicated account manager for colleges', color: 'text-purple-500' },
+                { icon: Globe, text: 'Custom integrations & feature requests', color: 'text-cyan-600' },
               ].map(({ icon: Icon, text, color }, i) => (
                 <div key={i} className="flex items-start space-x-3">
-                  <div className={`mt-0.5 w-7 h-7 rounded-lg bg-white/[0.03] border border-glassBorder flex items-center justify-center flex-shrink-0`}>
+                  <div className={`mt-0.5 w-7 h-7 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center flex-shrink-0`}>
                     <Icon className={`w-3.5 h-3.5 ${color}`} />
                   </div>
-                  <p className="text-xs text-gray-400 leading-relaxed">{text}</p>
+                  <p className="text-xs text-slate-600 leading-relaxed">{text}</p>
                 </div>
               ))}
             </div>
 
             {/* Social / Developer Links */}
-            <div className="glass-panel rounded-2xl p-6 border border-glassBorder space-y-4">
-              <h3 className="text-sm font-bold text-white uppercase tracking-widest">Find Us Online</h3>
+            <div className="bg-white rounded-2xl p-6 border border-slate-200 space-y-4 shadow-sm">
+              <h3 className="text-sm font-bold text-slate-700 uppercase tracking-widest">Find Us Online</h3>
               <div className="space-y-3">
                 <a
                   href="https://github.com/Aman-Kr09"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center space-x-3 p-3 rounded-xl border border-glassBorder bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/20 transition-all duration-200 group"
+                  className="flex items-center space-x-3 p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 hover:border-slate-300 transition-all duration-200 group"
                 >
-                  <Terminal className="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" />
+                  <Terminal className="w-4 h-4 text-slate-400 group-hover:text-slate-700 transition-colors" />
                   <div>
-                    <p className="text-xs font-semibold text-white group-hover:text-indigo-400 transition-colors">GitHub Repository</p>
-                    <p className="text-[10px] text-gray-500">Aman-Kr09 / CampusEvents</p>
+                    <p className="text-xs font-semibold text-slate-700 group-hover:text-indigo-600 transition-colors">GitHub Repository</p>
+                    <p className="text-[10px] text-slate-400">Aman-Kr09 / CampusEvents</p>
                   </div>
                 </a>
                 <a
                   href="https://www.linkedin.com/in/aman-kumar-455192296"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center space-x-3 p-3 rounded-xl border border-glassBorder bg-white/[0.02] hover:bg-white/[0.05] hover:border-blue-500/30 transition-all duration-200 group"
+                  className="flex items-center space-x-3 p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-blue-50 hover:border-blue-200 transition-all duration-200 group"
                 >
-                  <Briefcase className="w-4 h-4 text-gray-400 group-hover:text-blue-400 transition-colors" />
+                  <Briefcase className="w-4 h-4 text-slate-400 group-hover:text-blue-600 transition-colors" />
                   <div>
-                    <p className="text-xs font-semibold text-white group-hover:text-blue-400 transition-colors">LinkedIn Profile</p>
-                    <p className="text-[10px] text-gray-500">Aman Kumar · Developer</p>
+                    <p className="text-xs font-semibold text-slate-700 group-hover:text-blue-600 transition-colors">LinkedIn Profile</p>
+                    <p className="text-[10px] text-slate-400">Aman Kumar · Developer</p>
                   </div>
                 </a>
                 <a
                   href="https://nitdelhi.ac.in/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center space-x-3 p-3 rounded-xl border border-glassBorder bg-white/[0.02] hover:bg-white/[0.05] hover:border-indigo-500/30 transition-all duration-200 group"
+                  className="flex items-center space-x-3 p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-indigo-50 hover:border-indigo-200 transition-all duration-200 group"
                 >
-                  <Globe className="w-4 h-4 text-gray-400 group-hover:text-indigo-400 transition-colors" />
+                  <Globe className="w-4 h-4 text-slate-400 group-hover:text-indigo-600 transition-colors" />
                   <div>
-                    <p className="text-xs font-semibold text-white group-hover:text-indigo-400 transition-colors">NIT Delhi</p>
-                    <p className="text-[10px] text-gray-500">nitdelhi.ac.in</p>
+                    <p className="text-xs font-semibold text-slate-700 group-hover:text-indigo-600 transition-colors">NIT Delhi</p>
+                    <p className="text-[10px] text-slate-400">nitdelhi.ac.in</p>
                   </div>
                 </a>
               </div>
@@ -520,11 +513,11 @@ const Contact = () => {
           className="space-y-6"
         >
           <div className="text-center space-y-2">
-            <h2 className="text-2xl font-extrabold tracking-tight">
+            <h2 className="text-2xl font-extrabold tracking-tight text-slate-900">
               Frequently Asked{' '}
               <span className="gradient-text-indigo-cyan">Questions</span>
             </h2>
-            <p className="text-sm text-gray-400">Quick answers to common queries about CampusEvents.</p>
+            <p className="text-sm text-slate-500">Quick answers to common queries about CampusEvents.</p>
           </div>
           <div className="max-w-3xl mx-auto space-y-3">
             {faqs.map((faq, i) => (
