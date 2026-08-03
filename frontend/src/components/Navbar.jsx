@@ -55,13 +55,12 @@ const Navbar = () => {
             {user?.role !== 'SuperAdmin' && (
               <Link
                 to="/home"
-                className={`px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center space-x-1.5 ${
+                className={`px-3.5 py-2 rounded-xl text-sm font-bold transition-all duration-200 ${
                   isActive('/home')
                     ? 'text-cyan-800 bg-cyan-50/80 border border-cyan-200/60 shadow-xs'
                     : 'text-slate-600 hover:text-cyan-700 hover:bg-slate-50'
                 }`}
               >
-                <Calendar className="w-4 h-4 text-cyan-600" />
                 <span>Events Hub</span>
               </Link>
             )}
@@ -70,25 +69,23 @@ const Navbar = () => {
               <>
                 <Link
                   to="/campus-connect"
-                  className={`px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center space-x-1.5 ${
+                  className={`px-3.5 py-2 rounded-xl text-sm font-bold transition-all duration-200 ${
                     isActive('/campus-connect')
                       ? 'text-sky-800 bg-sky-50/80 border border-sky-200/60 shadow-xs'
                       : 'text-slate-600 hover:text-sky-700 hover:bg-slate-50'
                   }`}
                 >
-                  <ShoppingBag className="w-4 h-4 text-sky-600" />
                   <span>Campus Connect</span>
                 </Link>
 
                 <Link
                   to="/pyq"
-                  className={`px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center space-x-1.5 ${
+                  className={`px-3.5 py-2 rounded-xl text-sm font-bold transition-all duration-200 ${
                     isActive('/pyq')
                       ? 'text-teal-800 bg-teal-50/80 border border-teal-200/60 shadow-xs'
                       : 'text-slate-600 hover:text-teal-700 hover:bg-slate-50'
                   }`}
                 >
-                  <BookOpen className="w-4 h-4 text-teal-600" />
                   <span>PYQ Hub</span>
                 </Link>
               </>
@@ -97,13 +94,12 @@ const Navbar = () => {
             {user?.role === 'Student' && (
               <Link
                 to="/profile"
-                className={`px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center space-x-1.5 ${
+                className={`px-3.5 py-2 rounded-xl text-sm font-bold transition-all duration-200 ${
                   isActive('/profile')
                     ? 'text-indigo-800 bg-indigo-50/80 border border-indigo-200/60 shadow-xs'
                     : 'text-slate-600 hover:text-indigo-700 hover:bg-slate-50'
                 }`}
               >
-                <User className="w-4 h-4 text-indigo-600" />
                 <span>My Profile</span>
               </Link>
             )}
@@ -111,13 +107,12 @@ const Navbar = () => {
             {user?.role === 'Admin' && (
               <Link
                 to="/admin"
-                className={`px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center space-x-1.5 ${
+                className={`px-3.5 py-2 rounded-xl text-sm font-bold transition-all duration-200 ${
                   isActive('/admin')
                     ? 'text-cyan-800 bg-cyan-50/80 border border-cyan-200/60 shadow-xs'
                     : 'text-slate-600 hover:text-cyan-700 hover:bg-slate-50'
                 }`}
               >
-                <BarChart3 className="w-4 h-4 text-cyan-600" />
                 <span>Admin Panel</span>
               </Link>
             )}
@@ -125,13 +120,12 @@ const Navbar = () => {
             {user?.role === 'SuperAdmin' && (
               <Link
                 to="/superadmin"
-                className={`px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center space-x-1.5 ${
+                className={`px-3.5 py-2 rounded-xl text-sm font-bold transition-all duration-200 ${
                   isActive('/superadmin')
                     ? 'text-teal-800 bg-teal-50/80 border border-teal-200/60 shadow-xs'
                     : 'text-slate-600 hover:text-teal-700 hover:bg-slate-50'
                 }`}
               >
-                <ShieldAlert className="w-4 h-4 text-teal-600" />
                 <span>Super Admin</span>
               </Link>
             )}
@@ -150,10 +144,10 @@ const Navbar = () => {
             
             <button
               onClick={handleLogout}
-              className="p-2 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition-all duration-200"
+              className="px-2.5 py-1.5 text-xs font-bold text-slate-500 hover:text-rose-600 rounded-lg hover:bg-rose-50 border border-slate-200 transition-all duration-200"
               title="Logout"
             >
-              <LogOut className="w-5 h-5 text-slate-400 hover:text-rose-600" />
+              Logout
             </button>
           </div>
         </div>

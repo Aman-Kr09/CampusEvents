@@ -630,16 +630,15 @@ const Home = () => {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 15 }}
-            className="glass-panel p-6 rounded-2xl mb-8 space-y-6 relative border-indigo-500/20 shadow-glow"
+            className="bg-white p-6 rounded-2xl mb-8 space-y-6 relative border border-[#D6EAF8] shadow-sm"
           >
-            <div className="flex items-center justify-between border-b border-glassBorder pb-3">
-              <h3 className="font-bold text-white flex items-center space-x-2 text-sm sm:text-base">
-                <Search className="w-5 h-5 text-indigo-400" />
-                <span>Search Matches for "{searchQuery}"</span>
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h3 className="font-bold text-slate-900 text-sm sm:text-base">
+                Search Matches for "{searchQuery}"
               </h3>
               <button
                 onClick={() => { setSearchQuery(''); setIsSearching(false); setSearchResults(null); }}
-                className="p-1 text-gray-500 hover:text-white rounded-lg hover:bg-white/5"
+                className="p-1 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -648,23 +647,22 @@ const Home = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* Event results */}
               <div>
-                <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3 flex items-center space-x-1">
-                  <Calendar className="w-3.5 h-3.5 text-indigo-400" />
-                  <span>Matching Events ({searchResults.events.length})</span>
+                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
+                  Matching Events ({searchResults.events.length})
                 </h4>
                 {searchResults.events.length === 0 ? (
-                  <p className="text-xs text-gray-600">No events matched</p>
+                  <p className="text-xs text-slate-400">No events matched</p>
                 ) : (
                   <div className="space-y-2">
                     {searchResults.events.map(ev => (
                       <div
                         key={ev._id}
                         onClick={() => { recordView(ev._id); setSelectedEventDetails(ev); }}
-                        className="p-3 bg-white/[0.01] border border-glassBorder rounded-xl cursor-pointer hover:bg-white/[0.04] transition-all"
+                        className="p-3 bg-slate-50 border border-slate-200 rounded-xl cursor-pointer hover:border-cyan-400 transition-all"
                       >
-                        <span className="text-xs font-bold text-indigo-400 block">{ev.category}</span>
-                        <p className="text-sm font-bold text-white mt-0.5 truncate">{ev.name}</p>
-                        <span className="text-xs text-gray-500 block mt-1">{formatDate(ev.date)} &bull; {ev.venue}</span>
+                        <span className="text-xs font-bold text-cyan-700 block">{ev.category}</span>
+                        <p className="text-sm font-bold text-slate-900 mt-0.5 truncate">{ev.name}</p>
+                        <span className="text-xs text-slate-500 block mt-1">{formatDate(ev.date)} &bull; {ev.venue}</span>
                       </div>
                     ))}
                   </div>
@@ -673,22 +671,21 @@ const Home = () => {
 
               {/* Question results */}
               <div>
-                <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3 flex items-center space-x-1">
-                  <HelpCircle className="w-3.5 h-3.5 text-purple-400" />
-                  <span>Matching Questions ({searchResults.questions.length})</span>
+                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
+                  Matching Questions ({searchResults.questions.length})
                 </h4>
                 {searchResults.questions.length === 0 ? (
-                  <p className="text-xs text-gray-600">No questions matched</p>
+                  <p className="text-xs text-slate-400">No questions matched</p>
                 ) : (
                   <div className="space-y-2">
                     {searchResults.questions.map(q => (
                       <div
                         key={q._id}
                         onClick={() => viewQuestionDetails(q)}
-                        className="p-3 bg-white/[0.01] border border-glassBorder rounded-xl cursor-pointer hover:bg-white/[0.04] transition-all"
+                        className="p-3 bg-slate-50 border border-slate-200 rounded-xl cursor-pointer hover:border-cyan-400 transition-all"
                       >
-                        <p className="text-sm font-bold text-white truncate">{q.title}</p>
-                        <span className="text-xs text-gray-500 block mt-1">Asked by {q.user?.name} &bull; {q.answersCount} answers</span>
+                        <p className="text-sm font-bold text-slate-900 truncate">{q.title}</p>
+                        <span className="text-xs text-slate-500 block mt-1">Asked by {q.user?.name} &bull; {q.answersCount} answers</span>
                       </div>
                     ))}
                   </div>
@@ -697,21 +694,20 @@ const Home = () => {
 
               {/* Announcement results */}
               <div>
-                <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3 flex items-center space-x-1">
-                  <Megaphone className="w-3.5 h-3.5 text-cyan-400" />
-                  <span>Matching Bulletins ({searchResults.announcements.length})</span>
+                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
+                  Matching Bulletins ({searchResults.announcements.length})
                 </h4>
                 {searchResults.announcements.length === 0 ? (
-                  <p className="text-xs text-gray-600">No announcements matched</p>
+                  <p className="text-xs text-slate-400">No announcements matched</p>
                 ) : (
                   <div className="space-y-2">
                     {searchResults.announcements.map(ann => (
                       <div
                         key={ann._id}
-                        className="p-3 bg-white/[0.01] border border-glassBorder rounded-xl"
+                        className="p-3 bg-slate-50 border border-slate-200 rounded-xl"
                       >
-                        <p className="text-sm font-bold text-white truncate">{ann.title}</p>
-                        <p className="text-xs text-gray-400 mt-1 line-clamp-2">{ann.content}</p>
+                        <p className="text-sm font-bold text-slate-900 truncate">{ann.title}</p>
+                        <p className="text-xs text-slate-600 mt-1 line-clamp-2">{ann.content}</p>
                       </div>
                     ))}
                   </div>
@@ -738,7 +734,6 @@ const Home = () => {
                 <div className="space-y-4">
                   <div className="flex items-center space-x-2">
                     <h2 className="text-lg sm:text-xl font-bold text-slate-900">Recommended For You</h2>
-                    <span className="text-xs bg-cyan-50 text-cyan-700 px-2 py-0.5 rounded border border-cyan-200 font-semibold tracking-wide uppercase">AI Personalized</span>
                   </div>
 
                   {/* Horizontal Scroll Cards */}
@@ -917,31 +912,31 @@ const Home = () => {
                   </h3>
 
                   {timeline.length === 0 ? (
-                    <p className="text-xs text-gray-600 pl-2">No upcoming events scheduled</p>
+                    <p className="text-xs text-slate-400 pl-2">No upcoming events scheduled</p>
                   ) : (
-                    <div className="glass-panel p-6 rounded-2xl space-y-6">
+                    <div className="glass-panel p-6 rounded-2xl space-y-6 shadow-sm">
                       {timeline.map((event) => (
                         <div
                           key={event._id}
-                          onClick={() => { recordView(event._id); alert(`Event Details:\n\nName: ${event.name}\nVenue: ${event.venue}\nDescription: ${event.description}`); }}
+                          onClick={() => { recordView(event._id); setSelectedEventDetails(event); }}
                           className="relative pl-8 timeline-item cursor-pointer group"
                         >
                           {/* Bullet point node */}
-                          <div className="absolute left-3 top-1 w-3.5 h-3.5 rounded-full bg-cyan-500 shadow-cyanGlow border-2 border-darkCard transition-transform duration-300 group-hover:scale-125"></div>
+                          <div className="absolute left-3 top-1 w-3.5 h-3.5 rounded-full bg-cyan-600 border-2 border-white shadow-xs transition-transform duration-300 group-hover:scale-125"></div>
 
                           <div className="space-y-1">
                             <div className="flex items-center space-x-3">
-                              <span className="text-xs font-bold text-cyan-400 uppercase tracking-wide">
+                              <span className="text-xs font-bold text-cyan-700 uppercase tracking-wide">
                                 {formatDate(event.date)}
                               </span>
-                              <span className="text-[10px] text-gray-500 bg-white/[0.03] px-2 py-0.5 rounded border border-glassBorder">
+                              <span className="text-[10px] text-slate-500 bg-slate-50 px-2 py-0.5 rounded border border-slate-200">
                                 {event.time}
                               </span>
                             </div>
-                            <h4 className="text-sm font-bold text-white group-hover:text-cyan-400 transition-colors">
+                            <h4 className="text-sm font-bold text-slate-900 group-hover:text-cyan-700 transition-colors">
                               {event.name}
                             </h4>
-                            <p className="text-xs text-gray-500 line-clamp-1">
+                            <p className="text-xs text-slate-500 line-clamp-1">
                               {event.venue} &bull; {event.description}
                             </p>
                           </div>
@@ -1117,8 +1112,7 @@ const Home = () => {
 
                   {placements.length === 0 || !placements.some(pr => pr.companiesVisited?.some(c => c.status === 'Approved')) ? (
                     <div className="py-12 text-center space-y-3">
-                      <Briefcase className="w-12 h-12 text-gray-600 mx-auto opacity-30" />
-                      <p className="text-xs text-gray-500 font-semibold">No recruiters listed for this year.</p>
+                      <p className="text-xs text-slate-500 font-semibold">No recruiters listed for this year.</p>
                     </div>
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -1131,63 +1125,63 @@ const Home = () => {
                         .map(c => (
                           <div
                             key={`${c._prId}-${c._id || c.name}`}
-                            className="bg-white/[0.01] border border-glassBorder rounded-2xl p-5 flex flex-col justify-between hover:border-indigo-500/20 hover:bg-white/[0.03] transition-all duration-200"
+                            className="bg-white border border-[#D6EAF8] rounded-2xl p-5 flex flex-col justify-between hover:border-cyan-400 transition-all duration-200 shadow-xs"
                           >
                             <div className="mb-3">
-                              <span className="text-[9px] font-bold tracking-widest text-indigo-400 uppercase bg-indigo-950/60 border border-indigo-500/20 px-2 py-0.5 rounded-full">
+                              <span className="text-[9px] font-bold tracking-widest text-cyan-800 uppercase bg-cyan-50 border border-cyan-200 px-2 py-0.5 rounded-full">
                                 AY {c._year}
                               </span>
                             </div>
 
                             <div className="space-y-2">
                               <div className="flex items-start justify-between">
-                                <h4 className="font-bold text-white text-sm sm:text-base leading-snug">
+                                <h4 className="font-bold text-slate-900 text-sm sm:text-base leading-snug">
                                   {c.name}
                                 </h4>
                                 <div className="flex flex-col items-end gap-1.5 shrink-0">
                                   <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${c.type === 'Blocking'
-                                    ? 'bg-red-950/50 text-red-300 border-red-500/20'
-                                    : 'bg-cyan-950/50 text-cyan-300 border-cyan-500/20'
+                                    ? 'bg-red-50 text-red-700 border-red-200'
+                                    : 'bg-cyan-50 text-cyan-700 border-cyan-200'
                                     }`}>
                                     {c.type || 'Non-Blocking'}
                                   </span>
-                                  <span className="bg-purple-950/60 text-purple-300 border border-purple-500/20 px-2 py-0.5 rounded text-[10px] font-bold">
+                                  <span className="bg-purple-50 text-purple-700 border border-purple-200 px-2 py-0.5 rounded text-[10px] font-bold">
                                     {c.jobType || 'FTE'}
                                   </span>
                                 </div>
                               </div>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-white/[0.03] text-xs">
+                            <div className="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-slate-100 text-xs">
                               <div className="flex flex-col">
-                                <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">CPA Cutoff</span>
-                                <span className="font-bold text-indigo-300 mt-0.5">
+                                <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">CPA Cutoff</span>
+                                <span className="font-bold text-slate-900 mt-0.5">
                                   {c.cpaRequired != null ? `${c.cpaRequired}` : '—'}
                                 </span>
                               </div>
                               <div className="flex flex-col">
-                                <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Package</span>
-                                <span className="font-bold text-emerald-400 mt-0.5">
+                                <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Package</span>
+                                <span className="font-bold text-emerald-700 mt-0.5">
                                   {c.package != null ? (c.package.toLowerCase() === 'nil' ? 'nil' : `${c.package}`) : '—'}
                                 </span>
                               </div>
                             </div>
 
                             {c.branchesEligible && c.branchesEligible.trim().toLowerCase() !== 'nil' && (
-                              <div className="text-xs text-gray-400 mt-3 pt-2.5 border-t border-white/[0.03]">
-                                <span className="font-bold text-gray-500 uppercase text-[9px] tracking-wider block">Branches Eligible</span>
-                                <span className="text-white mt-0.5 block">{c.branchesEligible}</span>
+                              <div className="text-xs text-slate-600 mt-3 pt-2.5 border-t border-slate-100">
+                                <span className="font-bold text-slate-500 uppercase text-[9px] tracking-wider block">Branches Eligible</span>
+                                <span className="text-slate-800 mt-0.5 block">{c.branchesEligible}</span>
                               </div>
                             )}
 
                             {c.deadline && c.deadline.trim().toLowerCase() !== 'nil' && (
-                              <div className="text-xs text-gray-400 mt-2">
-                                <span className="font-bold text-amber-500/80 uppercase text-[9px] tracking-wider block">Form Deadline</span>
-                                <span className="text-amber-400 font-semibold mt-0.5 block">{c.deadline}</span>
+                              <div className="text-xs text-slate-600 mt-2">
+                                <span className="font-bold text-amber-700 uppercase text-[9px] tracking-wider block">Form Deadline</span>
+                                <span className="text-amber-800 font-semibold mt-0.5 block">{c.deadline}</span>
                               </div>
                             )}
 
-                            <div className="mt-4 pt-3 border-t border-white/[0.03] flex items-center justify-between gap-2">
+                            <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
                               {c.googleFormLink && c.googleFormLink.trim().toLowerCase() !== 'nil' ? (
                                 <a
                                   href={c.googleFormLink.startsWith('http') ? c.googleFormLink : `https://${c.googleFormLink}`}
@@ -1204,13 +1198,12 @@ const Home = () => {
                                       salary: c.package || 'N/A'
                                     });
                                   }}
-                                  className="inline-flex items-center space-x-1.5 text-xs font-bold text-indigo-400 hover:text-indigo-300 transition-colors"
+                                  className="inline-flex items-center space-x-1 text-xs font-bold text-cyan-700 hover:text-cyan-800 transition-colors"
                                 >
-                                  <Link2 className="w-3.5 h-3.5" />
                                   <span>Apply via Form</span>
                                 </a>
                               ) : (
-                                <span className="text-[10px] text-gray-500 font-semibold">T&amp;P Cell Listing</span>
+                                <span className="text-[10px] text-slate-500 font-semibold">T&amp;P Cell Listing</span>
                               )}
 
                               <button
@@ -1227,8 +1220,8 @@ const Home = () => {
                                 }}
                                 className={`px-2.5 py-1 rounded text-[10px] font-bold border transition-all ${
                                   user?.appliedJobs?.some(j => j.jobId === `oncampus_${c._id || c.name}`)
-                                    ? 'bg-emerald-950/80 text-emerald-300 border-emerald-500/30'
-                                    : 'bg-white/[0.03] text-gray-400 border-glassBorder hover:text-white hover:bg-white/5'
+                                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                                    : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
                                 }`}
                               >
                                 {user?.appliedJobs?.some(j => j.jobId === `oncampus_${c._id || c.name}`) ? '✓ Applied' : 'Mark Applied'}
@@ -1243,153 +1236,82 @@ const Home = () => {
 
               {/* ─── OFF-CAMPUS PANEL ────────────────────────────────────────── */}
               {placementSubTab === 'offcampus' && (
-                <div className="glass-panel p-6 sm:p-8 rounded-2xl space-y-6">
+                <div className="glass-panel p-6 sm:p-8 rounded-2xl space-y-6 shadow-sm">
                   {/* Section heading */}
-                  <div className="flex items-center space-x-3 border-b border-glassBorder pb-4">
-                    <div className="p-2 bg-emerald-500/10 rounded-lg">
-                      <Globe className="w-5 h-5 text-emerald-400" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <h3 className="font-bold text-white text-lg">Off-Campus Opportunities</h3>
-                        <span className="flex items-center gap-1.5 text-[10px] font-bold bg-emerald-950/50 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full">
-                          <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
-                          Live Feed
-                        </span>
-                      </div>
+                  <div className="border-b border-slate-100 pb-4">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h3 className="font-bold text-slate-900 text-lg">Off-Campus Opportunities</h3>
+                      <span className="flex items-center gap-1.5 text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full">
+                        Live Feed
+                      </span>
                     </div>
                   </div>
 
 
                   {offCampusJobs.length === 0 ? (
-                    <div className="py-14 text-center space-y-4">
-                      <div className="w-16 h-16 mx-auto rounded-2xl bg-emerald-500/5 border border-emerald-500/10 flex items-center justify-center">
-                        <Globe className="w-8 h-8 text-gray-600 opacity-40" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-gray-500">No off-campus listings yet.</p>
-                        <p className="text-xs text-gray-600 mt-1">Check back soon — your T&P cell will post opportunities here.</p>
-                      </div>
+                    <div className="py-14 text-center space-y-2">
+                      <p className="text-sm font-semibold text-slate-500">No off-campus listings yet.</p>
+                      <p className="text-xs text-slate-400">Check back soon — your T&P cell will post opportunities here.</p>
                     </div>
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                       {offCampusJobs.map(job => (
                         <div
                           key={job._id}
-                          className="bg-white/[0.01] border border-glassBorder rounded-2xl p-5 flex flex-col justify-between hover:border-emerald-500/20 hover:bg-white/[0.03] transition-all duration-200 group"
+                          className="bg-white border border-[#D6EAF8] rounded-2xl p-5 flex flex-col justify-between hover:border-cyan-400 transition-all duration-200 group shadow-xs"
                         >
                           {/* Card Top: Logo + company + badges */}
                           <div className="flex items-start justify-between gap-2 mb-3">
                             <div className="flex items-center gap-3 min-w-0 flex-1">
-                              {job.logo ? (
-                                <img src={job.logo} alt={job.company} className="w-10 h-10 rounded-xl object-contain bg-white/5 border border-glassBorder p-1 shrink-0" onError={e => { e.target.style.display='none'; }} />
-                              ) : (
-                                <div className="w-10 h-10 rounded-xl bg-emerald-950/30 border border-emerald-500/10 flex items-center justify-center shrink-0">
-                                  <Briefcase className="w-5 h-5 text-emerald-500/50" />
-                                </div>
+                              {job.logo && (
+                                <img src={job.logo} alt={job.company} className="w-10 h-10 rounded-xl object-contain bg-white border border-slate-200 p-1 shrink-0" onError={e => { e.target.style.display='none'; }} />
                               )}
                               <div className="min-w-0">
-                                <h4 className="font-bold text-white text-sm leading-snug truncate group-hover:text-emerald-400 transition-colors">{job.title}</h4>
-                                <p className="text-xs text-gray-400 truncate">{job.company}</p>
+                                <h4 className="font-bold text-slate-900 text-sm leading-snug truncate group-hover:text-cyan-700 transition-colors">{job.title}</h4>
+                                <p className="text-xs text-slate-500 truncate">{job.company}</p>
                               </div>
                             </div>
 
                             {/* Right badges column */}
                             <div className="flex flex-col items-end gap-1.5 shrink-0">
                               <span className={`px-2 py-0.5 rounded text-[10px] font-bold border whitespace-nowrap ${
-                                job.employmentType === 'Full-Time' ? 'bg-blue-950/50 text-blue-300 border-blue-500/20'
-                                : job.employmentType === 'Internship' ? 'bg-purple-950/50 text-purple-300 border-purple-500/20'
-                                : job.employmentType === 'Contract' ? 'bg-orange-950/50 text-orange-300 border-orange-500/20'
-                                : 'bg-teal-950/50 text-teal-300 border-teal-500/20'
+                                job.employmentType === 'Full-Time' ? 'bg-blue-50 text-blue-700 border-blue-200'
+                                : job.employmentType === 'Internship' ? 'bg-purple-50 text-purple-700 border-purple-200'
+                                : job.employmentType === 'Contract' ? 'bg-orange-50 text-orange-700 border-orange-200'
+                                : 'bg-teal-50 text-teal-700 border-teal-200'
                               }`}>
                                 {job.employmentType}
                               </span>
-                              {job._external && (
-                                <span className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-emerald-950/40 text-emerald-400 border border-emerald-500/20 whitespace-nowrap">
-                                  <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse inline-block" />
-                                  Live
-                                </span>
-                              )}
                             </div>
                           </div>
 
 
                           {/* Description snippet */}
                           {job.description && (
-                            <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed mb-3">{job.description}</p>
+                            <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed mb-3">{job.description}</p>
                           )}
 
                           {/* Meta grid */}
                           <div className="grid grid-cols-2 gap-x-3 gap-y-2 text-xs mb-3">
                             {job.location && (
-                              <div className="flex items-center gap-1.5 text-gray-400">
-                                <MapPin className="w-3.5 h-3.5 text-gray-600 shrink-0" />
-                                <span className="truncate">{job.location}</span>
+                              <div className="flex items-center gap-1.5 text-slate-500">
+                                <span className="truncate">📍 {job.location}</span>
                               </div>
                             )}
                             {job.experience && (
-                              <div className="flex items-center gap-1.5 text-gray-400">
-                                <Clock className="w-3.5 h-3.5 text-gray-600 shrink-0" />
-                                <span className="truncate">{job.experience}</span>
+                              <div className="flex items-center gap-1.5 text-slate-500">
+                                <span className="truncate">⏳ {job.experience}</span>
                               </div>
                             )}
                             {job.salary && (
-                              <div className="flex items-center gap-1.5 col-span-2">
-                                <TrendingUp className="w-3.5 h-3.5 text-emerald-500/70 shrink-0" />
-                                <span className="font-bold text-emerald-400">{job.salary}</span>
+                              <div className="flex items-center gap-1.5 col-span-2 text-emerald-700 font-semibold">
+                                <span>💰 {job.salary}</span>
                               </div>
                             )}
                           </div>
 
-                          {/* Skills */}
-                          {job.skills && job.skills.length > 0 && (
-                            <div className="flex flex-wrap gap-1.5 mb-3">
-                              {job.skills.slice(0, 4).map((skill, idx) => (
-                                <span
-                                  key={idx}
-                                  className="inline-flex items-center gap-1 text-[10px] font-semibold bg-white/[0.03] border border-glassBorder text-gray-300 px-2 py-0.5 rounded-full"
-                                >
-                                  <Tag className="w-2.5 h-2.5 text-gray-500" />
-                                  {skill}
-                                </span>
-                              ))}
-                              {job.skills.length > 4 && (
-                                <span className="text-[10px] text-gray-600 font-semibold px-1">+{job.skills.length - 4} more</span>
-                              )}
-                            </div>
-                          )}
-
-                          {/* Deadline */}
-                          {job.deadline && (
-                            <div className="text-xs mb-3">
-                              <span className="font-bold text-amber-500/80 uppercase text-[9px] tracking-wider block">Apply By</span>
-                              <span className="text-amber-400 font-semibold">
-                                {new Date(job.deadline).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
-                              </span>
-                            </div>
-                          )}
-
-                          {/* Footer: source + apply button */}
-                          <div className="mt-auto pt-3 border-t border-white/[0.03] flex items-center justify-between gap-2">
-                            {job.source ? (
-                              <div className="flex items-center gap-1.5">
-                                {job.sourceLogo ? (
-                                  <img 
-                                    src={job.sourceLogo} 
-                                    alt={job.source} 
-                                    className="w-4 h-4 rounded object-contain" 
-                                    onError={(e) => { e.target.style.display = 'none'; }}
-                                  />
-                                ) : (
-                                  <Globe className="w-3.5 h-3.5 text-gray-600" />
-                                )}
-                                <span className="text-[10px] text-gray-500 font-semibold">{job.source}</span>
-                              </div>
-                            ) : (
-                              <span className="text-[10px] text-gray-600">via T&P Cell</span>
-                            )}
-
-                             <div className="flex items-center gap-1.5">
+                          <div className="flex items-center justify-between gap-2 pt-3 border-t border-slate-100">
+                            {job.applyUrl && (
                               <a
                                 href={job.applyUrl.startsWith('http') ? job.applyUrl : `https://${job.applyUrl}`}
                                 target="_blank"
@@ -1405,33 +1327,32 @@ const Home = () => {
                                     salary: job.salary || ''
                                   });
                                 }}
-                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 hover:text-emerald-300 transition-all"
+                                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold bg-cyan-50 text-cyan-800 border border-cyan-200 hover:bg-cyan-100 transition-all"
                               >
-                                <ExternalLink className="w-3.5 h-3.5" />
                                 Apply Now
                               </a>
+                            )}
 
-                              <button
-                                onClick={() => {
-                                  applyToJob({
-                                    jobId: String(job._id),
-                                    title: job.title,
-                                    company: job.company,
-                                    type: 'Off-Campus',
-                                    applyUrl: job.applyUrl,
-                                    location: job.location || '',
-                                    salary: job.salary || ''
-                                  });
-                                }}
-                                className={`px-2.5 py-1.5 rounded-lg text-xs font-bold border transition-all ${
-                                  user?.appliedJobs?.some(j => String(j.jobId) === String(job._id))
-                                    ? 'bg-emerald-950/80 text-emerald-300 border-emerald-500/30 shadow-glow/10'
-                                    : 'bg-white/[0.03] text-gray-400 border-glassBorder hover:text-white hover:bg-white/5'
-                                }`}
-                              >
-                                {user?.appliedJobs?.some(j => String(j.jobId) === String(job._id)) ? '✓ Applied' : 'Mark Applied'}
-                              </button>
-                            </div>
+                            <button
+                              onClick={() => {
+                                applyToJob({
+                                  jobId: String(job._id),
+                                  title: job.title,
+                                  company: job.company,
+                                  type: 'Off-Campus',
+                                  applyUrl: job.applyUrl,
+                                  location: job.location || '',
+                                  salary: job.salary || ''
+                                });
+                              }}
+                              className={`px-2.5 py-1.5 rounded-lg text-xs font-bold border transition-all ${
+                                user?.appliedJobs?.some(j => String(j.jobId) === String(job._id))
+                                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                                  : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                              }`}
+                            >
+                              {user?.appliedJobs?.some(j => String(j.jobId) === String(job._id)) ? '✓ Applied' : 'Mark Applied'}
+                            </button>
                           </div>
                         </div>
                       ))}
@@ -1445,33 +1366,32 @@ const Home = () => {
 
           {/* TAB 4: ANNOUNCEMENTS */}
           {activeTab === 'announcements' && (
-            <div className="glass-panel p-6 sm:p-8 rounded-2xl space-y-6 max-w-3xl mx-auto">
-              <div className="border-b border-glassBorder pb-4">
-                <h3 className="font-bold text-white text-lg flex items-center space-x-2">
-                  <Megaphone className="w-6 h-6 text-cyan-400" />
-                  <span>College Announcements</span>
+            <div className="glass-panel p-6 sm:p-8 rounded-2xl space-y-6 max-w-3xl mx-auto shadow-sm">
+              <div className="border-b border-slate-100 pb-4">
+                <h3 className="font-bold text-slate-900 text-lg">
+                  College Announcements
                 </h3>
-                <p className="text-gray-400 text-xs sm:text-sm mt-0.5">Official broadcasts and notices from campus administration.</p>
+                <p className="text-slate-500 text-xs sm:text-sm mt-0.5">Official broadcasts and notices from campus administration.</p>
               </div>
 
               {announcements.length === 0 ? (
-                <p className="text-xs text-gray-500 text-center py-12">No recent announcements from administration.</p>
+                <p className="text-xs text-slate-500 text-center py-12">No recent announcements from administration.</p>
               ) : (
                 <div className="space-y-4">
                   {announcements.map((ann) => (
                     <div
                       key={ann._id}
-                      className="bg-white/[0.01] border border-glassBorder p-5 rounded-2xl space-y-3 hover:bg-white/[0.03] hover:border-cyan-500/20 transition-all duration-200"
+                      className="bg-white border border-[#D6EAF8] p-5 rounded-2xl space-y-3 hover:border-cyan-300 transition-all duration-200 shadow-xs"
                     >
                       <div className="flex justify-between items-start">
-                        <h4 className="text-base font-bold text-white leading-snug">{ann.title}</h4>
-                        <span className="text-[10px] text-gray-500 bg-white/[0.03] px-2 py-0.5 rounded border border-glassBorder whitespace-nowrap">
+                        <h4 className="text-base font-bold text-slate-900 leading-snug">{ann.title}</h4>
+                        <span className="text-[10px] text-slate-500 bg-slate-50 px-2 py-0.5 rounded border border-slate-200 whitespace-nowrap">
                           {new Date(ann.createdAt).toLocaleDateString()}
                         </span>
                       </div>
-                      <p className="text-sm text-gray-300 leading-relaxed whitespace-pre-wrap">{ann.content}</p>
-                      <div className="pt-2 border-t border-white/[0.03] flex items-center space-x-2 text-[10px] text-gray-500">
-                        <span className="font-bold text-cyan-400">Administration Office</span>
+                      <p className="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">{ann.content}</p>
+                      <div className="pt-2 border-t border-slate-100 flex items-center space-x-2 text-[10px] text-slate-500">
+                        <span className="font-bold text-cyan-700">Administration Office</span>
                       </div>
                     </div>
                   ))}
@@ -1486,21 +1406,20 @@ const Home = () => {
       {/* EVENT COMPOSER SUBMISSION MODAL */}
       <AnimatePresence>
         {isEventModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              className="glass-panel w-full max-w-2xl rounded-2xl overflow-hidden max-h-[90vh] overflow-y-auto"
+              className="bg-white border border-[#D6EAF8] shadow-2xl w-full max-w-2xl rounded-2xl overflow-hidden max-h-[90vh] overflow-y-auto"
             >
-              <div className="flex items-center justify-between px-6 py-4 border-b border-glassBorder bg-white/[0.01]">
-                <h3 className="font-bold text-white text-lg flex items-center space-x-2">
-                  <Calendar className="w-5.5 h-5.5 text-indigo-400" />
-                  <span>Propose New Campus Event</span>
+              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/50">
+                <h3 className="font-bold text-slate-900 text-lg">
+                  Propose New Campus Event
                 </h3>
                 <button
                   onClick={() => setIsEventModalOpen(false)}
-                  className="p-1 text-gray-400 hover:text-white rounded-lg hover:bg-white/5"
+                  className="p-1 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100"
                 >
                   <X className="w-5.5 h-5.5" />
                 </button>
@@ -1508,15 +1427,15 @@ const Home = () => {
 
               <form onSubmit={handleEventSubmit} className="p-6 space-y-4">
                 {eventSuccessMsg && (
-                  <div className="p-3.5 rounded-lg border text-sm bg-emerald-950/40 text-emerald-300 border-emerald-500/20 flex items-center space-x-2">
-                    <Check className="w-4 h-4 text-emerald-400" />
+                  <div className="p-3.5 rounded-lg border text-sm bg-emerald-50 text-emerald-700 border-emerald-200 flex items-center space-x-2 font-medium">
+                    <Check className="w-4 h-4 text-emerald-600" />
                     <span>{eventSuccessMsg}</span>
                   </div>
                 )}
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="md:col-span-2">
-                    <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Event Name</label>
+                    <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase">Event Name</label>
                     <input
                       type="text"
                       required
@@ -1529,14 +1448,14 @@ const Home = () => {
 
                   <div className="md:col-span-2">
                     <div className="flex justify-between items-center mb-1.5">
-                      <label className="block text-xs font-semibold text-gray-400 uppercase">Event Description</label>
+                      <label className="block text-xs font-semibold text-slate-500 uppercase">Event Description</label>
                       <button
                         type="button"
                         onClick={handleAITagGeneration}
                         disabled={generatingTags}
-                        className="text-xs text-indigo-400 hover:text-indigo-300 font-bold flex items-center space-x-1 border border-indigo-500/20 bg-indigo-950/40 px-2 py-0.5 rounded"
+                        className="text-xs text-cyan-700 hover:text-cyan-800 font-bold flex items-center space-x-1 border border-cyan-200 bg-cyan-50 px-2 py-0.5 rounded"
                       >
-                        <Sparkles className="w-3.5 h-3.5 animate-pulse-slow" />
+                        <Sparkles className="w-3.5 h-3.5" />
                         <span>{generatingTags ? 'Extracting...' : 'AI Generate Tags'}</span>
                       </button>
                     </div>
@@ -1551,7 +1470,7 @@ const Home = () => {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Date</label>
+                    <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase">Date</label>
                     <input
                       type="date"
                       required
@@ -1562,7 +1481,7 @@ const Home = () => {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Time</label>
+                    <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase">Time</label>
                     <input
                       type="time"
                       required
@@ -1574,7 +1493,7 @@ const Home = () => {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Venue Room</label>
+                    <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase">Venue Room</label>
                     <input
                       type="text"
                       required
@@ -1586,22 +1505,21 @@ const Home = () => {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Category</label>
+                    <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase">Category</label>
                     <select
                       value={eventForm.category}
                       onChange={(e) => setEventForm({ ...eventForm, category: e.target.value })}
-                      style={{ backgroundColor: '#0d0f1a', color: '#fff' }}
-                      className="w-full glass-input appearance-none"
+                      className="w-full glass-input"
                     >
                       {['Coding', 'AI/ML', 'Data Science', 'Robotics', 'Sports', 'Design', 'Startups', 'Research', 'Placements', 'Hackathons', 'Music', 'Photography', 'Cultural Events', 'Entrepreneurship', 'Competition', 'Dancing', 'Arts & Crafts', 'Drama & Theatre', 'Workshop', 'Social Work', 'Fest', 'Gaming', 'Literature'].map(cat => (
-                        <option key={cat} value={cat} style={{ backgroundColor: '#0d0f1a', color: '#fff' }}>{cat}</option>
+                        <option key={cat} value={cat}>{cat}</option>
                       ))}
                     </select>
                   </div>
 
 
                   <div className="md:col-span-2">
-                    <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Registration Link <span className="text-gray-600 normal-case font-normal">(Optional)</span></label>
+                    <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase">Registration Link <span className="text-slate-400 normal-case font-normal">(Optional)</span></label>
                     <input
                       type="url"
                       placeholder="e.g. https://google.form/register-link"
@@ -1613,7 +1531,7 @@ const Home = () => {
 
                   {/* Banner Image base64 mock or url */}
                   <div className="md:col-span-2">
-                    <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Banner Image Link (Optional)</label>
+                    <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase">Banner Image Link (Optional)</label>
                     <input
                       type="text"
                       placeholder="Paste Unsplash image URL or leave blank"
@@ -1625,16 +1543,16 @@ const Home = () => {
 
                   {/* Tags list */}
                   <div className="md:col-span-2">
-                    <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Event Tags</label>
-                    <div className="flex flex-wrap gap-1.5 p-2 bg-white/[0.01] border border-glassBorder rounded-lg min-h-[44px]">
+                    <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase">Event Tags</label>
+                    <div className="flex flex-wrap gap-1.5 p-2 bg-slate-50 border border-slate-200 rounded-lg min-h-[44px]">
                       {eventForm.tags.map(tag => (
                         <span
                           key={tag}
-                          className="text-xs bg-indigo-950/60 text-indigo-300 border border-indigo-500/20 px-2.5 py-1 rounded-md flex items-center space-x-1"
+                          className="text-xs bg-cyan-50 text-cyan-800 border border-cyan-200 px-2.5 py-1 rounded-md flex items-center space-x-1 font-semibold"
                         >
                           <span>{tag}</span>
                           <button type="button" onClick={() => removeTag(tag)}>
-                            <X className="w-3 h-3 hover:text-white" />
+                            <X className="w-3 h-3 hover:text-slate-900" />
                           </button>
                         </span>
                       ))}
@@ -1645,26 +1563,26 @@ const Home = () => {
                           value={tagInput}
                           onChange={(e) => setTagInput(e.target.value)}
                           onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addCustomTag(); } }}
-                          className="bg-transparent outline-none text-xs text-white w-full border-none p-0"
+                          className="bg-transparent outline-none text-xs text-slate-800 w-full border-none p-0"
                         />
-                        <button type="button" onClick={addCustomTag} className="text-[10px] text-gray-400 hover:text-white font-bold">ADD</button>
+                        <button type="button" onClick={addCustomTag} className="text-[10px] text-slate-500 hover:text-slate-900 font-bold">ADD</button>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-end space-x-3 pt-4 border-t border-glassBorder">
+                <div className="flex items-center justify-end space-x-3 pt-4 border-t border-slate-100">
                   <button
                     type="button"
                     onClick={() => setIsEventModalOpen(false)}
-                    className="glass-button-secondary py-2 px-4 text-xs"
+                    className="glass-button-secondary py-2 px-4 text-xs font-bold"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={submittingEvent}
-                    className="glass-button-primary py-2 px-6 text-xs"
+                    className="glass-button-primary py-2 px-6 text-xs font-bold"
                   >
                     {submittingEvent ? 'Submitting Propose...' : 'Submit Proposed Event'}
                   </button>
@@ -1678,23 +1596,23 @@ const Home = () => {
       {/* ASK QUESTION MODAL */}
       <AnimatePresence>
         {isQAOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="glass-panel w-full max-w-lg rounded-2xl overflow-hidden"
+              className="bg-white border border-[#D6EAF8] shadow-2xl w-full max-w-lg rounded-2xl overflow-hidden"
             >
-              <div className="flex items-center justify-between px-6 py-4 border-b border-glassBorder">
-                <h3 className="font-bold text-white text-lg">Post to Q&A Board</h3>
-                <button onClick={() => setIsQAOpen(false)} className="p-1 text-gray-400 hover:text-white">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/50">
+                <h3 className="font-bold text-slate-900 text-lg">Post to Q&A Board</h3>
+                <button onClick={() => setIsQAOpen(false)} className="p-1 text-slate-400 hover:text-slate-700">
                   <X className="w-5.5 h-5.5" />
                 </button>
               </div>
 
               <form onSubmit={handleQuestionSubmit} className="p-6 space-y-4">
                 <div>
-                  <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Question Title</label>
+                  <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase">Question Title</label>
                   <input
                     type="text"
                     required
@@ -1706,7 +1624,7 @@ const Home = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase">Describe your query</label>
+                  <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase">Describe your query</label>
                   <textarea
                     rows={4}
                     required
@@ -1718,10 +1636,10 @@ const Home = () => {
                 </div>
 
                 <div className="flex items-center justify-end space-x-3 pt-2">
-                  <button type="button" onClick={() => setIsQAOpen(false)} className="glass-button-secondary py-2 px-4 text-xs">
+                  <button type="button" onClick={() => setIsQAOpen(false)} className="glass-button-secondary py-2 px-4 text-xs font-bold">
                     Cancel
                   </button>
-                  <button type="submit" disabled={submittingQuestion} className="glass-button-primary py-2 px-6 text-xs">
+                  <button type="submit" disabled={submittingQuestion} className="glass-button-primary py-2 px-6 text-xs font-bold">
                     {submittingQuestion ? 'Posting...' : 'Post Question'}
                   </button>
                 </div>
@@ -1734,7 +1652,7 @@ const Home = () => {
       {/* QUESTION THREAD DRAWER OVERLAY */}
       <AnimatePresence>
         {selectedQuestion && (
-          <div className="fixed inset-0 z-50 flex justify-end bg-black/60 backdrop-blur-xs">
+          <div className="fixed inset-0 z-50 flex justify-end bg-slate-900/40 backdrop-blur-xs">
             {/* Click outside to close */}
             <div className="flex-1" onClick={() => setSelectedQuestion(null)}></div>
 
@@ -1743,14 +1661,14 @@ const Home = () => {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'tween', duration: 0.3 }}
-              className="w-full max-w-2xl bg-darkCard border-l border-glassBorder shadow-2xl h-full flex flex-col justify-between overflow-hidden"
+              className="w-full max-w-2xl bg-white border-l border-[#D6EAF8] shadow-2xl h-full flex flex-col justify-between overflow-hidden"
             >
               {/* Drawer Header */}
-              <div className="flex items-center justify-between p-5 border-b border-glassBorder bg-white/[0.01]">
-                <span className="text-xs font-semibold text-indigo-400 uppercase tracking-wider">Question Thread</span>
+              <div className="flex items-center justify-between p-5 border-b border-slate-100 bg-slate-50/50">
+                <span className="text-xs font-semibold text-cyan-700 uppercase tracking-wider">Question Thread</span>
                 <button
                   onClick={() => setSelectedQuestion(null)}
-                  className="p-1 text-gray-400 hover:text-white rounded-lg hover:bg-white/5"
+                  className="p-1 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -1761,14 +1679,14 @@ const Home = () => {
 
                 {/* 1. Main Question Post */}
                 <div className="space-y-4">
-                  <h2 className="text-lg sm:text-xl font-bold text-white leading-snug">{selectedQuestion.title}</h2>
-                  <p className="text-sm text-gray-300 leading-relaxed bg-white/[0.01] border border-glassBorder/60 p-4 rounded-xl">
+                  <h2 className="text-lg sm:text-xl font-bold text-slate-900 leading-snug">{selectedQuestion.title}</h2>
+                  <p className="text-sm text-slate-700 leading-relaxed bg-slate-50 border border-slate-200 p-4 rounded-xl">
                     {selectedQuestion.content}
                   </p>
 
-                  <div className="flex items-center justify-between text-xs text-gray-500 pt-1">
+                  <div className="flex items-center justify-between text-xs text-slate-500 pt-1">
                     <div className="flex items-center space-x-2">
-                      <span className="font-bold text-white">{selectedQuestion.user?.name}</span>
+                      <span className="font-bold text-slate-900">{selectedQuestion.user?.name}</span>
                       <span>&bull;</span>
                       <span>{selectedQuestion.user?.branch} (Year {selectedQuestion.user?.year})</span>
                     </div>
@@ -1776,8 +1694,8 @@ const Home = () => {
                     <button
                       onClick={() => handleUpvoteQuestion(selectedQuestion._id)}
                       className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold transition-all ${selectedQuestion.upvotes.includes(user._id)
-                        ? 'bg-indigo-950/60 border-indigo-500/20 text-indigo-400'
-                        : 'bg-white/[0.02] border-glassBorder text-gray-400 hover:text-white'
+                        ? 'bg-cyan-50 border-cyan-200 text-cyan-800'
+                        : 'bg-slate-50 border-slate-200 text-slate-600 hover:text-slate-900'
                         }`}
                     >
                       <ThumbsUp className="w-3.5 h-3.5" />
@@ -1787,18 +1705,18 @@ const Home = () => {
                 </div>
 
                 {/* 2. Embedded Comments Section */}
-                <div className="space-y-3 pt-4 border-t border-glassBorder">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400">Comments ({selectedQuestion.comments?.length || 0})</h4>
+                <div className="space-y-3 pt-4 border-t border-slate-100">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500">Comments ({selectedQuestion.comments?.length || 0})</h4>
 
                   {selectedQuestion.comments?.length > 0 && (
-                    <div className="space-y-2.5 bg-white/[0.01] border border-glassBorder p-4 rounded-xl">
+                    <div className="space-y-2.5 bg-slate-50 border border-slate-200 p-4 rounded-xl">
                       {selectedQuestion.comments.map((comment) => (
                         <div key={comment._id} className="text-xs space-y-1">
                           <div className="flex items-center space-x-1.5 font-bold">
-                            <span className="text-gray-300">{comment.userName}</span>
-                            <span className="text-[10px] text-gray-600 font-semibold">{new Date(comment.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                            <span className="text-slate-800">{comment.userName}</span>
+                            <span className="text-[10px] text-slate-500 font-semibold">{new Date(comment.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                           </div>
-                          <p className="text-gray-400 leading-relaxed pl-1">{comment.content}</p>
+                          <p className="text-slate-600 leading-relaxed pl-1">{comment.content}</p>
                         </div>
                       ))}
                     </div>
@@ -1820,26 +1738,25 @@ const Home = () => {
                 </div>
 
                 {/* 3. Answers List */}
-                <div className="space-y-4 pt-6 border-t border-glassBorder">
-                  <h3 className="font-bold text-white text-sm sm:text-base flex items-center space-x-2">
-                    <MessageSquare className="w-4.5 h-4.5 text-indigo-400" />
-                    <span>Answers ({answers.length})</span>
+                <div className="space-y-4 pt-6 border-t border-slate-100">
+                  <h3 className="font-bold text-slate-900 text-sm sm:text-base">
+                    Answers ({answers.length})
                   </h3>
 
                   {answers.length === 0 ? (
-                    <p className="text-xs text-gray-500 pl-2">No answers posted yet. Help your classmate by answering below!</p>
+                    <p className="text-xs text-slate-500 pl-2">No answers posted yet. Help your classmate by answering below!</p>
                   ) : (
                     <div className="space-y-4">
                       {answers.map((answer) => (
                         <div
                           key={answer._id}
-                          className="bg-white/[0.02] border border-glassBorder p-4 rounded-xl space-y-3"
+                          className="bg-slate-50 border border-slate-200 p-4 rounded-xl space-y-3"
                         >
-                          <p className="text-xs sm:text-sm text-gray-300 leading-relaxed">{answer.content}</p>
+                          <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">{answer.content}</p>
 
-                          <div className="flex items-center justify-between text-xs text-gray-500 pt-1">
+                          <div className="flex items-center justify-between text-xs text-slate-500 pt-1">
                             <div className="flex items-center space-x-2">
-                              <span className="font-bold text-white">{answer.user?.name}</span>
+                              <span className="font-bold text-slate-900">{answer.user?.name}</span>
                               <span>&bull;</span>
                               <span>{answer.user?.branch} (Year {answer.user?.year})</span>
                             </div>
@@ -1847,8 +1764,8 @@ const Home = () => {
                             <button
                               onClick={() => handleUpvoteAnswer(answer._id)}
                               className={`flex items-center space-x-1 px-2.5 py-1 rounded border text-[10px] font-bold transition-all ${answer.upvotes.includes(user._id)
-                                ? 'bg-indigo-950/60 border-indigo-500/20 text-indigo-400'
-                                : 'bg-white/[0.02] border-glassBorder text-gray-400 hover:text-white'
+                                ? 'bg-cyan-50 border-cyan-200 text-cyan-800'
+                                : 'bg-white border-slate-200 text-slate-600 hover:text-slate-900'
                                 }`}
                             >
                               <ThumbsUp className="w-3 h-3" />
@@ -1863,7 +1780,7 @@ const Home = () => {
               </div>
 
               {/* Drawer Footer Answer Composer */}
-              <form onSubmit={handleAnswerSubmit} className="p-4 border-t border-glassBorder bg-white/[0.01] flex gap-3">
+              <form onSubmit={handleAnswerSubmit} className="p-4 border-t border-slate-100 bg-slate-50/50 flex gap-3">
                 <textarea
                   rows={2}
                   placeholder="Type your answer here..."
@@ -1886,15 +1803,15 @@ const Home = () => {
       {/* EVENT DETAILS MODAL */}
       <AnimatePresence>
         {selectedEventDetails && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="glass-panel w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl relative border-indigo-500/20"
+              className="bg-white border border-[#D6EAF8] w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl relative"
             >
               {/* Event Banner */}
-              <div className="h-44 bg-indigo-950/20 relative overflow-hidden">
+              <div className="h-44 bg-slate-100 relative overflow-hidden">
                 {selectedEventDetails.banner ? (
                   <img
                     src={selectedEventDetails.banner}
@@ -1902,16 +1819,16 @@ const Home = () => {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-indigo-950/40 to-purple-950/40 flex items-center justify-center">
-                    <Calendar className="w-12 h-12 text-indigo-500/40" />
+                  <div className="w-full h-full bg-slate-100 flex items-center justify-center">
+                    <Calendar className="w-12 h-12 text-slate-300" />
                   </div>
                 )}
-                <span className="absolute top-3 left-3 text-[10px] font-bold bg-darkCard/90 border border-glassBorder px-2.5 py-1 rounded-md text-indigo-400 uppercase">
+                <span className="absolute top-3 left-3 text-[10px] font-bold bg-white/90 border border-slate-200 px-2.5 py-1 rounded-md text-cyan-800 uppercase">
                   {selectedEventDetails.category}
                 </span>
                 <button
                   onClick={() => setSelectedEventDetails(null)}
-                  className="absolute top-3 right-3 p-1.5 bg-black/60 hover:bg-black/80 text-gray-400 hover:text-white rounded-full transition-all"
+                  className="absolute top-3 right-3 p-1.5 bg-white/80 hover:bg-white text-slate-600 rounded-full transition-all border border-slate-200"
                 >
                   <X className="w-4.5 h-4.5" />
                 </button>
@@ -1920,28 +1837,19 @@ const Home = () => {
               {/* Event Body */}
               <div className="p-6 space-y-4">
                 <div className="space-y-1.5">
-                  <h3 className="text-lg sm:text-xl font-extrabold text-white leading-snug">
+                  <h3 className="text-lg sm:text-xl font-extrabold text-slate-900 leading-snug">
                     {selectedEventDetails.name}
                   </h3>
-                  <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-gray-400">
-                    <span className="flex items-center space-x-1">
-                      <Clock className="w-3.5 h-3.5 text-indigo-400" />
-                      <span>{selectedEventDetails.time}</span>
-                    </span>
-                    <span className="flex items-center space-x-1">
-                      <MapPin className="w-3.5 h-3.5 text-indigo-400" />
-                      <span>{selectedEventDetails.venue}</span>
-                    </span>
-                    <span className="flex items-center space-x-1">
-                      <Calendar className="w-3.5 h-3.5 text-indigo-400" />
-                      <span>{formatDate(selectedEventDetails.date)}</span>
-                    </span>
+                  <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-slate-500 font-medium">
+                    <span>🕒 {selectedEventDetails.time}</span>
+                    <span>📍 {selectedEventDetails.venue}</span>
+                    <span>📅 {formatDate(selectedEventDetails.date)}</span>
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <span className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider">About the Event</span>
-                  <p className="text-xs sm:text-sm text-gray-300 leading-relaxed bg-white/[0.01] border border-glassBorder/60 p-4 rounded-xl max-h-[150px] overflow-y-auto">
+                  <span className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider">About the Event</span>
+                  <p className="text-xs sm:text-sm text-slate-700 leading-relaxed bg-slate-50 border border-slate-200 p-4 rounded-xl max-h-[150px] overflow-y-auto">
                     {selectedEventDetails.description}
                   </p>
                 </div>
@@ -1949,12 +1857,12 @@ const Home = () => {
                 {/* Registration Link / Form Link */}
                 {selectedEventDetails.registrationLink && (
                   <div className="space-y-2 pt-2">
-                    <span className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider font-semibold">Registration / Form Link</span>
+                    <span className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider font-semibold">Registration / Form Link</span>
                     <a
                       href={selectedEventDetails.registrationLink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center justify-between p-3.5 rounded-xl border border-indigo-500/20 bg-indigo-950/40 hover:bg-indigo-900/40 text-indigo-400 hover:text-indigo-300 transition-all font-bold text-xs sm:text-sm group"
+                      className="flex items-center justify-between p-3.5 rounded-xl border border-cyan-200 bg-cyan-50 hover:bg-cyan-100 text-cyan-800 transition-all font-bold text-xs sm:text-sm group"
                     >
                       <span className="truncate pr-4">{selectedEventDetails.registrationLink}</span>
                       <ArrowRight className="w-4 h-4 shrink-0 transform group-hover:translate-x-0.5 transition-transform" />
@@ -1964,24 +1872,24 @@ const Home = () => {
               </div>
 
               {/* Footer Actions */}
-              <div className="px-6 py-4 border-t border-glassBorder bg-white/[0.01] flex items-center justify-between">
-                <span className="text-[10px] text-gray-500 font-semibold">
+              <div className="px-6 py-4 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between">
+                <span className="text-[10px] text-slate-500 font-semibold">
                   Views: {selectedEventDetails.views || 0} &bull; Likes: {selectedEventDetails.likes?.length || 0}
                 </span>
                 <div className="flex items-center space-x-2">
                   <button
                     onClick={() => { handleLike(selectedEventDetails._id); setSelectedEventDetails(prev => ({ ...prev, likes: prev.likes?.includes(user._id) ? prev.likes.filter(id => id !== user._id) : [...(prev.likes || []), user._id] })); }}
                     className={`p-2 rounded-xl border transition-all ${selectedEventDetails.likes?.includes(user._id)
-                      ? 'bg-rose-950/40 border-rose-500/20 text-rose-400'
-                      : 'bg-white/[0.02] border-glassBorder text-gray-500 hover:text-white'
+                      ? 'bg-rose-50 border-rose-200 text-rose-600'
+                      : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800'
                       }`}
                   >
-                    <Heart className={`w-4 h-4 ${selectedEventDetails.likes?.includes(user._id) ? 'fill-rose-400' : ''}`} />
+                    <Heart className={`w-4 h-4 ${selectedEventDetails.likes?.includes(user._id) ? 'fill-rose-500' : ''}`} />
                   </button>
                   <button
                     onClick={() => { handleRegister(selectedEventDetails._id); setSelectedEventDetails(prev => ({ ...prev, registrations: prev.registrations?.includes(user._id) ? prev.registrations.filter(id => id !== user._id) : [...(prev.registrations || []), user._id] })); }}
                     className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${selectedEventDetails.registrations?.includes(user._id)
-                      ? 'bg-emerald-950 text-emerald-400 border border-emerald-500/20'
+                      ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                       : 'glass-button-primary'
                       }`}
                   >

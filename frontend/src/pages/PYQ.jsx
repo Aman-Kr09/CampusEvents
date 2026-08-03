@@ -152,48 +152,47 @@ const PreviewModal = ({ pyq, onClose, onDownload }) => {
       >
         <motion.div
           initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
-          className="relative w-full max-w-4xl max-h-[90vh] rounded-2xl overflow-hidden border border-white/10 bg-[#0d0d1a] shadow-2xl flex flex-col"
+          className="relative w-full max-w-4xl max-h-[90vh] rounded-2xl overflow-hidden border border-[#D6EAF8] bg-white shadow-2xl flex flex-col"
           onClick={e => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="flex items-start justify-between gap-4 px-5 py-4 border-b border-white/10">
+          <div className="flex items-start justify-between gap-4 px-5 py-4 border-b border-slate-100 bg-slate-50/50">
             <div>
-              <h3 className="text-base font-bold text-white">{pyq.subjectName}</h3>
-              <p className="text-xs text-indigo-400 font-mono">{pyq.courseCode} · {pyq.department} · Sem {pyq.semester}</p>
+              <h3 className="text-base font-bold text-slate-900">{pyq.subjectName}</h3>
+              <p className="text-xs text-cyan-700 font-mono">{pyq.courseCode} · {pyq.department} · Sem {pyq.semester}</p>
             </div>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => window.open(viewUrl, '_blank')}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 text-xs font-semibold border border-indigo-500/20 transition-all"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-50 hover:bg-cyan-100 text-cyan-800 text-xs font-bold border border-cyan-200 transition-all"
                 title="Open in new tab"
               >
-                <Eye className="w-3.5 h-3.5" /> Open
+                <span>Open</span>
               </button>
               <button
                 onClick={() => onDownload(pyq)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/40 text-emerald-300 text-xs font-semibold border border-emerald-500/20 transition-all"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold border border-emerald-200 transition-all"
               >
-                <Download className="w-3.5 h-3.5" /> Download
+                <span>Download</span>
               </button>
-              <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition-all">
+              <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-all">
                 <X className="w-5 h-5" />
               </button>
             </div>
           </div>
 
           {/* Content */}
-          <div className="flex-1 overflow-hidden min-h-[500px] relative bg-[#080812] flex items-center justify-center">
+          <div className="flex-1 overflow-hidden min-h-[500px] relative bg-slate-50 flex items-center justify-center">
             {pyq.fileType === 'pdf' ? (
               iframeError ? (
                 /* Fallback when iframe fails */
                 <div className="flex flex-col items-center gap-4 text-center px-6">
-                  <AlertCircle className="w-12 h-12 text-amber-400" />
-                  <p className="text-sm text-gray-400">Preview unavailable. Open the PDF directly.</p>
+                  <p className="text-sm text-slate-600">Preview unavailable. Open the PDF directly.</p>
                   <button
                     onClick={() => window.open(viewUrl, '_blank')}
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 text-sm font-semibold border border-indigo-500/30 transition-all"
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-cyan-50 hover:bg-cyan-100 text-cyan-800 text-sm font-bold border border-cyan-200 transition-all"
                   >
-                    <Eye className="w-4 h-4" /> Open PDF
+                    <span>Open PDF</span>
                   </button>
                 </div>
               ) : (
@@ -283,14 +282,14 @@ const UploadModal = ({ departments, academicYears, onClose, onSuccess }) => {
     }
   };
 
-  const inputCls = "w-full px-3 py-2.5 rounded-xl bg-[#0d0d1a] border border-white/10 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-indigo-500/60 focus:ring-1 focus:ring-indigo-500/30 transition-all";
-  const labelCls = "block text-xs font-semibold text-gray-400 mb-1.5";
+  const inputCls = "w-full px-3 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm placeholder-slate-400 focus:outline-none focus:border-cyan-500 transition-all";
+  const labelCls = "block text-xs font-semibold text-slate-500 mb-1.5 uppercase";
 
   return (
     <AnimatePresence>
       <motion.div
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto"
+        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm overflow-y-auto"
         onClick={onClose}
       >
         <motion.div
@@ -298,21 +297,16 @@ const UploadModal = ({ departments, academicYears, onClose, onSuccess }) => {
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.9, opacity: 0 }}
           transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-          className="relative w-full max-w-xl rounded-2xl border border-white/10 bg-[#0d0d1a] shadow-2xl my-4"
+          className="relative w-full max-w-xl rounded-2xl border border-[#D6EAF8] bg-white shadow-2xl my-4"
           onClick={e => e.stopPropagation()}
         >
           {/* Modal header */}
-          <div className="flex items-center justify-between px-6 py-5 border-b border-white/10">
-            <div className="flex items-center gap-2.5">
-              <div className="p-2 rounded-xl bg-indigo-500/10">
-                <Upload className="w-5 h-5 text-indigo-400" />
-              </div>
-              <div>
-                <h2 className="text-base font-bold text-white">Upload PYQ</h2>
-                <p className="text-xs text-gray-500">Share question papers with your college</p>
-              </div>
+          <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100 bg-slate-50/50">
+            <div>
+              <h2 className="text-base font-bold text-slate-900">Upload PYQ</h2>
+              <p className="text-xs text-slate-500">Share question papers with your college</p>
             </div>
-            <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition-all">
+            <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-all">
               <X className="w-5 h-5" />
             </button>
           </div>
@@ -325,26 +319,23 @@ const UploadModal = ({ departments, academicYears, onClose, onSuccess }) => {
               onDragLeave={() => setDrag(false)}
               onClick={() => fileRef.current?.click()}
               className={`cursor-pointer flex flex-col items-center justify-center gap-2 py-8 rounded-xl border-2 border-dashed transition-all duration-200 ${dragging
-                ? 'border-indigo-500/70 bg-indigo-500/10'
+                ? 'border-cyan-500 bg-cyan-50'
                 : file
-                  ? 'border-emerald-500/50 bg-emerald-500/5'
-                  : 'border-white/10 hover:border-indigo-500/40 hover:bg-white/[0.03]'
+                  ? 'border-emerald-500 bg-emerald-50'
+                  : 'border-slate-200 hover:border-cyan-400 bg-slate-50'
                 }`}
             >
               <input ref={fileRef} type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden" onChange={e => validateAndSetFile(e.target.files[0])} />
               {file ? (
                 <>
-                  <CheckCircle2 className="w-8 h-8 text-emerald-400" />
-                  <p className="text-sm font-semibold text-emerald-300">{file.name}</p>
-                  <p className="text-xs text-gray-500">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                  <CheckCircle2 className="w-8 h-8 text-emerald-600" />
+                  <p className="text-sm font-semibold text-emerald-800">{file.name}</p>
+                  <p className="text-xs text-slate-500">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
                 </>
               ) : (
                 <>
-                  <div className="p-3 rounded-xl bg-white/5">
-                    <Upload className="w-6 h-6 text-gray-400" />
-                  </div>
-                  <p className="text-sm font-medium text-gray-300">Drop image or file here or <span className="text-indigo-400">click to browse</span></p>
-                  <p className="text-xs text-gray-500">JPG, JPEG, PNG, PDF — max 10 MB</p>
+                  <p className="text-sm font-medium text-slate-700">Drop image or file here or <span className="text-cyan-700 font-bold">click to browse</span></p>
+                  <p className="text-xs text-slate-500">JPG, JPEG, PNG, PDF — max 10 MB</p>
                 </>
               )}
             </div>
@@ -373,14 +364,14 @@ const UploadModal = ({ departments, academicYears, onClose, onSuccess }) => {
                       <option value="">Select branch</option>
                       {departments.map(d => <option key={d} value={d}>{d}</option>)}
                     </select>
-                    <button type="button" onClick={() => setShowCustom(true)} className="px-2 py-2 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-indigo-400 transition-all" title="Add custom branch">
+                    <button type="button" onClick={() => setShowCustom(true)} className="px-2 py-2 rounded-xl bg-slate-100 border border-slate-200 text-slate-500 hover:text-cyan-700 transition-all" title="Add custom branch">
                       <Plus className="w-4 h-4" />
                     </button>
                   </div>
                 ) : (
                   <div className="flex gap-2">
                     <input className={`${inputCls} flex-1`} placeholder="Enter branch name" value={customDept} onChange={e => setCustomDept(e.target.value)} />
-                    <button type="button" onClick={() => { setShowCustom(false); setCustomDept(''); }} className="px-2 py-2 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-red-400 transition-all">
+                    <button type="button" onClick={() => { setShowCustom(false); setCustomDept(''); }} className="px-2 py-2 rounded-xl bg-slate-100 border border-slate-200 text-slate-500 hover:text-red-600 transition-all">
                       <X className="w-4 h-4" />
                     </button>
                   </div>
@@ -394,7 +385,7 @@ const UploadModal = ({ departments, academicYears, onClose, onSuccess }) => {
                       <option value="">Select year</option>
                       {academicYears.map(y => <option key={y} value={y}>{y}</option>)}
                     </select>
-                    <button type="button" onClick={() => setShowCY(true)} className="px-2 py-2 rounded-xl bg-[#0d0d1a] border border-white/10 text-gray-400 hover:text-indigo-400 transition-all" title="Add custom year">
+                    <button type="button" onClick={() => setShowCY(true)} className="px-2 py-2 rounded-xl bg-slate-100 border border-slate-200 text-slate-500 hover:text-cyan-700 transition-all" title="Add custom year">
                       <Plus className="w-4 h-4" />
                     </button>
                   </div>
@@ -406,7 +397,7 @@ const UploadModal = ({ departments, academicYears, onClose, onSuccess }) => {
                       value={customYear}
                       onChange={e => setCustomYear(e.target.value)}
                     />
-                    <button type="button" onClick={() => { setShowCY(false); setCustomYear(''); }} className="px-2 py-2 rounded-xl bg-[#0d0d1a] border border-white/10 text-gray-400 hover:text-red-400 transition-all">
+                    <button type="button" onClick={() => { setShowCY(false); setCustomYear(''); }} className="px-2 py-2 rounded-xl bg-slate-100 border border-slate-200 text-slate-500 hover:text-red-600 transition-all">
                       <X className="w-4 h-4" />
                     </button>
                   </div>
@@ -420,8 +411,8 @@ const UploadModal = ({ departments, academicYears, onClose, onSuccess }) => {
                       key={type} type="button"
                       onClick={() => setForm(f => ({ ...f, examType: type }))}
                       className={`px-3 py-2 rounded-xl text-xs font-semibold border transition-all ${form.examType === type
-                        ? 'bg-indigo-600/30 text-indigo-200 border-indigo-500/50'
-                        : 'bg-white/5 text-gray-400 border-white/10 hover:border-indigo-500/30 hover:text-white'
+                        ? 'bg-cyan-600 text-white border-cyan-600'
+                        : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
                         }`}
                     >
                       {type}
@@ -432,17 +423,17 @@ const UploadModal = ({ departments, academicYears, onClose, onSuccess }) => {
             </div>
 
             {error && (
-              <div className="flex items-start gap-2 px-3 py-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs">
-                <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" /> {error}
+              <div className="flex items-start gap-2 px-3 py-2.5 rounded-xl bg-red-50 border border-red-200 text-red-600 text-xs font-medium">
+                {error}
               </div>
             )}
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-sm transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-indigo-900/30"
+              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl glass-button-primary font-bold text-sm transition-all duration-300 disabled:opacity-50"
             >
-              {loading ? <><Loader2 className="w-4 h-4 animate-spin" /> Uploading…</> : <><Upload className="w-4 h-4" /> Upload PYQ</>}
+              {loading ? 'Uploading…' : 'Upload PYQ'}
             </button>
           </form>
         </motion.div>
