@@ -233,13 +233,12 @@ const Landing = () => {
         >
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
-              <Search className="absolute left-3.5 top-3.5 w-5 h-5 text-slate-400" />
               <input
                 type="text"
                 placeholder="Search your college by name or state..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-11 pr-4 py-3.5 bg-white border border-[#D6EAF8] rounded-xl text-slate-900 placeholder-slate-400 font-medium outline-none focus:border-cyan-600 focus:ring-4 focus:ring-cyan-500/10 shadow-sm transition-all duration-200"
+                className="w-full px-4 py-3.5 bg-white border border-[#D6EAF8] rounded-xl text-slate-900 placeholder-slate-400 font-medium outline-none focus:border-cyan-600 focus:ring-4 focus:ring-cyan-500/10 shadow-sm transition-all duration-200"
               />
             </div>
             <button

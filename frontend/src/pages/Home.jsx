@@ -570,7 +570,6 @@ const Home = () => {
         {/* Action controls */}
         <div className="flex items-center gap-3">
           <div className="relative max-w-xs flex-1">
-            <Search className="absolute left-3 top-2.5 w-4.5 h-4.5 text-slate-400" />
             <input
               type="text"
               placeholder={
@@ -580,7 +579,7 @@ const Home = () => {
               }
               value={searchQuery}
               onChange={handleSearchChange}
-              className="pl-9 pr-4 py-2.5 glass-input text-xs sm:text-sm w-full"
+              className="px-4 py-2.5 glass-input text-xs sm:text-sm w-full"
             />
           </div>
 
