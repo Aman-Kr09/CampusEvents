@@ -114,7 +114,7 @@ const Landing = () => {
 
       {/* ── Top Navbar ── */}
       <div className="relative max-w-5xl mx-auto w-full z-20">
-        <nav className="w-full flex items-center justify-between px-4 py-2.5 bg-white/90 backdrop-blur-sm border border-[#D6EAF8] rounded-2xl shadow-sm">
+        <nav className="w-full flex items-center justify-between px-4 py-2.5">
           {/* Logo */}
           <div className="flex items-center space-x-2">
             <span className="text-base font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-cyan-700 via-sky-600 to-teal-600">
