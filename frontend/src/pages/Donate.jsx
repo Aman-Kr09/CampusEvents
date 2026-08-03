@@ -47,7 +47,7 @@ const Donate = () => {
       setDonorsLoading(true);
       const res = await api.get('/payment/donors');
       if (res.data.success) setDonors(res.data.data);
-    } catch (_) {}
+    } catch (_) { }
     finally { setDonorsLoading(false); }
   };
 
@@ -178,7 +178,6 @@ const Donate = () => {
         >
           <div className="px-6 py-5 border-b border-slate-100 bg-slate-50/60">
             <h2 className="text-sm font-bold text-slate-800">Make a Contribution</h2>
-            <p className="text-[10px] text-slate-400 mt-0.5">Secured by Razorpay · All Indian payment modes supported</p>
           </div>
 
           <div className="p-6 space-y-7">
@@ -202,11 +201,10 @@ const Donate = () => {
                       key={item.amount}
                       type="button"
                       onClick={() => { setAmount(item.amount); setCustomAmount(''); }}
-                      className={`p-3 rounded-xl border text-center transition-all duration-200 ${
-                        isSelected
+                      className={`p-3 rounded-xl border text-center transition-all duration-200 ${isSelected
                           ? 'bg-cyan-600 border-cyan-600 text-white shadow-sm'
                           : 'bg-slate-50 border-slate-200 text-slate-700 hover:border-cyan-400 hover:bg-cyan-50'
-                      }`}
+                        }`}
                     >
                       <span className="text-base font-black block">{item.label}</span>
                       <span className={`text-[10px] block mt-0.5 ${isSelected ? 'text-cyan-100' : 'text-slate-400'}`}>{item.desc}</span>
@@ -221,7 +219,7 @@ const Donate = () => {
                 <input
                   type="number"
                   min="10"
-                  placeholder="Enter custom amount"
+                  placeholder="  Enter custom amount"
                   value={customAmount}
                   onChange={(e) => setCustomAmount(e.target.value)}
                   className="w-full glass-input pl-10 text-sm"
@@ -292,11 +290,6 @@ const Donate = () => {
               <span>Donate ₹{finalAmount || 0} via Razorpay</span>
               <ArrowRight className="w-4 h-4" />
             </button>
-
-            <p className="text-center text-[10px] text-slate-400">
-              <Lock className="w-3 h-3 inline mr-1" />
-              256-bit SSL encrypted · Powered by Razorpay
-            </p>
           </div>
         </motion.div>
 
@@ -359,10 +352,6 @@ const Donate = () => {
             </div>
           )}
         </motion.div>
-
-        <p className="text-center text-[10px] text-slate-400 pb-4">
-          CampusEvents Community Fund · Secured by Razorpay Payment Gateway.
-        </p>
       </div>
 
       {/* ── Payment Processing / Success Modal ── */}
