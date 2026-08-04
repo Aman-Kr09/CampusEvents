@@ -125,7 +125,7 @@ const Landing = () => {
           {/* Right side: Android App button + Hamburger */}
           <div className="flex items-center space-x-2">
             <a
-              href="https://expo.dev/artifacts/eas/amZEhB-oB98BNwR6dD_NC8IGarRDuTQlNLlvKonJ2SI.apk"
+              href="https://expo.dev/artifacts/eas/Zc8v2cd3ki0WCmVsl10POOyRzaMKw7F0aS1YGmfPx5M.apk"
               target="_blank"
               rel="noopener noreferrer"
               className="text-xs text-slate-700 hover:text-cyan-700 bg-white hover:bg-cyan-50 border border-[#D6EAF8] hover:border-cyan-300 px-3 py-1.5 rounded-lg transition-all duration-200 font-semibold"
