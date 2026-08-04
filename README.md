@@ -8,13 +8,18 @@ The platform enforces **strict college-based content isolation**, ensuring stude
 
 ---
 
-## 🌐 Live Demo
+## 🌐 Live Demo & Mobile App
 
-🔗 **Live Website:** https://campus-events-phi.vercel.app/
+🔗 **Live Website:** https://campus-events-phi.vercel.app/  
+📱 **Android App (APK):** [Download CampusEvents APK](https://expo.dev/artifacts/eas/Zc8v2cd3ki0WCmVsl10POOyRzaMKw7F0aS1YGmfPx5M.apk)
 
 <p align="center">
   <a href="https://campus-events-phi.vercel.app/" target="_blank">
     <img src="https://img.shields.io/badge/🚀%20Live%20Demo-Visit%20CampusEvents-blue?style=for-the-badge" alt="Live Demo">
+  </a>
+  &nbsp;&nbsp;
+  <a href="https://expo.dev/artifacts/eas/Zc8v2cd3ki0WCmVsl10POOyRzaMKw7F0aS1YGmfPx5M.apk" target="_blank">
+    <img src="https://img.shields.io/badge/📱%20Android%20APK-Download%20App-green?style=for-the-badge&logo=android" alt="Download Android APK">
   </a>
 </p>
 
@@ -218,8 +223,9 @@ Frontend runs at `http://localhost:5173` and Backend runs at `http://localhost:5
 
 ---
 
-## 📬 Live Application
+## 📬 Live Application & Download
 
-🔗 **Website:** https://campus-events-phi.vercel.app/
+🔗 **Website:** https://campus-events-phi.vercel.app/  
+📱 **Android APK:** [Download CampusEvents APK](https://expo.dev/artifacts/eas/Zc8v2cd3ki0WCmVsl10POOyRzaMKw7F0aS1YGmfPx5M.apk)
 
 CampusEvents bridges the gap between students, administrators, and campus opportunities through a secure, intelligent, and unified campus ecosystem.
