@@ -2,11 +2,6 @@ import React, { useState, useRef } from 'react';
 import emailjs from '@emailjs/browser';
 import { api } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Mail, Phone, MapPin, Send, CheckCircle2, AlertCircle,
-  ChevronDown, Globe, MessageSquare,
-  Clock, Shield, Zap, Users, Terminal, Briefcase
-} from 'lucide-react';
 
 const faqs = [
   {
@@ -33,7 +28,6 @@ const faqs = [
 
 const infoCards = [
   {
-    icon: Mail,
     title: 'Email Support',
     value: 'u5813051@gmail.com',
     sub: 'Response within 24 hours',
@@ -41,7 +35,6 @@ const infoCards = [
     href: 'mailto:u5813051@gmail.com',
   },
   {
-    icon: Phone,
     title: 'Phone / WhatsApp',
     value: '+91 7042017583',
     sub: 'Mon – Sun, 8 AM – 11 PM IST',
@@ -49,7 +42,6 @@ const infoCards = [
     href: 'tel:+917042017583',
   },
   {
-    icon: MapPin,
     title: 'Location',
     value: 'NIT Delhi',
     sub: 'Delhi, India',
@@ -57,7 +49,6 @@ const infoCards = [
     href: 'https://www.google.com/maps/search/National+Institute+of+Technology+New+Delhi',
   },
   {
-    icon: Clock,
     title: 'Support Hours',
     value: '10 AM – 6 PM IST',
     sub: 'Monday to Sunday',
@@ -112,13 +103,9 @@ const FAQItem = ({ q, a, index }) => {
         aria-expanded={open}
       >
         <span className="text-sm font-semibold text-slate-800 group-hover:text-cyan-700 transition-colors pr-4">{q}</span>
-        <motion.div
-          animate={{ rotate: open ? 180 : 0 }}
-          transition={{ duration: 0.25 }}
-          className="flex-shrink-0"
-        >
-          <ChevronDown className="w-4 h-4 text-slate-400 group-hover:text-cyan-600 transition-colors" />
-        </motion.div>
+        <span className="text-slate-400 text-sm font-bold group-hover:text-cyan-600 transition-colors flex-shrink-0">
+          {open ? '−' : '+'}
+        </span>
       </button>
       <AnimatePresence initial={false}>
         {open && (
@@ -253,14 +240,10 @@ const Contact = () => {
         >
           {infoCards.map((card, i) => {
             const c = colorMap[card.color];
-            const Icon = card.icon;
             const content = (
               <div
                 className={`bg-white rounded-xl p-5 border ${c.border} ${c.hover} transition-all duration-300 group shadow-sm ${card.href ? 'cursor-pointer' : ''}`}
               >
-                <div className={`w-10 h-10 rounded-lg ${c.bg} border ${c.border} flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300`}>
-                  <Icon className={`w-5 h-5 ${c.text}`} />
-                </div>
                 <p className="text-[10px] text-slate-400 uppercase tracking-widest font-bold mb-1">{card.title}</p>
                 <p className="text-sm font-bold text-slate-800 leading-snug">{card.value}</p>
                 <p className="text-xs text-slate-500 mt-0.5">{card.sub}</p>
@@ -302,14 +285,9 @@ const Contact = () => {
             className="lg:col-span-3 bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-200"
           >
             {/* Form Header */}
-            <div className="px-6 py-5 border-b border-slate-100 bg-slate-50/60 flex items-center space-x-3">
-              <div className="w-9 h-9 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-center">
-                <Send className="w-4 h-4 text-indigo-600" />
-              </div>
-              <div>
-                <h2 className="text-sm font-bold text-slate-800">Send a Message</h2>
-                <p className="text-[10px] text-slate-400">We'll respond within 24 hours</p>
-              </div>
+            <div className="px-6 py-5 border-b border-slate-100 bg-slate-50/60">
+              <h2 className="text-sm font-bold text-slate-800">Send a Message</h2>
+              <p className="text-[10px] text-slate-400">We'll respond within 24 hours</p>
             </div>
 
             <form onSubmit={handleSubmit} className="p-6 space-y-5">
@@ -322,8 +300,7 @@ const Contact = () => {
                     exit={{ opacity: 0, height: 0 }}
                     className="flex items-center space-x-2.5 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl px-4 py-3 text-sm"
                   >
-                    <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
-                    <span>✅ Your message has been sent! We'll respond within 24 hours.</span>
+                    <span>Your message has been sent! We'll respond within 24 hours.</span>
                   </motion.div>
                 )}
                 {status === 'error' && (
@@ -335,11 +312,10 @@ const Contact = () => {
                     className="flex flex-col space-y-1 bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm"
                   >
                     <div className="flex items-center space-x-2.5">
-                      <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                      <span>⚠️ Failed to send. Please email us directly at amankumar19930000@gmail.com</span>
+                      <span>Failed to send. Please email us directly at amankumar19930000@gmail.com</span>
                     </div>
                     {errorDetail && (
-                      <p className="text-[11px] text-red-400 pl-6 font-mono break-all">{errorDetail}</p>
+                      <p className="text-[11px] text-red-400 font-mono break-all">{errorDetail}</p>
                     )}
                   </motion.div>
                 )}
@@ -414,21 +390,18 @@ const Contact = () => {
                 id="contact-submit"
                 type="submit"
                 disabled={submitting}
-                className="w-full glass-button-primary flex items-center justify-center space-x-2 py-3 text-sm disabled:opacity-60 disabled:cursor-not-allowed"
+                className="w-full glass-button-primary flex items-center justify-center py-3 text-sm disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {submitting ? (
                   <>
-                    <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                    <svg className="animate-spin w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
                     </svg>
                     <span>Sending...</span>
                   </>
                 ) : (
-                  <>
-                    <Send className="w-4 h-4" />
-                    <span>Send Message</span>
-                  </>
+                  <span>Send Message</span>
                 )}
               </button>
             </form>
@@ -445,15 +418,13 @@ const Contact = () => {
             <div className="bg-white rounded-2xl p-6 border border-slate-200 space-y-4 shadow-sm">
               <h3 className="text-sm font-bold text-slate-700 uppercase tracking-widest">Why Reach Out?</h3>
               {[
-                { icon: Zap, text: 'Fast onboarding for new institutions', color: 'text-yellow-500' },
-                { icon: Shield, text: 'Smooth Operation of Events', color: 'text-indigo-500' },
-                { icon: Users, text: 'Dedicated account manager for colleges', color: 'text-purple-500' },
-                { icon: Globe, text: 'Custom integrations & feature requests', color: 'text-cyan-600' },
-              ].map(({ icon: Icon, text, color }, i) => (
-                <div key={i} className="flex items-start space-x-3">
-                  <div className={`mt-0.5 w-7 h-7 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center flex-shrink-0`}>
-                    <Icon className={`w-3.5 h-3.5 ${color}`} />
-                  </div>
+                'Fast onboarding for new institutions',
+                'Smooth Operation of Events',
+                'Dedicated account manager for colleges',
+                'Custom integrations & feature requests',
+              ].map((text, i) => (
+                <div key={i} className="flex items-start space-x-2">
+                  <span className="text-slate-400 font-bold text-xs select-none">•</span>
                   <p className="text-xs text-slate-600 leading-relaxed">{text}</p>
                 </div>
               ))}
@@ -490,3 +461,4 @@ const Contact = () => {
 };
 
 export default Contact;
+
